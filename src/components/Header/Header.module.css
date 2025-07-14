@@ -1,0 +1,239 @@
+/* Header.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+.headerWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.container {
+  width: 864.01px;
+  height: 160px;
+  display: flex;
+  font-family: 'Bai Jamjuree', sans-serif;
+  justify-content: center;
+  align-items: center;
+}
+
+.profileImage {
+  width: 160px;
+  height: 160px;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profileImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.details {
+  flex: 1;
+  padding-left: 24px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* Toggle theme button */
+.themeToggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 9999px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background 0.3s ease;
+}
+
+.themeToggle.light {
+  background: #e5e7eb;
+}
+
+.themeToggle.dark {
+  background: #4b5563;
+}
+
+.toggleKnob {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 9999px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+}
+
+/* Light mode: knob at left */
+.toggleKnobLight {
+  transform: translateX(0);
+}
+
+/* Dark mode: knob at right */
+.toggleKnobDark {
+  transform: translateX(20px);
+}
+
+.toggleIcon {
+  width: 12px;
+  height: 12px;
+}
+
+.modeToggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 24px;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.nameContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.name {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.certifiedIcon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.certifiedIcon:hover {
+  transform: scale(1.1);
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.locationIcon {
+  width: 13.99px;
+  height: 13.99px;
+  margin-right: 8px;
+}
+
+.title {
+  font-size: 16px;
+  margin: 0 0 16px 0;
+  color: #000;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-family: 'Bai Jamjuree', sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.button:hover {
+  background-color: #e0e0e0;
+}
+
+/* Schedule a Call button - Black background */
+.scheduleButton {
+  background-color: #000;
+  color: white;
+  border: none;
+}
+
+.scheduleButton:hover {
+  background-color: #333;
+}
+
+/* Send Email button - Outline only */
+.emailButton {
+  background-color: transparent;
+  border: 1px solid #e0e0e0;
+  color: #333;
+}
+
+.emailButton:hover {
+  background-color: #f8f8f8;
+  border-color: #ccc;
+}
+
+/* Download CV button - Black background */
+.downloadButton {
+  background-color: #000;
+  color: white;
+  border: none;
+}
+
+.downloadButton:hover {
+  background-color: #333;
+}
+
+/* Shared icon style */
+.buttonIcon {
+  margin-right: 8px;
+  font-size: 12px;
+}
+
+/* Dark mode styles */
+.headerWrapper.darkMode {
+  background-color: #1a1a1a;
+}
+
+.darkText {
+  color: #f0f0f0 !important;
+}
+
+.darkButton {
+  background-color: #333 !important;
+  color: #f0f0f0 !important;
+}
+
+.darkButton:hover {
+  background-color: #444 !important;
+}
+
+.darkEmailButton {
+  background-color: transparent !important;
+  border-color: #444 !important;
+  color: #f0f0f0 !important;
+}
+
+.darkEmailButton:hover {
+  background-color: #333 !important;
+  border-color: #555 !important;
+}

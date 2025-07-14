@@ -1,0 +1,296 @@
+@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+* {
+  font-family: "Bai Jamjuree", sans-serif !important;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.pageWrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-items: center;
+}
+
+.mainContent {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 15px;
+  max-width: 864.01px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.leftColumn, .rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.gridBox {
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(60,60,60,0.04);
+  padding: 28px 28px 22px 28px;
+  margin-bottom: 0;
+}
+
+.gridTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.aboutText {
+  font-size: 14px;
+}
+
+.gridIcon {
+  font-size: 1.15em;
+  color: #666;
+}
+
+/* Bento Tech Stack Styling */
+.techStackHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.techStackTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.techStackIcon {
+  width: 15px;
+  height: 15px;
+  color: #666;
+}
+.techStackLink {
+  font-size: 12px;
+  color: #888;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+.techStackLink:hover {
+  color: #222;
+}
+.techStackArrow {
+  width: 14px;
+  height: 14px;
+  color: currentColor;
+}
+.techStackGroups {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.techStackGroupTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.techStackTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.techTag {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #f5f5f5;
+  border: 1px solid #ececec;
+  color: #222;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+/* --- EXPERIENCE TIMELINE --- */
+.experienceHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.experienceIcon {
+  width: 20px;
+  height: 20px;
+  color: #666;
+  top: 5%;
+}
+
+.timelineBox {
+  position: relative;
+  padding-left: 18px;
+  margin-top: 20px;
+}
+
+.timelineLine {
+  position: absolute;
+  left: 7px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: #e5e5e5;
+  z-index: 0;
+}
+
+.timelineItem,
+.timelineItemCurrent,
+.timelineItemActive {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.timelineDot,
+.timelineDotCurrent,
+.timelineDotActive {
+  position: absolute;
+  left: -18px;
+  top: 6px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 2.5px solid #e5e5e5;
+  background: #fff;
+  z-index: 1;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+/* Timeline dot active style (black) */
+.timelineDotActive {
+  background: #222;
+  border-color: #222;
+}
+
+/* Timeline dot current style (gray) */
+.timelineDotCurrent {
+  background: #aaa;
+  border-color: #aaa;
+}
+
+/* Timeline dot default style (white) */
+.timelineDot {
+  background: #fff;
+  border-color: #e5e5e5;
+}
+
+/* Content */
+.timelineContent {
+  flex: 1;
+  margin-left: 10px;
+}
+
+.timelineRole,
+.timelineRoleActive {
+  font-size: 14px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 0;
+}
+
+/* Highlight for active role */
+.timelineRoleActive {
+  color: #222;
+}
+
+.timelineDetails {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+  gap: 18px;
+}
+
+.timelineCompany {
+  font-size: 12px;
+  color: #666;
+}
+
+.timelineYear {
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 3px 12px;
+  font-size: 10px;
+  font-weight: 500;
+  color: #333;
+  border: 1px solid #ececec;
+  margin-left: 12px;
+}
+
+/* Dark mode styles */
+.pageWrapper.darkMode {
+  background-color: #1a1a1a;
+  color: #f0f0f0;
+}
+
+.darkMode .mainContent {
+  background-color: #1a1a1a;
+}
+
+.darkGridBox {
+  background-color: #2d2d2d !important;
+  border-color: #444 !important;
+}
+
+.darkText {
+  color: #f0f0f0 !important;
+}
+
+.darkLink {
+  color: #a0a0a0 !important;
+}
+
+.darkLink:hover {
+  color: #f0f0f0 !important;
+}
+
+.darkTechTag {
+  background-color: #444 !important;
+  border-color: #555 !important;
+  color: #f0f0f0 !important;
+}
+
+.darkTimelineLine {
+  background-color: #444 !important;
+}
+
+.darkTimelineDot {
+  background-color: #2d2d2d !important;
+  border-color: #555 !important;
+}
+
+.darkTimelineYear {
+  background-color: #444 !important;
+  border-color: #555 !important;
+  color: #f0f0f0 !important;
+}
+
+.darkTimelineDotActive {
+  background-color: #fff !important;
+  border-color: #fff !important;
+}
