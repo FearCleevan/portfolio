@@ -1,25 +1,27 @@
-/* Header.module.css */
 @import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
 
+/* Base Mobile Styles */
 .headerWrapper {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-top: 40px;
+  margin-top: 20px;
+  padding: 0 16px;
 }
 
 .container {
-  width: 864.01px;
-  height: 160px;
+  width: 100%;
+  max-width: 864px;
   display: flex;
-  font-family: 'Bai Jamjuree', sans-serif;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  gap: 20px;
+  font-family: 'Bai Jamjuree', sans-serif;
 }
 
 .profileImage {
-  width: 160px;
-  height: 160px;
+  width: 120px;
+  height: 120px;
   border-radius: 10px;
   overflow: hidden;
   display: flex;
@@ -34,18 +36,20 @@
 }
 
 .details {
-  flex: 1;
-  padding-left: 24px;
+  width: 100%;
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 16px;
 }
 
-/* Toggle theme button */
+/* Theme Toggle */
 .themeToggle {
-  position: relative;
+  position: absolute;
+  top: 0;
+  right: 16px;
   width: 44px;
   height: 24px;
   border-radius: 9999px;
@@ -68,24 +72,21 @@
 .toggleKnob {
   position: absolute;
   left: 2px;
-  top: 2px;
   width: 20px;
   height: 20px;
   background: #fff;
   border-radius: 9999px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+  transition: transform 0.3s cubic-bezier(.4, 0, .2, 1);
 }
 
-/* Light mode: knob at left */
 .toggleKnobLight {
   transform: translateX(0);
 }
 
-/* Dark mode: knob at right */
 .toggleKnobDark {
   transform: translateX(20px);
 }
@@ -95,38 +96,29 @@
   height: 12px;
 }
 
-.modeToggle {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 24px;
-  width: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
+/* Header Content */
 .nameContainer {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 4px;
+  margin-bottom: 12px;
+  width: 100%;
 }
 
 .name {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 600;
   margin: 0;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .certifiedIcon {
-  width: 20px;
-  height: 20px;
-  transition: transform 0.2s ease;
-}
-
-.certifiedIcon:hover {
-  transform: scale(1.1);
+  width: 18px;
+  height: 18px;
 }
 
 .location {
@@ -134,42 +126,47 @@
   align-items: center;
   font-size: 14px;
   margin-bottom: 8px;
+  justify-content: center;
 }
 
 .locationIcon {
-  width: 13.99px;
-  height: 13.99px;
-  margin-right: 8px;
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
 }
 
 .title {
   font-size: 16px;
-  margin: 0 0 16px 0;
-  color: #000;
+  margin: 0 0 20px 0;
+  color: #666;
 }
 
+/* Buttons */
 .buttons {
   display: flex;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  width: 100%;
 }
 
 .button {
   display: flex;
   align-items: center;
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: 4px;
-  font-family: 'Bai Jamjuree', sans-serif;
-  font-weight: 500;
   font-size: 12px;
-  cursor: pointer;
-  transition: all 0.3s;
+  font-weight: 500;
+  flex-grow: 1;
+  justify-content: center;
+  min-width: 120px;
+  transition: all 0.2s ease;
 }
 
-.button:hover {
-  background-color: #e0e0e0;
+.buttonText {
+  white-space: nowrap;
 }
 
-/* Schedule a Call button - Black background */
 .scheduleButton {
   background-color: #000;
   color: white;
@@ -180,7 +177,6 @@
   background-color: #333;
 }
 
-/* Send Email button - Outline only */
 .emailButton {
   background-color: transparent;
   border: 1px solid #e0e0e0;
@@ -192,7 +188,6 @@
   border-color: #ccc;
 }
 
-/* Download CV button - Black background */
 .downloadButton {
   background-color: #000;
   color: white;
@@ -203,13 +198,12 @@
   background-color: #333;
 }
 
-/* Shared icon style */
 .buttonIcon {
-  margin-right: 8px;
+  margin-right: 6px;
   font-size: 12px;
 }
 
-/* Dark mode styles */
+/* Dark Mode Styles */
 .headerWrapper.darkMode {
   background-color: #1a1a1a;
 }
@@ -236,4 +230,71 @@
 .darkEmailButton:hover {
   background-color: #333 !important;
   border-color: #555 !important;
+}
+
+/* Tablet Styles (768px+) */
+@media (min-width: 768px) {
+  .container {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .profileImage {
+    width: 140px;
+    height: 140px;
+  }
+
+  .details {
+    align-items: flex-start;
+    text-align: left;
+    padding-left: 24px;
+  }
+
+  .nameContainer {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .name {
+    font-size: 22px;
+  }
+
+  .buttons {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+  }
+
+  .button {
+    padding: 8px 16px;
+    flex-grow: 0;
+  }
+}
+
+/* Desktop Styles (1024px+) */
+@media (min-width: 1024px) {
+  .container {
+    height: 160px;
+  }
+
+  .profileImage {
+    width: 160px;
+    height: 160px;
+  }
+
+  .name {
+    font-size: 24px;
+  }
+}
+
+/* Small Mobile Adjustments (max-width: 360px) */
+@media (max-width: 360px) {
+  .buttons {
+    flex-direction: column;
+  }
+
+  .button {
+    width: 100%;
+  }
 }

@@ -1,0 +1,244 @@
+.container {
+    width: 100%;
+    max-width: 895px;
+    margin: auto 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 16px;
+    margin-bottom: 20px;
+}
+
+/* Bento Card Styles */
+.bentoCard {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(60,60,60,0.04);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.cardTitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cardIcon {
+    width: 18px;
+    height: 18px;
+}
+
+.cardHeading {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.viewAllLink {
+    font-size: 12px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.linkArrow {
+    width: 12px;
+    height: 12px;
+}
+
+/* Projects Grid */
+.projectsGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.projectCard {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.projectLink {
+    display: block;
+    text-decoration: none;
+}
+
+.projectTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.externalIcon {
+    width: 12px;
+    height: 12px;
+    color: #6b7280;
+}
+
+.projectDescription {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 6px;
+}
+
+.projectDomain {
+    font-size: 11px;
+    font-family: monospace !important;
+    background: #f3f4f6;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    color: #4b5563;
+}
+
+/* Certifications List */
+.certificationsList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.certificationItem {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-decoration: none;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.certificationTitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 2px;
+}
+
+.certificationIssuer {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+/* Dark Mode Styles */
+.container.darkMode {
+    background-color: transparent;
+}
+
+.darkBentoCard {
+    background-color: #2d2d2d !important;
+    border-color: #444 !important;
+}
+
+.darkText {
+    color: #f0f0f0 !important;
+}
+
+.darkSecondaryText {
+    color: #a0a0a0 !important;
+}
+
+.darkLink {
+    color: #a0a0a0 !important;
+}
+
+.darkLink:hover {
+    color: #f0f0f0 !important;
+}
+
+.darkProjectCard {
+    background-color: #333 !important;
+}
+
+.darkDomain {
+    background-color: #444 !important;
+    color: #d1d1d1 !important;
+}
+
+.darkCertificationItem {
+    background-color: #333 !important;
+}
+
+/* Tablet Styles (768px and up) */
+@media (min-width: 768px) {
+    .container {
+        grid-template-columns: 1.5fr 1fr;
+        gap: 24px;
+        margin-bottom: 20px;
+    }
+
+    .projectsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cardHeading {
+        font-size: 20px;
+    }
+
+    .projectTitle {
+        font-size: 15px;
+    }
+
+    .certificationTitle {
+        font-size: 14px;
+    }
+}
+
+/* Desktop Styles (1024px and up) */
+@media (min-width: 1024px) {
+    .cardHeading {
+        font-size: 22px;
+    }
+
+    .projectTitle {
+        font-size: 16px;
+    }
+
+    .certificationTitle {
+        font-size: 15px;
+    }
+}
+
+/* Hover Effects */
+@media (hover: hover) {
+    .projectCard:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .certificationItem:hover {
+        background: #f0f0f0;
+        transform: translateX(2px);
+    }
+
+    .viewAllLink:hover {
+        color: #111827;
+    }
+
+    .darkProjectCard:hover {
+        background-color: #3a3a3a !important;
+    }
+
+    .darkCertificationItem:hover {
+        background-color: #3a3a3a !important;
+    }
+
+    .darkLink:hover {
+        color: #f0f0f0 !important;
+    }
+}

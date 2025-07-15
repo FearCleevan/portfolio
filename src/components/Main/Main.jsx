@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './Main.module.css';
 import Header from '../Header/Header';
+import Container from '../Container/Container';
 import Footer from '../Footer/Footer';
 import { aboutData } from '../../data/about';
 import { techStackData } from '../../data/techStack';
@@ -99,7 +100,9 @@ export default function Main() {
                         </section>
                     </div>
                 </div>
+               
             </main>
+            <Container isDarkMode={isDarkMode} />
             <Footer isDarkMode={isDarkMode} />
         </div>
     );

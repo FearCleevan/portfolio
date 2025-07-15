@@ -2,7 +2,7 @@ export const techStackData = {
   groups: [
     {
       title: "Frontend",
-      items: ["HTML", "CSS", "JavaScript", "TypeScript", "React", "Next.js", "Vue.js", "SCSS"]
+      items: ["HTML", "CSS", "JavaScript", "TypeScript", "React", "Next.js", "SCSS"]
     },
     {
       title: "Backend",

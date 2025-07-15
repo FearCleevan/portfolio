@@ -42,4 +42,5 @@ export const experienceData = [
         year: "2021",
         status: "past"
     }
+    
 ];
