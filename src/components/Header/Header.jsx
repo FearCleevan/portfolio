@@ -2,6 +2,7 @@ import styles from './Header.module.css';
 import React from 'react';
 import profile from '../../assets/profile.png';
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaDownload } from 'react-icons/fa';
+import Chat from '../Chat/ChatButton';
 
 function ThemeToggle({ isDarkMode, toggleDarkMode }) {
     return (
@@ -69,7 +70,9 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                         </button>
                     </div>
                 </div>
+                
             </div>
+            
         </div>
     );
 };

@@ -7,11 +7,53 @@
   box-sizing: border-box;
 }
 
+/* Smooth page transition animations */
 .pageWrapper {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   align-items: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.pageWrapper.mounted {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered animations for child elements */
+.pageWrapper:not(.mounted) .headerWrapper {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.4s ease-out 0.1s, transform 0.4s ease-out 0.1s;
+}
+
+.pageWrapper:not(.mounted) .mainContent {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease-out 0.2s, transform 0.4s ease-out 0.2s;
+}
+
+.pageWrapper:not(.mounted) .container {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease-out 0.3s, transform 0.4s ease-out 0.3s;
+}
+
+.pageWrapper:not(.mounted) .footer {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease-out 0.4s, transform 0.4s ease-out 0.4s;
+}
+
+.pageWrapper.mounted .headerWrapper,
+.pageWrapper.mounted .mainContent,
+.pageWrapper.mounted .container,
+.pageWrapper.mounted .footer {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .mainContent {
@@ -39,7 +81,7 @@
   gap: 15px;
 }
 
-.rightColumn{
+.rightColumn {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 15px;
@@ -52,6 +94,7 @@
   box-shadow: 0 2px 8px rgba(60,60,60,0.04);
   padding: 10px;
   margin-bottom: 0;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .gridTitle {
@@ -61,16 +104,19 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  transition: color 0.3s ease;
 }
 
 .aboutText {
   font-size: 14px;
   line-height: 1.5;
+  transition: color 0.3s ease;
 }
 
 .gridIcon {
   font-size: 1.15em;
   color: #666;
+  transition: color 0.3s ease;
 }
 
 /* Tech Stack Styling */
@@ -111,6 +157,7 @@
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 8px;
+  transition: color 0.3s ease;
 }
 .techStackTags {
   display: flex;
@@ -126,6 +173,7 @@
   color: #222;
   font-weight: 500;
   margin-bottom: 2px;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 /* Experience Timeline */
@@ -150,6 +198,7 @@
   width: 2px;
   background: #e5e5e5;
   z-index: 0;
+  transition: background-color 0.3s ease;
 }
 
 .timelineItem,
@@ -175,7 +224,7 @@
   border: 2.5px solid #e5e5e5;
   background: #fff;
   z-index: 1;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .timelineDotActive {
@@ -199,6 +248,7 @@
   font-weight: 700;
   color: #222;
   margin-bottom: 0;
+  transition: color 0.3s ease;
 }
 
 .timelineRoleActive {
@@ -215,6 +265,7 @@
 .timelineCompany {
   font-size: 12px;
   color: #666;
+  transition: color 0.3s ease;
 }
 
 .timelineYear {
@@ -226,6 +277,7 @@
   color: #333;
   border: 1px solid #ececec;
   align-self: flex-start;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 /* Dark Mode Styles */

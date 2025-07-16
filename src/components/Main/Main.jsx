@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Main.module.css';
 import Header from '../Header/Header';
 import Container from '../Container/Container';
@@ -6,13 +6,31 @@ import Footer from '../Footer/Footer';
 import { aboutData } from '../../data/about';
 import { techStackData } from '../../data/techStack';
 import { experienceData } from '../../data/experience';
+import ChatButton from '../Chat/ChatButton';
 
 export default function Main() {
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    // Initialize state with localStorage value or default to false
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        const savedMode = localStorage.getItem('darkMode');
+        return savedMode ? JSON.parse(savedMode) : false;
+    });
+    const [isMounted, setIsMounted] = useState(false);
+
+    // Update localStorage whenever dark mode changes
+    useEffect(() => {
+        localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
+    }, [isDarkMode]);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
 
     return (
-        <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
+        <div
+            className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''} ${isMounted ? styles.mounted : ''}`}
+        >
             <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
             <main className={`${styles.mainContent} ${isDarkMode ? styles.darkMode : ''}`}>
                 <div className={styles.gridContainer}>
@@ -100,10 +118,11 @@ export default function Main() {
                         </section>
                     </div>
                 </div>
-               
+
             </main>
             <Container isDarkMode={isDarkMode} />
             <Footer isDarkMode={isDarkMode} />
+            <ChatButton isDarkMode={isDarkMode} />
         </div>
     );
 }
