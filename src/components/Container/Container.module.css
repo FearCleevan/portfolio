@@ -31,9 +31,15 @@
     gap: 8px;
 }
 
-.cardIcon {
+/* .cardIcon {
     width: 18px;
     height: 18px;
+} */
+
+.gridIcon {
+  font-size: 1.15em;
+  color: #666;
+  transition: color 0.3s ease;
 }
 
 .cardHeading {

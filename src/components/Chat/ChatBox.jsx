@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { FiSend } from 'react-icons/fi';
 import styles from './ChatBox.module.css';
 import profileImage from '../../assets/profile.png';
 
@@ -95,7 +96,7 @@ const ChatBox = ({ onClose, isDarkMode }) => {
                         </div>
                     </div>
                 </div>
-                <button onClick={onClose} className={styles.closeButton}>
+                <button onClick={onClose} className={`${styles.closeButton} ${isDarkMode ? styles.darkCloseButton : ''}`} aria-label="Close chat">
                     &times;
                 </button>
             </div>
@@ -151,9 +152,7 @@ const ChatBox = ({ onClose, isDarkMode }) => {
                     {isLoading ? (
                         <div className={styles.spinner}></div>
                     ) : (
-                        <svg className={styles.sendIcon} viewBox="0 0 24 24">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M12 5l7 7-7 7" />
-                        </svg>
+                        <FiSend className={styles.sendIcon} />
                     )}
                 </button>
             </form>

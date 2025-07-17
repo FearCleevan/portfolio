@@ -48,10 +48,7 @@ const Container = ({ isDarkMode }) => {
       <div className={`${styles.bentoCard} ${isDarkMode ? styles.darkBentoCard : ''}`}>
         <div className={styles.cardHeader}>
           <div className={styles.cardTitle}>
-            <svg className={styles.cardIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
-            </svg>
-            <h2 className={`${styles.cardHeading} ${isDarkMode ? styles.darkText : ''}`}>Recent Projects</h2>
+            <h2 className={`${styles.cardHeading} ${isDarkMode ? styles.darkText : ''}`}><span className={styles.gridIcon}>📂</span> Recent Projects</h2>
           </div>
           <a className={`${styles.viewAllLink} ${isDarkMode ? styles.darkLink : ''}`} href="#">
             View All
@@ -82,10 +79,7 @@ const Container = ({ isDarkMode }) => {
       <div className={`${styles.bentoCard} ${isDarkMode ? styles.darkBentoCard : ''}`}>
         <div className={styles.cardHeader}>
           <div className={styles.cardTitle}>
-            <svg className={styles.cardIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
-            </svg>
-            <h2 className={`${styles.cardHeading} ${isDarkMode ? styles.darkText : ''}`}>Certifications</h2>
+            <h2 className={`${styles.cardHeading} ${isDarkMode ? styles.darkText : ''}`}><span className={styles.gridIcon}>🎓</span> Certifications</h2>
           </div>
           <a className={`${styles.viewAllLink} ${isDarkMode ? styles.darkLink : ''}`} href="#">
             View All

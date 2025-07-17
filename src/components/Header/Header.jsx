@@ -32,6 +32,13 @@ function ThemeToggle({ isDarkMode, toggleDarkMode }) {
 }
 
 const Header = ({ isDarkMode, toggleDarkMode }) => {
+    // Replace this with your actual Calendly URL
+    const calendlyUrl = "https://calendly.com/fearcleevan/30min";
+    
+    const handleScheduleCall = () => {
+        window.open(calendlyUrl, '_blank', 'noopener,noreferrer');
+    };
+
     return (
         <div className={`${styles.headerWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
             <div className={styles.container}>
@@ -56,7 +63,10 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                     </div>
                     <p className={`${styles.title} ${isDarkMode ? styles.darkText : ''}`}>Junior Web Developer</p>
                     <div className={styles.buttons}>
-                        <button className={`${styles.button} ${styles.scheduleButton} ${isDarkMode ? styles.darkButton : ''}`}>
+                        <button 
+                            className={`${styles.button} ${styles.scheduleButton} ${isDarkMode ? styles.darkButton : ''}`}
+                            onClick={handleScheduleCall}
+                        >
                             <FaPhone className={styles.buttonIcon} />
                             <span className={styles.buttonText}>Schedule a Call</span>
                         </button>
@@ -70,9 +80,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                         </button>
                     </div>
                 </div>
-                
             </div>
-            
         </div>
     );
 };
