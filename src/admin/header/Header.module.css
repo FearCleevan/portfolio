@@ -1,0 +1,64 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #0f172a;
+  color: #f8fafc;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid #1e293b;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  font-family: "Bai Jamjuree", sans-serif;
+}
+
+.logoHighlight {
+  color: #60a5fa;
+  font-weight: 700;
+}
+
+.logoutButton {
+  background-color: transparent;
+  border: 1px solid #334155;
+  color: #f8fafc;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Bai Jamjuree", sans-serif;
+  font-weight: 500;
+}
+
+.logoutButton:hover {
+  background-color: #1e293b;
+  border-color: #60a5fa;
+  color: #60a5fa;
+}
+
+.logoutIcon {
+  transition: transform 0.3s ease;
+}
+
+.logoutButton:hover .logoutIcon {
+  transform: translateX(2px);
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .logo {
+    font-size: 1.25rem;
+  }
+}

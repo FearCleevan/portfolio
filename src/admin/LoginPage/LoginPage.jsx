@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { loginAdmin } from '../../firebase/services/authService';
 import styles from './LoginPage.module.css';
 
 const LoginPage = () => {
@@ -9,34 +10,27 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Mock authentication function (replace with real implementation later)
-  const mockAuth = (email, password) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // Simple validation for demo purposes
-        const isValid = email === 'admin@example.com' && password === 'password123';
-        resolve(isValid);
-      }, 1000);
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
     
     try {
-      // Replace this with real authentication later
-      // const success = await loginAdmin(email, password);
-      const success = await mockAuth(email, password);
-      
-      if (success) {
-        navigate('/AdminPanel');
-      } else {
-        setError('Invalid email or password');
-      }
+      await loginAdmin(email, password);
+      navigate('/AdminPanel'); // Changed to /AdminPanel
     } catch (err) {
-      setError('Failed to login. Please try again.');
+      let errorMessage = 'Failed to login. Please try again.';
+      
+      // More specific error messages
+      if (err.code === 'auth/wrong-password') {
+        errorMessage = 'Invalid password';
+      } else if (err.code === 'auth/user-not-found') {
+        errorMessage = 'User not found';
+      } else if (err.code === 'auth/too-many-requests') {
+        errorMessage = 'Too many attempts. Account temporarily locked.';
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +69,7 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               className={styles.formInput}
-              placeholder="password123"
+              placeholder="Enter your password"
             />
           </div>
           
@@ -92,11 +86,11 @@ const LoginPage = () => {
           </button>
 
           {/* Demo credentials hint (remove in production) */}
-          <div className={styles.demoHint}>
+          {/* <div className={styles.demoHint}>
             <p>Demo credentials:</p>
             <p>Email: admin@example.com</p>
             <p>Password: password123</p>
-          </div>
+          </div> */}
         </form>
       </div>
     </div>
