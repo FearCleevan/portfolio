@@ -88,3 +88,17 @@
     border-bottom: 3px solid #60a5fa;
   }
 }
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  padding: 10px 15px;
+}
+
+.navLink:hover {
+  color: inherit;
+}

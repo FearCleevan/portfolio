@@ -1,22 +1,26 @@
+// src/components/Main/Main.jsx
 import React, { useState, useEffect } from 'react';
 import styles from './Main.module.css';
 import Header from '../Header/Header';
 import Container from '../Container/Container';
 import Footer from '../Footer/Footer';
-import { aboutData } from '../../data/about';
-import { techStackData } from '../../data/techStack';
+import { useAboutContent } from '../../firebase/hooks/useFirestore';
 import { experienceData } from '../../data/experience';
 import ChatButton from '../Chat/ChatButton';
+import { Link, useLocation } from 'react-router-dom';
+import { useTechStack } from '../../firebase/hooks/useTechStack';
 
 export default function Main() {
-    // Initialize state with localStorage value or default to false
     const [isDarkMode, setIsDarkMode] = useState(() => {
         const savedMode = localStorage.getItem('darkMode');
         return savedMode ? JSON.parse(savedMode) : false;
     });
     const [isMounted, setIsMounted] = useState(false);
+    const { aboutContent, loading: aboutLoading, error: aboutError } = useAboutContent();
+    const { techStack: allTechStack, loading: techStackLoading, error: techStackError } = useTechStack();
+    const location = useLocation();
+    const [isExiting, setIsExiting] = useState(false);
 
-    // Update localStorage whenever dark mode changes
     useEffect(() => {
         localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
     }, [isDarkMode]);
@@ -25,25 +29,58 @@ export default function Main() {
         setIsMounted(true);
     }, []);
 
+    useEffect(() => {
+        setIsExiting(false);
+        return () => setIsExiting(true);
+    }, [location]);
+
     const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
 
+    // Get first 3 groups and limit items to 5 per group
+    const limitedTechStackData = {
+        groups: allTechStack.slice(0, 3).map(group => ({
+            ...group,
+            items: group.items.slice(0, 5)
+        }))
+    };
+
+    if (aboutLoading || techStackLoading) {
+        return (
+            <div className={styles.loadingOverlay}>
+                <div className={styles.spinner}></div>
+                <p>Loading portfolio...</p>
+            </div>
+        );
+    }
+
+    if (aboutError || techStackError) {
+        return (
+            <div className={styles.errorOverlay}>
+                <p>Failed to load portfolio content.</p>
+                <button onClick={() => window.location.reload()}>
+                    Retry
+                </button>
+            </div>
+        );
+    }
+
     return (
-        <div
-            className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''} ${isMounted ? styles.mounted : ''}`}
-        >
+        <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''} ${isMounted ? styles.mounted : ''} ${isExiting ? styles.exit : ''}`}>
             <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
             <main className={`${styles.mainContent} ${isDarkMode ? styles.darkMode : ''}`}>
                 <div className={styles.gridContainer}>
                     {/* Left Column */}
                     <div className={styles.leftColumn}>
+
+                        {/* About */}
                         <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
                             <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}>
                                 <span className={styles.gridIcon}>📄</span> About
                             </h2>
-                            {aboutData.description.map((paragraph, index) => (
+                            {aboutContent.map((paragraph, index) => (
                                 <React.Fragment key={index}>
                                     <p className={`${styles.aboutText} ${isDarkMode ? styles.darkText : ''}`}>{paragraph}</p>
-                                    {index < aboutData.description.length - 1 && <br />}
+                                    {index < aboutContent.length - 1 && <br />}
                                 </React.Fragment>
                             ))}
                         </section>
@@ -54,15 +91,15 @@ export default function Main() {
                                 <div className={styles.techStackTitleRow}>
                                     <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}> <span className={styles.gridIcon}>💻</span> Tech Stack</h2>
                                 </div>
-                                <a className={`${styles.techStackLink} ${isDarkMode ? styles.darkLink : ''}`} href="/tech-stack">
+                                <Link to="/tech-stack" className={`${styles.techStackLink} ${isDarkMode ? styles.darkLink : ''}`}>
                                     View All
                                     <svg className={styles.techStackArrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path>
                                     </svg>
-                                </a>
+                                </Link>
                             </div>
                             <div className={styles.techStackGroups}>
-                                {techStackData.groups.map((group, index) => (
+                                {limitedTechStackData.groups.map((group, index) => (
                                     <div key={index} className={styles.techStackGroup}>
                                         <h3 className={`${styles.techStackGroupTitle} ${isDarkMode ? styles.darkText : ''}`}>{group.title}</h3>
                                         <div className={styles.techStackTags}>
@@ -74,10 +111,13 @@ export default function Main() {
                                 ))}
                             </div>
                         </section>
+
                     </div>
 
                     {/* Right Column */}
                     <div className={styles.rightColumn}>
+
+                        {/* Experience */}
                         <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
                             <div className={styles.experienceHeader}>
                                 <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}> <span className={styles.gridIcon}>💼</span> Experience</h2>
@@ -116,6 +156,7 @@ export default function Main() {
                                 })}
                             </div>
                         </section>
+
                     </div>
                 </div>
 

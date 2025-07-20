@@ -1,0 +1,190 @@
+.editorWrapper {
+  width: 100%;
+}
+
+.editPanel {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.editHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.editHeader h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.125rem;
+}
+
+.editActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.editorContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Buttons */
+.saveButton {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.saveButton:hover {
+  background-color: #1d4ed8;
+}
+
+.cancelButton {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cancelButton:hover {
+  background-color: #e5e7eb;
+}
+
+.editButton {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  font-size: 0.8125rem;
+}
+
+.editButton:hover {
+  background-color: #e5e7eb;
+}
+
+.addButton {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  font-size: 0.875rem;
+  margin-top: 0.625rem;
+}
+
+.addButton:hover {
+  background-color: #bfdbfe;
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  color: #dc2626;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.removeButton:hover {
+  color: #b91c1c;
+}
+
+/* Form Elements */
+.textArea {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease;
+  min-height: 5rem;
+  resize: vertical;
+  flex: 1;
+}
+
+.textArea:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+/* Content List */
+.contentList {
+  background-color: #fff;
+  border-radius: 0.375rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.listHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.listHeader h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1rem;
+}
+
+/* Paragraphs */
+.paragraphsPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.paragraphItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.625rem;
+  background-color: #f9fafb;
+  border-radius: 0.25rem;
+}
+
+.paragraphItem p {
+  margin: 0;
+  flex: 1;
+}
+
+/* Array Items */
+.arrayItem {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+}

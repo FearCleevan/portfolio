@@ -1,12 +1,13 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom'; // Add Link import
 import styles from './Sidebar.module.css';
 
 const Sidebar = () => {
   const location = useLocation();
 
-  // Check if current route is dashboard or starts with /admin
-  const isDashboardActive = location.pathname === '/' || location.pathname.startsWith('/admin');
+  // Check if current route is dashboard or content editor
+  const isDashboardActive = location.pathname === '/AdminPanel';
+  const isContentEditorActive = location.pathname === '/AdminPanel/content';
 
   return (
     <aside className={styles.sidebar}>
@@ -16,12 +17,16 @@ const Sidebar = () => {
       <nav>
         <ul className={styles.navList}>
           <li className={`${styles.navItem} ${isDashboardActive ? styles.active : ''}`}>
-            <span className={styles.navIcon}>📊</span>
-            Dashboard
+            <Link to="/AdminPanel" className={styles.navLink}>
+              <span className={styles.navIcon}>📊</span>
+              Dashboard
+            </Link>
           </li>
-          <li className={styles.navItem}>
-            <span className={styles.navIcon}>✏️</span>
-            Content Editor
+          <li className={`${styles.navItem} ${isContentEditorActive ? styles.active : ''}`}>
+            <Link to="/AdminPanel/content" className={styles.navLink}>
+              <span className={styles.navIcon}>✏️</span>
+              Content Editor
+            </Link>
           </li>
           <li className={styles.navItem}>
             <span className={styles.navIcon}>💬</span>
