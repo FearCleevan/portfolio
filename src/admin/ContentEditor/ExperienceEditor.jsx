@@ -1,24 +1,11 @@
-import React, { useState } from 'react';
+// src/admin/ContentEditor/ExperienceEditor.jsx
+import React, { useState, useEffect } from 'react';
 import { FiEdit2, FiSave, FiX, FiPlus, FiTrash2 } from 'react-icons/fi';
+import { useExperience } from '../../firebase/hooks/useExperience';
 import styles from './ExperienceEditor.module.css';
 
 const ExperienceEditor = () => {
-    const [experience, setExperience] = useState([
-        {
-            id: 1,
-            role: "Frontend Developer",
-            company: "The Launchpad Inc",
-            year: "2022 - Present",
-            status: "current"
-        },
-        {
-            id: 2,
-            role: "Web Developer Intern",
-            company: "Tech Solutions Inc",
-            year: "2021 - 2022",
-            status: "active"
-        }
-    ]);
+    const { experience, loading, error, addItem, updateItem, removeItem } = useExperience();
     const [isEditing, setIsEditing] = useState(false);
     const [currentEditItem, setCurrentEditItem] = useState(null);
     const [newItem, setNewItem] = useState(false);
@@ -40,11 +27,31 @@ const ExperienceEditor = () => {
         setNewItem(false);
     };
 
-    const handleSave = () => {
-        console.log('Saving experience data:', currentEditItem);
-        setIsEditing(false);
-        setCurrentEditItem(null);
-        setNewItem(false);
+    const handleSave = async () => {
+        try {
+            if (newItem) {
+                await addItem(currentEditItem);
+            } else {
+                const originalItem = experience.find(item => item.id === currentEditItem.id);
+                if (originalItem) {
+                    await updateItem(originalItem, currentEditItem);
+                }
+            }
+        } catch (error) {
+            console.error('Error saving experience:', error);
+        } finally {
+            handleCancelEdit();
+        }
+    };
+
+    const handleDelete = async (item) => {
+        if (window.confirm(`Are you sure you want to delete the "${item.role}" at "${item.company}"?`)) {
+            try {
+                await removeItem(item);
+            } catch (error) {
+                console.error('Error deleting experience item:', error);
+            }
+        }
     };
 
     const handleInputChange = (e) => {
@@ -55,9 +62,8 @@ const ExperienceEditor = () => {
         }));
     };
 
-    const handleDelete = (id) => {
-        console.log('Deleting experience item with id:', id);
-    };
+    if (loading && !experience.length) return <div>Loading experience...</div>;
+    if (error) return <div>Error loading experience: {error.message}</div>;
 
     return (
         <div className={styles.editorWrapper}>
@@ -69,6 +75,7 @@ const ExperienceEditor = () => {
                             <button
                                 onClick={handleSave}
                                 className={styles.saveButton}
+                                disabled={!currentEditItem?.role || !currentEditItem?.company || !currentEditItem?.year}
                             >
                                 <FiSave /> Save
                             </button>
@@ -89,6 +96,7 @@ const ExperienceEditor = () => {
                                 value={currentEditItem?.role || ''}
                                 onChange={handleInputChange}
                                 className={styles.input}
+                                placeholder="e.g., Frontend Developer"
                             />
                         </div>
                         <div className={styles.formGroup}>
@@ -99,6 +107,7 @@ const ExperienceEditor = () => {
                                 value={currentEditItem?.company || ''}
                                 onChange={handleInputChange}
                                 className={styles.input}
+                                placeholder="e.g., Tech Solutions Inc"
                             />
                         </div>
                         <div className={styles.formGroup}>
@@ -109,6 +118,7 @@ const ExperienceEditor = () => {
                                 value={currentEditItem?.year || ''}
                                 onChange={handleInputChange}
                                 className={styles.input}
+                                placeholder="e.g., 2022 - Present"
                             />
                         </div>
                         <div className={styles.formGroup}>
@@ -138,7 +148,7 @@ const ExperienceEditor = () => {
                         </button>
                     </div>
                     {experience.map((exp, index) => (
-                        <div key={index} className={`${styles.listItem} ${styles[exp.status]}`}>
+                        <div key={exp.id} className={`${styles.listItem} ${styles[exp.status]}`}>
                             <div className={styles.itemContent}>
                                 <h4>{exp.role}</h4>
                                 <p>{exp.company}</p>
@@ -152,7 +162,7 @@ const ExperienceEditor = () => {
                                     <FiEdit2 />
                                 </button>
                                 <button
-                                    onClick={() => handleDelete(exp.id)}
+                                    onClick={() => handleDelete(exp)}
                                     className={styles.deleteButton}
                                 >
                                     <FiTrash2 />

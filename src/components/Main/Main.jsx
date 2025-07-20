@@ -9,6 +9,7 @@ import { experienceData } from '../../data/experience';
 import ChatButton from '../Chat/ChatButton';
 import { Link, useLocation } from 'react-router-dom';
 import { useTechStack } from '../../firebase/hooks/useTechStack';
+import { useExperience } from '../../firebase/hooks/useExperience';
 
 export default function Main() {
     const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -18,6 +19,7 @@ export default function Main() {
     const [isMounted, setIsMounted] = useState(false);
     const { aboutContent, loading: aboutLoading, error: aboutError } = useAboutContent();
     const { techStack: allTechStack, loading: techStackLoading, error: techStackError } = useTechStack();
+    const { experience: experienceData, loading: experienceLoading, error: experienceError } = useExperience();
     const location = useLocation();
     const [isExiting, setIsExiting] = useState(false);
 
@@ -44,25 +46,25 @@ export default function Main() {
         }))
     };
 
-    if (aboutLoading || techStackLoading) {
-        return (
-            <div className={styles.loadingOverlay}>
-                <div className={styles.spinner}></div>
-                <p>Loading portfolio...</p>
-            </div>
-        );
-    }
+    if (aboutLoading || techStackLoading || experienceLoading) {
+    return (
+        <div className={styles.loadingOverlay}>
+            <div className={styles.spinner}></div>
+            <p>Loading portfolio...</p>
+        </div>
+    );
+}
 
-    if (aboutError || techStackError) {
-        return (
-            <div className={styles.errorOverlay}>
-                <p>Failed to load portfolio content.</p>
-                <button onClick={() => window.location.reload()}>
-                    Retry
-                </button>
-            </div>
-        );
-    }
+if (aboutError || techStackError || experienceError) {
+    return (
+        <div className={styles.errorOverlay}>
+            <p>Failed to load portfolio content.</p>
+            <button onClick={() => window.location.reload()}>
+                Retry
+            </button>
+        </div>
+    );
+}
 
     return (
         <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''} ${isMounted ? styles.mounted : ''} ${isExiting ? styles.exit : ''}`}>
@@ -117,7 +119,7 @@ export default function Main() {
                     {/* Right Column */}
                     <div className={styles.rightColumn}>
 
-                        {/* Experience */}
+                        {/* Experience Section */}
                         <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
                             <div className={styles.experienceHeader}>
                                 <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}> <span className={styles.gridIcon}>💼</span> Experience</h2>

@@ -96,3 +96,70 @@ export const deleteTechStackGroup = async (group) => {
     throw error;
   }
 };
+
+// Experience functions
+export const getExperience = async () => {
+  try {
+    const docRef = doc(db, CONTENT_COLLECTION, "experience");
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return docSnap.data().items || [];
+    } else {
+      // Initialize with default experience if doesn't exist
+      const defaultExperience = [
+        {
+          id: Date.now().toString(),
+          role: "Frontend Developer",
+          company: "The Launchpad Inc",
+          year: "2022 - Present",
+          status: "current"
+        }
+      ];
+      await setDoc(docRef, { items: defaultExperience });
+      return defaultExperience;
+    }
+  } catch (error) {
+    console.error("Error getting experience:", error);
+    throw error;
+  }
+};
+
+export const addExperienceItem = async (item) => {
+  try {
+    const docRef = doc(db, CONTENT_COLLECTION, "experience");
+    await updateDoc(docRef, {
+      items: arrayUnion(item)
+    });
+  } catch (error) {
+    console.error("Error adding experience item:", error);
+    throw error;
+  }
+};
+
+export const updateExperienceItem = async (oldItem, newItem) => {
+  try {
+    const docRef = doc(db, CONTENT_COLLECTION, "experience");
+    await updateDoc(docRef, {
+      items: arrayRemove(oldItem)
+    });
+    await updateDoc(docRef, {
+      items: arrayUnion(newItem)
+    });
+  } catch (error) {
+    console.error("Error updating experience item:", error);
+    throw error;
+  }
+};
+
+export const deleteExperienceItem = async (item) => {
+  try {
+    const docRef = doc(db, CONTENT_COLLECTION, "experience");
+    await updateDoc(docRef, {
+      items: arrayRemove(item)
+    });
+  } catch (error) {
+    console.error("Error deleting experience item:", error);
+    throw error;
+  }
+};

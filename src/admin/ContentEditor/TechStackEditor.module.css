@@ -1,3 +1,4 @@
+/* src/admin/ContentEditor/TechStackEditor.module.css */
 .editorWrapper {
   width: 100%;
 }
@@ -53,6 +54,11 @@
 
 .saveButton:hover {
   background-color: #1d4ed8;
+}
+
+.saveButton:disabled {
+  background-color: #93c5fd;
+  cursor: not-allowed;
 }
 
 .cancelButton {
@@ -132,6 +138,12 @@
 .input:focus {
   outline: none;
   border-color: #2563eb;
+}
+
+.inputHint {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
 }
 
 /* Content List */

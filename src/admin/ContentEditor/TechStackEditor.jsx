@@ -9,10 +9,12 @@ const TechStackEditor = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentEditItem, setCurrentEditItem] = useState(null);
   const [newItem, setNewItem] = useState(false);
+  const [techInput, setTechInput] = useState('');
 
   const handleEdit = (item = null) => {
     setIsEditing(true);
     setCurrentEditItem(item ? { ...item } : { title: '', items: [] });
+    setTechInput(item ? item.items.join(', ') : '');
     setNewItem(item === null);
   };
 
@@ -20,6 +22,7 @@ const TechStackEditor = () => {
     setIsEditing(false);
     setCurrentEditItem(null);
     setNewItem(false);
+    setTechInput('');
   };
 
   const handleSave = async () => {
@@ -59,6 +62,21 @@ const TechStackEditor = () => {
     setCurrentEditItem(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleTechInputChange = (e) => {
+    const value = e.target.value;
+    setTechInput(value);
+    
+    // Update the items array whenever the input changes
+    const items = value.split(',')
+      .map(item => item.trim())
+      .filter(item => item.length > 0);
+    
+    setCurrentEditItem(prev => ({
+      ...prev,
+      items
     }));
   };
 
@@ -104,19 +122,14 @@ const TechStackEditor = () => {
               <input
                 type="text"
                 name="items"
-                value={currentEditItem?.items?.join(', ') || ''}
-                onChange={(e) => {
-                  const items = e.target.value.split(',')
-                    .map(item => item.trim())
-                    .filter(item => item.length > 0);
-                  setCurrentEditItem(prev => ({
-                    ...prev,
-                    items
-                  }));
-                }}
+                value={techInput}
+                onChange={handleTechInputChange}
                 className={styles.input}
                 placeholder="e.g., React, JavaScript, HTML"
               />
+              <div className={styles.inputHint}>
+                Separate technologies with commas (e.g., "React, JavaScript, HTML")
+              </div>
             </div>
           </div>
         </div>
