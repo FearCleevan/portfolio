@@ -163,3 +163,136 @@ export const deleteExperienceItem = async (item) => {
     throw error;
   }
 };
+
+// Projects functions
+export const getProjects = async () => {
+  try {
+    const docRef = doc(db, CONTENT_COLLECTION, "projects");
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return docSnap.data().items || [];
+    } else {
+      // Initialize with default projects if doesn't exist
+      const defaultProjects = [
+        {
+          id: Date.now().toString(),
+          title: "ScapeDBM",
+          description: "Landscaping Services Landing Page",
+          url: "https://scapedbm.com",
+          domain: "scapedbm.com"
+        }
+      ];
+      await setDoc(docRef, { items: defaultProjects });
+      return defaultProjects;
+    }
+  } catch (error) {
+    console.error("Error getting projects:", error);
+    throw error;
+  }
+};
+
+export const addProject = async (project) => {
+  try {
+    const docRef = doc(db, CONTENT_COLLECTION, "projects");
+    await updateDoc(docRef, {
+      items: arrayUnion(project)
+    });
+  } catch (error) {
+    console.error("Error adding project:", error);
+    throw error;
+  }
+};
+
+export const updateProject = async (oldProject, newProject) => {
+  try {
+    const docRef = doc(db, CONTENT_COLLECTION, "projects");
+    await updateDoc(docRef, {
+      items: arrayRemove(oldProject)
+    });
+    await updateDoc(docRef, {
+      items: arrayUnion(newProject)
+    });
+  } catch (error) {
+    console.error("Error updating project:", error);
+    throw error;
+  }
+};
+
+export const deleteProject = async (project) => {
+  try {
+    const docRef = doc(db, CONTENT_COLLECTION, "projects");
+    await updateDoc(docRef, {
+      items: arrayRemove(project)
+    });
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    throw error;
+  }
+};
+
+// Certifications functions
+export const getCertifications = async () => {
+  try {
+    const docRef = doc(db, CONTENT_COLLECTION, "certifications");
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return docSnap.data().items || [];
+    } else {
+      // Initialize with default certifications if doesn't exist
+      const defaultCertifications = [
+        {
+          id: Date.now().toString(),
+          title: "Huawei Developer Expert",
+          issuer: "Huawei",
+          url: "https://example.com/cert1"
+        }
+      ];
+      await setDoc(docRef, { items: defaultCertifications });
+      return defaultCertifications;
+    }
+  } catch (error) {
+    console.error("Error getting certifications:", error);
+    throw error;
+  }
+};
+
+export const addCertification = async (certification) => {
+  try {
+    const docRef = doc(db, CONTENT_COLLECTION, "certifications");
+    await updateDoc(docRef, {
+      items: arrayUnion(certification)
+    });
+  } catch (error) {
+    console.error("Error adding certification:", error);
+    throw error;
+  }
+};
+
+export const updateCertification = async (oldCert, newCert) => {
+  try {
+    const docRef = doc(db, CONTENT_COLLECTION, "certifications");
+    await updateDoc(docRef, {
+      items: arrayRemove(oldCert)
+    });
+    await updateDoc(docRef, {
+      items: arrayUnion(newCert)
+    });
+  } catch (error) {
+    console.error("Error updating certification:", error);
+    throw error;
+  }
+};
+
+export const deleteCertification = async (certification) => {
+  try {
+    const docRef = doc(db, CONTENT_COLLECTION, "certifications");
+    await updateDoc(docRef, {
+      items: arrayRemove(certification)
+    });
+  } catch (error) {
+    console.error("Error deleting certification:", error);
+    throw error;
+  }
+};

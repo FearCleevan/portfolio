@@ -1,5 +1,5 @@
-/* src/components/Main/FullTechStack.module.css */
-.fullTechStackContainer {
+/* src/components/Main/AllProjects.module.css */
+.allProjectsContainer {
     max-width: 896px;
     margin: 0 auto;
     padding: 2rem;
@@ -36,13 +36,13 @@
     color: #111827;
 }
 
-.techStackGroups {
+.projectsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(864px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
 }
 
-.techStackGroup {
+.projectCard {
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 0.5rem;
@@ -50,26 +50,40 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.groupTitle {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: #111827;
+.projectLink {
+    display: block;
+    text-decoration: none;
 }
 
-.techStackTags {
+.projectTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #111827;
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     gap: 0.5rem;
 }
 
-.techTag {
+.externalIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.projectDescription {
     font-size: 0.875rem;
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.375rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.projectDomain {
+    font-size: 0.75rem;
+    font-family: monospace;
     background: rgba(0, 0, 0, 0.05);
-    border: 1px solid #e5e7eb;
-    color: #111827;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    display: inline-block;
+    color: #4b5563;
 }
 
 @keyframes fadeIn {
@@ -84,22 +98,27 @@
 }
 
 /* Dark mode styles */
-.darkMode .techStackGroup,
+.darkMode .projectCard,
 .darkMode .darkBentoCard {
     background: #2d2d2d;
     border-color: #444;
 }
 
-.darkMode .groupTitle,
+.darkMode .title,
+.darkMode .projectTitle,
 .darkMode .darkText {
     color: #f0f0f0;
 }
 
-.darkMode .techTag,
-.darkMode .darkTechTag {
+.darkMode .projectDescription,
+.darkMode .darkSecondaryText {
+    color: #a0a0a0;
+}
+
+.darkMode .projectDomain,
+.darkMode .darkDomain {
     background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #f0f0f0;
+    color: #d1d1d1;
 }
 
 .darkMode .backButton,

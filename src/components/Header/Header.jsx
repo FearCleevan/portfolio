@@ -2,7 +2,6 @@ import styles from './Header.module.css';
 import React from 'react';
 import profile from '../../assets/profile.png';
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaDownload } from 'react-icons/fa';
-import Chat from '../Chat/ChatButton';
 
 function ThemeToggle({ isDarkMode, toggleDarkMode }) {
     return (
@@ -16,12 +15,10 @@ function ThemeToggle({ isDarkMode, toggleDarkMode }) {
                 className={`${styles.toggleKnob} ${isDarkMode ? styles.toggleKnobDark : styles.toggleKnobLight}`}
             >
                 {isDarkMode ? (
-                    // Black moon icon
                     <svg className={styles.toggleIcon} viewBox="0 0 20 20" fill="#000000">
                         <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
                     </svg>
                 ) : (
-                    // Yellow sun icon
                     <svg className={styles.toggleIcon} viewBox="0 0 20 20" fill="#FFD700">
                         <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fillRule="evenodd" clipRule="evenodd"></path>
                     </svg>
@@ -32,11 +29,19 @@ function ThemeToggle({ isDarkMode, toggleDarkMode }) {
 }
 
 const Header = ({ isDarkMode, toggleDarkMode }) => {
-    // Replace this with your actual Calendly URL
     const calendlyUrl = "https://calendly.com/fearcleevan/30min";
     
     const handleScheduleCall = () => {
         window.open(calendlyUrl, '_blank', 'noopener,noreferrer');
+    };
+
+    const handleSendEmail = () => {
+        window.location.href = "mailto:fearcleevan@gmail.com";
+    };
+
+    const handleDownloadCV = () => {
+        // Replace with your actual CV download link
+        window.open('/path-to-cv.pdf', '_blank');
     };
 
     return (
@@ -70,11 +75,17 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                             <FaPhone className={styles.buttonIcon} />
                             <span className={styles.buttonText}>Schedule a Call</span>
                         </button>
-                        <button className={`${styles.button} ${styles.emailButton} ${isDarkMode ? styles.darkEmailButton : ''}`}>
+                        <button 
+                            className={`${styles.button} ${styles.emailButton} ${isDarkMode ? styles.darkEmailButton : ''}`}
+                            onClick={handleSendEmail}
+                        >
                             <FaEnvelope className={styles.buttonIcon} />
                             <span className={styles.buttonText}>Send Email</span>
                         </button>
-                        <button className={`${styles.button} ${styles.downloadButton} ${isDarkMode ? styles.darkButton : ''}`}>
+                        <button 
+                            className={`${styles.button} ${styles.downloadButton} ${isDarkMode ? styles.darkButton : ''}`}
+                            onClick={handleDownloadCV}
+                        >
                             <FaDownload className={styles.buttonIcon} />
                             <span className={styles.buttonText}>Download CV</span>
                         </button>

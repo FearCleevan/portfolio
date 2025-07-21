@@ -5,11 +5,12 @@ import Header from '../Header/Header';
 import Container from '../Container/Container';
 import Footer from '../Footer/Footer';
 import { useAboutContent } from '../../firebase/hooks/useFirestore';
-import { experienceData } from '../../data/experience';
 import ChatButton from '../Chat/ChatButton';
 import { Link, useLocation } from 'react-router-dom';
 import { useTechStack } from '../../firebase/hooks/useTechStack';
 import { useExperience } from '../../firebase/hooks/useExperience';
+import { useProjects } from '../../firebase/hooks/useProjects';
+import { useCertifications } from '../../firebase/hooks/useCertifications';
 
 export default function Main() {
     const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -20,6 +21,9 @@ export default function Main() {
     const { aboutContent, loading: aboutLoading, error: aboutError } = useAboutContent();
     const { techStack: allTechStack, loading: techStackLoading, error: techStackError } = useTechStack();
     const { experience: experienceData, loading: experienceLoading, error: experienceError } = useExperience();
+    const { projects, loading: projectsLoading, error: projectsError } = useProjects();
+    const { certifications, loading: certLoading, error: certError } = useCertifications();
+
     const location = useLocation();
     const [isExiting, setIsExiting] = useState(false);
 
@@ -46,25 +50,25 @@ export default function Main() {
         }))
     };
 
-    if (aboutLoading || techStackLoading || experienceLoading) {
-    return (
-        <div className={styles.loadingOverlay}>
-            <div className={styles.spinner}></div>
-            <p>Loading portfolio...</p>
-        </div>
-    );
-}
+    if (aboutLoading || techStackLoading || experienceLoading || projectsLoading || certLoading) {
+        return (
+            <div className={styles.loadingOverlay}>
+                <div className={styles.spinner}></div>
+                <p>Loading portfolio...</p>
+            </div>
+        );
+    }
 
-if (aboutError || techStackError || experienceError) {
-    return (
-        <div className={styles.errorOverlay}>
-            <p>Failed to load portfolio content.</p>
-            <button onClick={() => window.location.reload()}>
-                Retry
-            </button>
-        </div>
-    );
-}
+    if (aboutError || techStackError || experienceError || projectsError || certError) {
+        return (
+            <div className={styles.errorOverlay}>
+                <p>Failed to load portfolio content.</p>
+                <button onClick={() => window.location.reload()}>
+                    Retry
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''} ${isMounted ? styles.mounted : ''} ${isExiting ? styles.exit : ''}`}>
@@ -73,7 +77,6 @@ if (aboutError || techStackError || experienceError) {
                 <div className={styles.gridContainer}>
                     {/* Left Column */}
                     <div className={styles.leftColumn}>
-
                         {/* About */}
                         <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
                             <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}>
@@ -113,12 +116,10 @@ if (aboutError || techStackError || experienceError) {
                                 ))}
                             </div>
                         </section>
-
                     </div>
 
                     {/* Right Column */}
                     <div className={styles.rightColumn}>
-
                         {/* Experience Section */}
                         <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
                             <div className={styles.experienceHeader}>
@@ -158,12 +159,10 @@ if (aboutError || techStackError || experienceError) {
                                 })}
                             </div>
                         </section>
-
                     </div>
                 </div>
-
             </main>
-            <Container isDarkMode={isDarkMode} />
+            <Container isDarkMode={isDarkMode} projects={projects} certifications={certifications}/>
             <Footer isDarkMode={isDarkMode} />
             <ChatButton isDarkMode={isDarkMode} />
         </div>

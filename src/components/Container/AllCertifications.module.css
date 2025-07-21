@@ -1,5 +1,4 @@
-/* src/components/Main/FullTechStack.module.css */
-.fullTechStackContainer {
+.allCertificationsContainer {
     max-width: 896px;
     margin: 0 auto;
     padding: 2rem;
@@ -36,40 +35,50 @@
     color: #111827;
 }
 
-.techStackGroups {
+.certificationsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(864px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
 }
 
-.techStackGroup {
+.certificationCard {
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 0.5rem;
     padding: 1.5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.groupTitle {
+.certificationCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.certificationLink {
+    display: block;
+    text-decoration: none;
+}
+
+.certificationTitle {
     font-size: 1.25rem;
     font-weight: 600;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     color: #111827;
-}
-
-.techStackTags {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     gap: 0.5rem;
 }
 
-.techTag {
+.externalIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.certificationIssuer {
     font-size: 0.875rem;
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.375rem;
-    background: rgba(0, 0, 0, 0.05);
-    border: 1px solid #e5e7eb;
-    color: #111827;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
 }
 
 @keyframes fadeIn {
@@ -84,22 +93,21 @@
 }
 
 /* Dark mode styles */
-.darkMode .techStackGroup,
+.darkMode .certificationCard,
 .darkMode .darkBentoCard {
     background: #2d2d2d;
     border-color: #444;
 }
 
-.darkMode .groupTitle,
+.darkMode .title,
+.darkMode .certificationTitle,
 .darkMode .darkText {
     color: #f0f0f0;
 }
 
-.darkMode .techTag,
-.darkMode .darkTechTag {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #f0f0f0;
+.darkMode .certificationIssuer,
+.darkMode .darkSecondaryText {
+    color: #a0a0a0;
 }
 
 .darkMode .backButton,

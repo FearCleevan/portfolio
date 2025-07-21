@@ -96,6 +96,7 @@
     width: 12px;
     height: 12px;
     color: #6b7280;
+    visibility: hidden;
 }
 
 .projectDescription {
@@ -247,4 +248,10 @@
     .darkLink:hover {
         color: #f0f0f0 !important;
     }
+}
+
+.certificationItem a, 
+.certificationItem a:hover, 
+.certificationItem a:focus {
+    text-decoration: none;
 }

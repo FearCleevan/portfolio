@@ -1,3 +1,4 @@
+// src/components/Footer/Footer.jsx
 import styles from './Footer.module.css';
 
 const Footer = ({ isDarkMode }) => {

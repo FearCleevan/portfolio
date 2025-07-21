@@ -1,14 +1,21 @@
-// src/admin/ContentEditor/ExperienceEditor.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FiEdit2, FiSave, FiX, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { useExperience } from '../../firebase/hooks/useExperience';
 import styles from './ExperienceEditor.module.css';
+import Modal from 'react-modal';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+Modal.setAppElement('#root');
 
 const ExperienceEditor = () => {
     const { experience, loading, error, addItem, updateItem, removeItem } = useExperience();
     const [isEditing, setIsEditing] = useState(false);
     const [currentEditItem, setCurrentEditItem] = useState(null);
     const [newItem, setNewItem] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleEdit = (item = null) => {
         setIsEditing(true);
@@ -28,29 +35,45 @@ const ExperienceEditor = () => {
     };
 
     const handleSave = async () => {
+        setIsSaving(true);
         try {
             if (newItem) {
                 await addItem(currentEditItem);
+                toast.success('Experience item added successfully!');
             } else {
                 const originalItem = experience.find(item => item.id === currentEditItem.id);
                 if (originalItem) {
                     await updateItem(originalItem, currentEditItem);
+                    toast.success('Experience item updated successfully!');
                 }
             }
+            handleCancelEdit();
         } catch (error) {
             console.error('Error saving experience:', error);
+            toast.error('Failed to save experience item');
         } finally {
-            handleCancelEdit();
+            setIsSaving(false);
         }
     };
 
-    const handleDelete = async (item) => {
-        if (window.confirm(`Are you sure you want to delete the "${item.role}" at "${item.company}"?`)) {
-            try {
-                await removeItem(item);
-            } catch (error) {
-                console.error('Error deleting experience item:', error);
-            }
+    const openDeleteModal = (item) => {
+        setItemToDelete(item);
+        setIsDeleteModalOpen(true);
+    };
+
+    const closeDeleteModal = () => {
+        setIsDeleteModalOpen(false);
+        setItemToDelete(null);
+    };
+
+    const confirmDelete = async () => {
+        closeDeleteModal();
+        try {
+            await removeItem(itemToDelete);
+            toast.success('Experience item deleted successfully!');
+        } catch (error) {
+            console.error('Error deleting experience item:', error);
+            toast.error('Failed to delete experience item');
         }
     };
 
@@ -62,8 +85,25 @@ const ExperienceEditor = () => {
         }));
     };
 
-    if (loading && !experience.length) return <div>Loading experience...</div>;
-    if (error) return <div>Error loading experience: {error.message}</div>;
+    if (loading && !experience.length) {
+        return (
+            <div className={styles.loadingOverlay}>
+                <div className={styles.spinner}></div>
+                <p>Loading experience...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={styles.errorOverlay}>
+                <p>Error loading experience: {error.message}</p>
+                <button onClick={() => window.location.reload()}>
+                    Retry
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.editorWrapper}>
@@ -75,13 +115,20 @@ const ExperienceEditor = () => {
                             <button
                                 onClick={handleSave}
                                 className={styles.saveButton}
-                                disabled={!currentEditItem?.role || !currentEditItem?.company || !currentEditItem?.year}
+                                disabled={!currentEditItem?.role || !currentEditItem?.company || !currentEditItem?.year || isSaving}
                             >
-                                <FiSave /> Save
+                                {isSaving ? (
+                                    <span className={styles.spinner}></span>
+                                ) : (
+                                    <>
+                                        <FiSave /> Save
+                                    </>
+                                )}
                             </button>
                             <button
                                 onClick={handleCancelEdit}
                                 className={styles.cancelButton}
+                                disabled={isSaving}
                             >
                                 <FiX /> Cancel
                             </button>
@@ -147,7 +194,7 @@ const ExperienceEditor = () => {
                             <FiPlus /> Add Experience
                         </button>
                     </div>
-                    {experience.map((exp, index) => (
+                    {experience.map((exp) => (
                         <div key={exp.id} className={`${styles.listItem} ${styles[exp.status]}`}>
                             <div className={styles.itemContent}>
                                 <h4>{exp.role}</h4>
@@ -162,7 +209,7 @@ const ExperienceEditor = () => {
                                     <FiEdit2 />
                                 </button>
                                 <button
-                                    onClick={() => handleDelete(exp)}
+                                    onClick={() => openDeleteModal(exp)}
                                     className={styles.deleteButton}
                                 >
                                     <FiTrash2 />
@@ -172,6 +219,24 @@ const ExperienceEditor = () => {
                     ))}
                 </div>
             )}
+
+            <Modal
+                isOpen={isDeleteModalOpen}
+                onRequestClose={closeDeleteModal}
+                className={styles.modal}
+                overlayClassName={styles.modalOverlay}
+            >
+                <h3>Confirm Delete</h3>
+                <p>Are you sure you want to delete the "{itemToDelete?.role}" at "{itemToDelete?.company}"? This cannot be undone.</p>
+                <div className={styles.modalActions}>
+                    <button onClick={closeDeleteModal} className={styles.cancelButton}>
+                        Cancel
+                    </button>
+                    <button onClick={confirmDelete} className={styles.deleteButton}>
+                        Confirm Delete
+                    </button>
+                </div>
+            </Modal>
         </div>
     );
 };

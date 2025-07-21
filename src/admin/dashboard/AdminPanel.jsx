@@ -97,7 +97,7 @@ const AdminPanel = () => {
                                         </div>
                                     ) : (
                                         <iframe
-                                            src="http://localhost:5173/"
+                                            src="https://l2hr04xr-5173.asse.devtunnels.ms/"
                                             title="Portfolio Preview"
                                             className={styles.embeddedFrame}
                                             allow="fullscreen"
