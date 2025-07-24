@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 Modal.setAppElement('#root');
 
 const AboutEditor = () => {
-  const { aboutContent, loading, error, updateContent, resetContent } = useAboutContent();
+  const { aboutContent, loading, error, updateContent } = useAboutContent();
   const [isEditing, setIsEditing] = useState(false);
   const [currentEditItem, setCurrentEditItem] = useState(null);
   const [newItem, setNewItem] = useState(false);
@@ -45,18 +45,6 @@ const AboutEditor = () => {
     }
   };
 
-  // const handleReset = async () => {
-  //   if (window.confirm('Are you sure you want to reset all about content? This cannot be undone.')) {
-  //     try {
-  //       await resetContent();
-  //       toast.success('About content reset to default!');
-  //     } catch (error) {
-  //       console.error('Failed to reset about content:', error);
-  //       toast.error('Failed to reset about content');
-  //     }
-  //   }
-  // };
-
   const handleArrayItemChange = (e, index) => {
     const { value } = e.target;
     setCurrentEditItem(prev => {
@@ -75,17 +63,6 @@ const AboutEditor = () => {
       description: [...(prev.description || []), ""]
     }));
   };
-
-  // const removeArrayItem = (index) => {
-  //   setCurrentEditItem(prev => {
-  //     const newArray = [...prev.description];
-  //     newArray.splice(index, 1);
-  //     return {
-  //       ...prev,
-  //       description: newArray
-  //     };
-  //   });
-  // };
 
   const openDeleteModal = (index) => {
     setParagraphToDelete(index);
