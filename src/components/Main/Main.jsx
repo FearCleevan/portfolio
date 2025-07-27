@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './Main.module.css';
 import Header from '../Header/Header';
 import Container from '../Container/Container';
+import ContainerSecond from '../Container/ContainerSecond';
 import Footer from '../Footer/Footer';
 import { useAboutContent } from '../../firebase/hooks/useFirestore';
 import ChatButton from '../Chat/ChatButton';
@@ -163,6 +164,7 @@ export default function Main() {
                 </div>
             </main>
             <Container isDarkMode={isDarkMode} projects={projects} certifications={certifications}/>
+            <ContainerSecond isDarkMode={isDarkMode} />
             <Footer isDarkMode={isDarkMode} />
             <ChatButton isDarkMode={isDarkMode} />
         </div>
