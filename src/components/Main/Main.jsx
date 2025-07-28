@@ -164,7 +164,7 @@ export default function Main() {
                 </div>
             </main>
             <Container isDarkMode={isDarkMode} projects={projects} certifications={certifications}/>
-            <ContainerSecond isDarkMode={isDarkMode} />
+            {/* <ContainerSecond isDarkMode={isDarkMode} /> */}
             <Footer isDarkMode={isDarkMode} />
             <ChatButton isDarkMode={isDarkMode} />
         </div>
