@@ -161,6 +161,12 @@
   justify-content: center;
   min-width: 120px;
   transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.button a {
+  text-decoration: none;
+  color: inherit;
 }
 
 .buttonText {
@@ -201,6 +207,7 @@
 .buttonIcon {
   margin-right: 6px;
   font-size: 12px;
+  cursor: pointer;
 }
 
 /* Dark Mode Styles */
