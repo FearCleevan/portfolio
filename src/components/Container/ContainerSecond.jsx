@@ -5,38 +5,40 @@ import { Link } from 'react-router-dom';
 
 export default function ContainerSecond({ isDarkMode }) {
     return (
-        <div className={styles.container}>
+        <div className={`${styles.container} ${isDarkMode ? styles.darkMode : ''}`}>
             {/* Connect Section */}
-            <div className={`${styles.bentoCard} ${styles.connectCard}`}>
+            <div className={`${styles.bentoCard} ${isDarkMode ? styles.darkBentoCard : ''}`}>
                 <div className={styles.cardHeader}>
-                    <h2 className={styles.cardTitle}>🔗 Connect</h2>
+                    <h2 className={`${styles.cardTitle} ${isDarkMode ? styles.darkText : ''}`}>
+                        <span className={styles.gridIcon}>🔗</span> Connect
+                    </h2>
                 </div>
 
                 <div className={styles.cardContent}>
                     {/* Email */}
                     <a className={`${styles.linkCard} ${isDarkMode ? styles.darkLinkCard : ''}`} href="mailto:jonathan.mauring17@gmail.com">
-                        <p className={styles.linkLabel}>Primary Email</p>
-                        <p className={styles.linkText}>jonathan.mauring17@gmail.com</p>
+                        <p className={`${styles.linkLabel} ${isDarkMode ? styles.darkSecondaryText : ''}`}>Primary Email</p>
+                        <p className={`${styles.linkText} ${isDarkMode ? styles.darkText : ''}`}>jonathan.mauring17@gmail.com</p>
                     </a>
 
                     {/* Secondary Email */}
                     <a className={`${styles.linkCard} ${isDarkMode ? styles.darkLinkCard : ''}`} href="mailto:fearcleevan123@gmail.com">
-                        <p className={styles.linkLabel}>Secondary Email</p>
-                        <p className={styles.linkText}>fearcleevan123@gmail.com</p>
+                        <p className={`${styles.linkLabel} ${isDarkMode ? styles.darkSecondaryText : ''}`}>Secondary Email</p>
+                        <p className={`${styles.linkText} ${isDarkMode ? styles.darkText : ''}`}>fearcleevan123@gmail.com</p>
                     </a>
 
                     {/* Phone Number */}
                     <div className={`${styles.linkCard} ${isDarkMode ? styles.darkLinkCard : ''}`}>
-                        <p className={styles.linkLabel}>Phone</p>
-                        <a className={styles.linkText} href="tel:+639515379127">+63 951 537 9127</a>
+                        <p className={`${styles.linkLabel} ${isDarkMode ? styles.darkSecondaryText : ''}`}>Phone</p>
+                        <a className={`${styles.linkText} ${isDarkMode ? styles.darkText : ''}`} href="tel:+639515379127">+63 951 537 9127</a>
                     </div>
 
                     {/* Schedule a Call */}
                     <div className={styles.linkGroup}>
-                        <p className={styles.linkLabel}>Let's Talk</p>
+                        <p className={`${styles.linkLabel} ${isDarkMode ? styles.darkSecondaryText : ''}`}>Let's Talk</p>
                         <a className={`${styles.linkCard} ${isDarkMode ? styles.darkLinkCard : ''}`} href="https://calendly.com/fearcleevan/30min" target="_blank" rel="noopener noreferrer">
                             <div className={styles.linkWithIcon}>
-                                <span className={styles.linkText}>Schedule a Call</span>
+                                <span className={`${styles.linkText} ${isDarkMode ? styles.darkText : ''}`}>Schedule a Call</span>
                                 <svg className={styles.arrowIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path>
                                 </svg>
@@ -46,7 +48,7 @@ export default function ContainerSecond({ isDarkMode }) {
 
                     {/* Social Links */}
                     <div className={styles.linkGroup}>
-                        <p className={styles.linkLabel}>Social Links</p>
+                        <p className={`${styles.linkLabel} ${isDarkMode ? styles.darkSecondaryText : ''}`}>Social Links</p>
                         <div className={styles.socialGrid}>
                             <a className={`${styles.socialLink} ${isDarkMode ? styles.darkSocialLink : ''}`} href="https://linkedin.com/in/peterpaullazan" target="_blank" rel="noopener noreferrer" aria-label="Visit LinkedIn profile" title="Visit LinkedIn profile">
                                 <svg className={styles.socialIcon} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -74,11 +76,16 @@ export default function ContainerSecond({ isDarkMode }) {
             </div>
 
             {/* Blog Posts Section */}
-            <div className={`${styles.bentoCard} ${styles.blogCard}`}>
+            <div className={`${styles.bentoCard} ${isDarkMode ? styles.darkBentoCard : ''}`}>
                 <div className={styles.blogHeader}>
-                    <h2 className={styles.cardTitle}>Recent Blog Posts</h2>
-                    <Link to="/blog" className={`${styles.viewAllLink} ${isDarkMode ? styles.darkViewAllLink : ''}`}>
+                    <h2 className={`${styles.cardTitle} ${isDarkMode ? styles.darkText : ''}`}>
+                        <span className={styles.gridIcon}>📝</span> Recent Blog Posts
+                    </h2>
+                    <Link to="/blog" className={`${styles.viewAllLink} ${isDarkMode ? styles.darkLink : ''}`}>
                         View All
+                        <svg className={styles.linkArrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path>
+                        </svg>
                     </Link>
                 </div>
 
@@ -86,13 +93,13 @@ export default function ContainerSecond({ isDarkMode }) {
                     {/* Blog Post 1 */}
                     <div className={`${styles.blogPost} ${isDarkMode ? styles.darkBlogPost : ''}`}>
                         <Link to="/blog/navigating-the-startup-jungle-building-a-productive-and-positive-culture" className={styles.blogLink}>
-                            <h3 className={`${styles.blogTitle} ${isDarkMode ? styles.darkBlogTitle : ''}`}>Navigating the Startup Jungle: Building a Productive and Positive Culture</h3>
+                            <h3 className={`${styles.blogTitle} ${isDarkMode ? styles.darkText : ''}`}>Navigating the Startup Jungle: Building a Productive and Positive Culture</h3>
                             <div className={styles.blogMeta}>
-                                <time className={styles.blogDate}>July 3, 2025</time>
-                                <span className={styles.blogSeparator}>•</span>
-                                <span className={styles.blogReadTime}>3 min read</span>
+                                <time className={`${styles.blogDate} ${isDarkMode ? styles.darkSecondaryText : ''}`}>July 3, 2025</time>
+                                <span className={`${styles.blogSeparator} ${isDarkMode ? styles.darkSecondaryText : ''}`}>•</span>
+                                <span className={`${styles.blogReadTime} ${isDarkMode ? styles.darkSecondaryText : ''}`}>3 min read</span>
                             </div>
-                            <p className={`${styles.blogExcerpt} ${isDarkMode ? styles.darkBlogExcerpt : ''}`}>
+                            <p className={`${styles.blogExcerpt} ${isDarkMode ? styles.darkSecondaryText : ''}`}>
                                 This post explores the key elements of a successful startup culture, offering practical tips and examples for fostering a productive and positive environment.
                             </p>
                             <div className={styles.blogTags}>
@@ -107,13 +114,13 @@ export default function ContainerSecond({ isDarkMode }) {
                     {/* Blog Post 2 */}
                     <div className={`${styles.blogPost} ${isDarkMode ? styles.darkBlogPost : ''}`}>
                         <Link to="/blog/prompt-engineering-getting-the-most-out-of-large-language-models" className={styles.blogLink}>
-                            <h3 className={`${styles.blogTitle} ${isDarkMode ? styles.darkBlogTitle : ''}`}>Prompt Engineering: Getting the Most Out of Large Language Models</h3>
+                            <h3 className={`${styles.blogTitle} ${isDarkMode ? styles.darkText : ''}`}>Prompt Engineering: Getting the Most Out of Large Language Models</h3>
                             <div className={styles.blogMeta}>
-                                <time className={styles.blogDate}>July 1, 2025</time>
-                                <span className={styles.blogSeparator}>•</span>
-                                <span className={styles.blogReadTime}>3 min read</span>
+                                <time className={`${styles.blogDate} ${isDarkMode ? styles.darkSecondaryText : ''}`}>July 1, 2025</time>
+                                <span className={`${styles.blogSeparator} ${isDarkMode ? styles.darkSecondaryText : ''}`}>•</span>
+                                <span className={`${styles.blogReadTime} ${isDarkMode ? styles.darkSecondaryText : ''}`}>3 min read</span>
                             </div>
-                            <p className={`${styles.blogExcerpt} ${isDarkMode ? styles.darkBlogExcerpt : ''}`}>
+                            <p className={`${styles.blogExcerpt} ${isDarkMode ? styles.darkSecondaryText : ''}`}>
                                 This post dives into prompt engineering, the art of crafting effective prompts to get the desired output from large language models (LLMs). We'll explore practical examples and best practices.
                             </p>
                             <div className={styles.blogTags}>
@@ -128,13 +135,13 @@ export default function ContainerSecond({ isDarkMode }) {
                     {/* Blog Post 3 */}
                     <div className={`${styles.blogPost} ${isDarkMode ? styles.darkBlogPost : ''}`}>
                         <Link to="/blog/laravel-eloquent-beyond-the-basics-efficient-data-retrieval-and-manipulation" className={styles.blogLink}>
-                            <h3 className={`${styles.blogTitle} ${isDarkMode ? styles.darkBlogTitle : ''}`}>Laravel Eloquent: Beyond the Basics - Efficient Data Retrieval and Manipulation</h3>
+                            <h3 className={`${styles.blogTitle} ${isDarkMode ? styles.darkText : ''}`}>Laravel Eloquent: Beyond the Basics - Efficient Data Retrieval and Manipulation</h3>
                             <div className={styles.blogMeta}>
-                                <time className={styles.blogDate}>June 26, 2025</time>
-                                <span className={styles.blogSeparator}>•</span>
-                                <span className={styles.blogReadTime}>3 min read</span>
+                                <time className={`${styles.blogDate} ${isDarkMode ? styles.darkSecondaryText : ''}`}>June 26, 2025</time>
+                                <span className={`${styles.blogSeparator} ${isDarkMode ? styles.darkSecondaryText : ''}`}>•</span>
+                                <span className={`${styles.blogReadTime} ${isDarkMode ? styles.darkSecondaryText : ''}`}>3 min read</span>
                             </div>
-                            <p className={`${styles.blogExcerpt} ${isDarkMode ? styles.darkBlogExcerpt : ''}`}>
+                            <p className={`${styles.blogExcerpt} ${isDarkMode ? styles.darkSecondaryText : ''}`}>
                                 This post dives into some lesser-known but incredibly useful features of Laravel's Eloquent ORM, going beyond basic CRUD operations. Learn how to optimize your queries, leverage accessors and mutators, and more.
                             </p>
                             <div className={styles.blogTags}>
