@@ -9,6 +9,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import FullTechStack from './components/Main/FullTechStack';
 import AllProjects from './components/Container/AllProjects';
 import AllCertifications from './components/Container/AllCertifications';
+import RecentBlogs from './components/RecentBlogs/RecentBlogs';
+import BlogPost from './components/BlogPost/BlogPost';
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         <Route path="/tech-stack" element={<FullTechStack />} />
         <Route path="/projects" element={<AllProjects />} />
         <Route path="/certifications" element={<AllCertifications />} />
+        <Route path="/blog" element={<RecentBlogs />} />
+        <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/LoginPanel" element={<LoginPage />} />
         <Route path="/AdminPanel" element={<ProtectedRoute element={AdminPanel} />} />
         <Route path="/AdminPanel/content" element={<ProtectedRoute element={ContentEditor} />} />
