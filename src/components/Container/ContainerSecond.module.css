@@ -1,21 +1,20 @@
 /* src/components/ContainerSecond/ContainerSecond.module.css */
 .container {
     width: 100%;
+    max-width: 895px;
+    margin: auto 0;
     display: flex;
     gap: 20px;
     padding: 0 16px;
-    max-width: 895px;
-    margin: 0 auto;
-    margin-bottom: 20px;
 }
 
+/* Bento Card Styles */
 .bentoCard {
-    border-radius: 0.5rem;
-    padding: 1rem;
-    background-color: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    background: #fff;
     border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(60,60,60,0.04);
 }
 
 /* Connect Card - Specific dimensions */
@@ -39,31 +38,41 @@
     overflow-y: auto;
 }
 
-/* Remove underlines from all links */
-a,
-.linkCard,
-.blogLink,
-.infoLink,
-.viewAllLink,
-.orgLink,
-.socialLink {
-    text-decoration: none !important;
-}
-
 .cardHeader {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
+    margin-bottom: 16px;
 }
 
 .cardTitle {
-    font-size: 1.125rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
     font-weight: 700;
+    color: #111827;
 }
 
-.icon {
-    width: 1rem;
-    height: 1rem;
+.gridIcon {
+  font-size: 1.15em;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.viewAllLink {
+    font-size: 12px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.linkArrow {
+    width: 12px;
+    height: 12px;
 }
 
 .cardContent {
@@ -75,21 +84,12 @@ a,
 .linkCard {
     padding: 0.5rem;
     border-radius: 0.375rem;
-    background-color: #f3f4f6;
+    background-color: #f9fafb;
     transition: background-color 0.2s;
 }
 
-.darkLinkCard {
-    background-color: #2d3748;
-    color: #e2e8f0;
-}
-
 .linkCard:hover {
-    background-color: #e5e7eb;
-}
-
-.darkLinkCard:hover {
-    background-color: #4a5568;
+    background-color: #f0f0f0;
 }
 
 .linkLabel {
@@ -101,7 +101,7 @@ a,
     font-size: 0.875rem;
     font-weight: 500;
     text-decoration: none;
-    color: #000;
+    color: #111827;
 }
 
 .linkGroup {
@@ -121,40 +121,6 @@ a,
     height: 1rem;
 }
 
-.infoCard {
-    padding: 0.5rem;
-    border-radius: 0.375rem;
-    background-color: #f3f4f6;
-}
-
-.darkInfoCard {
-    background-color: #2d3748;
-    color: #e2e8f0;
-}
-
-.infoText {
-    font-size: 0.75rem;
-    color: #6b7280;
-    margin-bottom: 0.25rem;
-}
-
-.darkInfoText {
-    color: #a0aec0;
-}
-
-.infoLink {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #111111;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.darkInfoLink {
-    color: #63b3ed;
-}
-
 .socialGrid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -167,22 +133,13 @@ a,
     justify-content: center;
     padding: 0.5rem;
     border-radius: 0.375rem;
-    background-color: #f3f4f6;
+    background-color: #f9fafb;
     transition: background-color 0.2s;
     color: #464646;
 }
 
-.darkSocialLink {
-    background-color: #2d3748;
-    color: #e2e8f0;
-}
-
 .socialLink:hover {
-    background-color: #e5e7eb;
-}
-
-.darkSocialLink:hover {
-    background-color: #4a5568;
+    background-color: #f0f0f0;
 }
 
 .socialIcon {
@@ -190,97 +147,36 @@ a,
     height: 1.25rem;
 }
 
-.memberHeader {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.orgLinks {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.orgLink {
-    padding: 0.5rem;
-    border-radius: 0.375rem;
-    background-color: #f3f4f6;
-    transition: background-color 0.2s;
-}
-
-.darkOrgLink {
-    background-color: #2d3748;
-    color: #e2e8f0;
-}
-
-.orgLink:hover {
-    background-color: #e5e7eb;
-}
-
-.darkOrgLink:hover {
-    background-color: #4a5568;
-}
-
-.orgText {
-    font-size: 0.6875rem;
-    font-weight: 500;
-    line-height: 1.5;
-    color: #000;
-}
-
-.externalIcon {
-    width: 0.875rem;
-    height: 0.875rem;
-    color: #9ca3af;
-    flex-shrink: 0;
-}
-
 .blogHeader {
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-.viewAllLink {
-    font-size: 0.75rem;
-    color: #6b7280;
-}
-
-.darkViewAllLink {
-    color: #a0aec0;
+    margin-bottom: 16px;
 }
 
 .blogPosts {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 12px;
 }
 
 .blogPost {
-    padding: 0.75rem;
-    border-radius: 0.375rem;
-    background-color: #f3f4f6;
-}
-
-.darkBlogPost {
-    background-color: #2d3748;
-    color: #e2e8f0;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #f9fafb;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .blogLink {
     display: block;
+    text-decoration: none;
 }
 
 .blogTitle {
-    font-size: 0.875rem;
+    font-size: 14px;
     font-weight: 600;
-    margin-bottom: 0.25rem;
-    color: #000;
-}
-
-.darkBlogTitle {
-    color: #e2e8f0;
+    color: #111827;
+    margin-bottom: 4px;
 }
 
 .blogMeta {
@@ -293,7 +189,7 @@ a,
 }
 
 .blogExcerpt {
-    font-size: 0.75rem;
+    font-size: 12px;
     color: #6b7280;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -301,11 +197,6 @@ a,
     -webkit-box-orient: vertical;
     overflow: hidden;
     margin-bottom: 0.5rem;
-}
-
-
-.darkBlogExcerpt {
-    color: #a0aec0;
 }
 
 .blogTags {
@@ -323,10 +214,108 @@ a,
     color: #000;
 }
 
+/* Dark Mode Styles */
+.container.darkMode {
+    background-color: transparent;
+}
+
+.darkBentoCard {
+    background-color: #2d2d2d !important;
+    border-color: #444 !important;
+}
+
+.darkText {
+    color: #f0f0f0 !important;
+}
+
+.darkSecondaryText {
+    color: #a0a0a0 !important;
+}
+
+.darkLink {
+    color: #a0a0a0 !important;
+}
+
+.darkLink:hover {
+    color: #f0f0f0 !important;
+}
+
+.darkLinkCard {
+    background-color: #333 !important;
+}
+
+.darkLinkCard:hover {
+    background-color: #3a3a3a !important;
+}
+
+.darkSocialLink {
+    background-color: #333 !important;
+    color: #e2e8f0 !important;
+}
+
+.darkSocialLink:hover {
+    background-color: #3a3a3a !important;
+}
+
+.darkBlogPost {
+    background-color: #333 !important;
+}
+
+.darkBlogPost:hover {
+    background-color: #3a3a3a !important;
+}
+
 .darkTag {
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #e2e8f0;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #e2e8f0 !important;
+}
+
+/* Hover Effects */
+@media (hover: hover) {
+    .blogPost:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .linkCard:hover {
+        background-color: #f0f0f0;
+    }
+    
+    .socialLink:hover {
+        background-color: #f0f0f0;
+    }
+    
+    .viewAllLink:hover {
+        color: #111827;
+    }
+    
+    .darkLinkCard:hover {
+        background-color: #3a3a3a !important;
+    }
+    
+    .darkSocialLink:hover {
+        background-color: #3a3a3a !important;
+    }
+    
+    .darkBlogPost:hover {
+        background-color: #3a3a3a !important;
+    }
+    
+    .darkLink:hover {
+        color: #f0f0f0 !important;
+    }
+}
+
+/* Remove underlines from all links */
+a,
+.linkCard,
+.blogLink,
+.infoLink,
+.viewAllLink,
+.orgLink,
+.socialLink {
+    text-decoration: none !important;
 }
 
 /* Responsive adjustments */
@@ -339,5 +328,19 @@ a,
     .blogCard {
         width: 100%;
         height: auto;
+    }
+}
+
+/* Tablet Styles (768px and up) */
+@media (min-width: 768px) {
+    .blogTitle {
+        font-size: 15px;
+    }
+}
+
+/* Desktop Styles (1024px and up) */
+@media (min-width: 1024px) {
+    .blogTitle {
+        font-size: 16px;
     }
 }
