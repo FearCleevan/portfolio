@@ -1,0 +1,308 @@
+/* src/components/Container/GitHubCalendar.module.css */
+.calendarContainer {
+  width: 100%;
+  max-width: 865px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(60, 60, 60, 0.04);
+  overflow: hidden; /* Prevent overflow issues */
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.calendarTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.calendarTitle::before {
+  content: "📊";
+}
+
+.yearFilter {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 4px;
+}
+
+.yearButton {
+  padding: 8px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.yearButton:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.yearButton.selected {
+  background: #0366d6;
+  color: white;
+  border-color: #0366d6;
+}
+
+.darkYearButton {
+  background: #3b3b3b;
+  border-color: #555;
+  color: #a0a0a0;
+}
+
+.darkYearButton:hover {
+  background: #444;
+  color: #f0f0f0;
+}
+
+.darkYearButton.selected {
+  background: #1a73e8;
+  color: white;
+  border-color: #1a73e8;
+}
+
+.calendarWrapper {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.calendar {
+  width: 100%;
+  overflow: visible;
+}
+
+.weeks {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+  margin-left: 20px; /* Space for month labels */
+  flex-wrap: nowrap;
+  overflow: visible;
+}
+
+.week {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.day {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.day:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  background: #000;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 100;
+  margin-bottom: 8px;
+  pointer-events: none;
+}
+
+.day:hover::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #000;
+  margin-bottom: -2px;
+  pointer-events: none;
+}
+
+/* Contribution color levels */
+.color0 {
+  background-color: #ebedf0;
+}
+
+.color1 {
+  background-color: #9be9a8;
+}
+
+.color2 {
+  background-color: #40c463;
+}
+
+.color3 {
+  background-color: #30a14e;
+}
+
+.color4 {
+  background-color: #216e39;
+}
+
+.months {
+  display: flex;
+  justify-content: flex-start;
+  margin-left: 20px; /* Match the weeks container */
+  margin-bottom: 8px;
+  gap: 0;
+  width: calc(100% - 20px);
+}
+
+.month {
+  font-size: 10px;
+  color: #6b7280;
+  text-align: left;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.legendColors {
+  display: flex;
+  gap: 2px;
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.legendText {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+}
+
+.error {
+  color: #dc2626;
+}
+
+/* Dark Mode Styles */
+.darkMode {
+  background-color: #2d2d2d !important;
+  border-color: #444 !important;
+}
+
+.darkText {
+  color: #f0f0f0 !important;
+}
+
+.darkMode .month {
+  color: #a0a0a0 !important;
+}
+
+.darkMode .color0 {
+  background-color: #3b3b3b;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .calendarContainer {
+    padding: 16px;
+  }
+  
+  .calendarHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .yearFilter {
+    align-self: stretch;
+    justify-content: center;
+  }
+  
+  .weeks {
+    margin-left: 16px;
+  }
+  
+  .months {
+    margin-left: 16px;
+  }
+  
+  .day {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .legendColor {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .month {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .weeks {
+    margin-left: 14px;
+  }
+  
+  .months {
+    margin-left: 14px;
+  }
+  
+  .day {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .legendColor {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .month {
+    font-size: 7px;
+  }
+  
+  .yearButton {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
