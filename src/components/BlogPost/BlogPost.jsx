@@ -1,14 +1,44 @@
 // src/components/BlogPost/BlogPost.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './BlogPost.module.css';
 import { Link, useParams } from 'react-router-dom';
-import { getBlogPostBySlug } from '../../data/blogPosts';
+import { getBlogPostBySlug } from '../../firebase/services/contentService';
 
 export default function BlogPost({ isDarkMode }) {
   const { slug } = useParams();
-  const post = getBlogPostBySlug(slug);
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  if (!post) {
+  useEffect(() => {
+    const fetchBlogPost = async () => {
+      try {
+        setLoading(true);
+        const postData = await getBlogPostBySlug(slug);
+        setPost(postData);
+      } catch (err) {
+        console.error('Error fetching blog post:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogPost();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className={`${styles.blogPostContainer} ${isDarkMode ? styles.darkMode : ''}`}>
+        <div className={styles.loadingState}>
+          <div className={styles.spinner}></div>
+          <p>Loading blog post...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !post) {
     return (
       <div className={`${styles.blogPostContainer} ${isDarkMode ? styles.darkMode : ''}`}>
         <div className={styles.notFound}>

@@ -1,3 +1,4 @@
+//src/admin/ContentEditor/ContentEditor.jsx
 import React, { useState, useEffect } from 'react';
 import { logoutAdmin } from '../../firebase/services/authService';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +10,7 @@ import TechStackEditor from './TechStackEditor';
 import ExperienceEditor from './ExperienceEditor';
 import ProjectsEditor from './ProjectsEditor';
 import CertificationsEditor from './CertificationsEditor';
+import BlogPostEditor from './BlogPostEditor';
 
 const ContentEditor = () => {
   const navigate = useNavigate();
@@ -41,6 +43,8 @@ const ContentEditor = () => {
         return <ProjectsEditor />;
       case 'certifications':
         return <CertificationsEditor />;
+      case 'blogPosts':
+        return <BlogPostEditor />;
       default:
         return null;
     }
@@ -76,38 +80,44 @@ const ContentEditor = () => {
               </div>
 
               <div className={styles.tabs}>
-                <button 
+                <button
                   className={`${styles.tab} ${activeTab === 'about' ? styles.active : ''}`}
                   onClick={() => setActiveTab('about')}
                 >
                   About
                 </button>
-                <button 
+                <button
                   className={`${styles.tab} ${activeTab === 'techStack' ? styles.active : ''}`}
                   onClick={() => setActiveTab('techStack')}
                 >
                   Tech Stack
                 </button>
-                <button 
+                <button
                   className={`${styles.tab} ${activeTab === 'experience' ? styles.active : ''}`}
                   onClick={() => setActiveTab('experience')}
                 >
                   Experience
                 </button>
-                <button 
+                <button
                   className={`${styles.tab} ${activeTab === 'projects' ? styles.active : ''}`}
                   onClick={() => setActiveTab('projects')}
                 >
                   Projects
                 </button>
-                <button 
+                <button
                   className={`${styles.tab} ${activeTab === 'certifications' ? styles.active : ''}`}
                   onClick={() => setActiveTab('certifications')}
                 >
                   Certifications
                 </button>
+                <button
+                  className={`${styles.tab} ${activeTab === 'blogPosts' ? styles.active : ''}`}
+                  onClick={() => setActiveTab('blogPosts')}
+                >
+                  Blog Posts
+                </button>
               </div>
-              
+
               <div className={styles.editorContainer}>
                 {renderActiveTab()}
               </div>

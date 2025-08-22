@@ -1,3 +1,4 @@
+//src/admin/ContentEditor/ProjectsEditor.jsx
 import React, { useState } from 'react';
 import { FiEdit2, FiSave, FiX, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { useProjects } from '../../firebase/hooks/useProjects';

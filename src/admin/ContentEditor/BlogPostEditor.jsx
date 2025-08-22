@@ -1,0 +1,472 @@
+// src/admin/ContentEditor/BlogPostEditor.jsx
+import React, { useState } from 'react';
+import { FiEdit2, FiSave, FiX, FiPlus, FiTrash2, FiBold, FiItalic, 
+  FiList, FiCode, FiType, FiImage, FiVideo } from 'react-icons/fi';
+import { useBlogPosts } from '../../firebase/hooks/useBlogPosts';
+import styles from './BlogPostEditor.module.css';
+import Modal from 'react-modal';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+Modal.setAppElement('#root');
+
+const BlogPostEditor = () => {
+  const { blogPosts, loading, error, addItem, updateItem, removeItem } = useBlogPosts();
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentEditItem, setCurrentEditItem] = useState(null);
+  const [newItem, setNewItem] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formattingToolbar, setFormattingToolbar] = useState(false);
+  const [formatPosition, setFormatPosition] = useState({ top: 0, left: 0 });
+
+  // Format options
+  const formatOptions = [
+    { type: 'bold', icon: <FiBold />, tag: 'strong' },
+    { type: 'italic', icon: <FiItalic />, tag: 'em' },
+    { type: 'code', icon: <FiCode />, tag: 'code' },
+    { type: 'bullet', icon: <FiList />, tag: 'ul' },
+    { type: 'heading', icon: <FiType />, tag: 'h2' },
+  ];
+
+  const handleEdit = (item = null) => {
+    setIsEditing(true);
+    setCurrentEditItem(item ? { ...item } : {
+      title: '',
+      slug: '',
+      date: new Date().toISOString().split('T')[0],
+      readTime: '3 min read',
+      excerpt: '',
+      tags: [],
+      content: '',
+      newTag: ''
+    });
+    setNewItem(item === null);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setCurrentEditItem(null);
+    setNewItem(false);
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      // Generate slug from title if new item
+      const itemToSave = { ...currentEditItem };
+      
+      if (newItem) {
+        // Create slug from title
+        itemToSave.slug = itemToSave.title
+          .toLowerCase()
+          .replace(/[^a-z0-9 -]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-');
+        
+        // Add ID and creation date
+        itemToSave.id = Date.now().toString();
+        itemToSave.createdAt = new Date().toISOString();
+        
+        await addItem(itemToSave);
+        toast.success('Blog post added successfully!');
+      } else {
+        const originalItem = blogPosts.find(item => item.id === currentEditItem.id);
+        if (originalItem) {
+          await updateItem(originalItem, itemToSave);
+          toast.success('Blog post updated successfully!');
+        }
+      }
+      handleCancelEdit();
+    } catch (error) {
+      console.error('Error saving blog post:', error);
+      toast.error('Failed to save blog post');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const openDeleteModal = (item) => {
+    setItemToDelete(item);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setItemToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    closeDeleteModal();
+    try {
+      await removeItem(itemToDelete);
+      toast.success('Blog post deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting blog post:', error);
+      toast.error('Failed to delete blog post');
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCurrentEditItem(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleContentChange = (e) => {
+    setCurrentEditItem(prev => ({
+      ...prev,
+      content: e.target.value
+    }));
+  };
+
+  const handleTagChange = (e) => {
+    setCurrentEditItem(prev => ({
+      ...prev,
+      newTag: e.target.value
+    }));
+  };
+
+  const addTag = () => {
+    if (currentEditItem.newTag.trim() && !currentEditItem.tags.includes(currentEditItem.newTag.trim())) {
+      setCurrentEditItem(prev => ({
+        ...prev,
+        tags: [...prev.tags, prev.newTag.trim()],
+        newTag: ''
+      }));
+    }
+  };
+
+  const removeTag = (tagToRemove) => {
+    setCurrentEditItem(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTag();
+    }
+  };
+
+  const applyFormatting = (formatType) => {
+    const textarea = document.getElementById('blogContent');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+    
+    let formattedText = '';
+    
+    switch (formatType) {
+      case 'bold':
+        formattedText = `<strong>${selectedText}</strong>`;
+        break;
+      case 'italic':
+        formattedText = `<em>${selectedText}</em>`;
+        break;
+      case 'code':
+        formattedText = `<code>${selectedText}</code>`;
+        break;
+      case 'bullet':
+        formattedText = `\n<ul>\n  <li>${selectedText}</li>\n</ul>\n`;
+        break;
+      case 'heading':
+        formattedText = `\n<h2>${selectedText}</h2>\n`;
+        break;
+      default:
+        formattedText = selectedText;
+    }
+    
+    const newContent = 
+      textarea.value.substring(0, start) + 
+      formattedText + 
+      textarea.value.substring(end);
+    
+    setCurrentEditItem(prev => ({
+      ...prev,
+      content: newContent
+    }));
+    
+    setFormattingToolbar(false);
+  };
+
+  const handleTextSelection = () => {
+    const textarea = document.getElementById('blogContent');
+    if (textarea.selectionStart !== textarea.selectionEnd) {
+      const rect = textarea.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      
+      setFormatPosition({
+        top: rect.top + scrollTop - 40,
+        left: rect.left
+      });
+      
+      setFormattingToolbar(true);
+    } else {
+      setFormattingToolbar(false);
+    }
+  };
+
+  if (loading && !blogPosts.length) {
+    return (
+      <div className={styles.loadingOverlay}>
+        <div className={styles.spinner}></div>
+        <p>Loading blog posts...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.errorOverlay}>
+        <p>Error loading blog posts: {error.message}</p>
+        <button onClick={() => window.location.reload()}>
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.editorWrapper}>
+      {isEditing ? (
+        <div className={styles.editPanel}>
+          <div className={styles.editHeader}>
+            <h3>{newItem ? 'Add New' : 'Edit'} Blog Post</h3>
+            <div className={styles.editActions}>
+              <button
+                onClick={handleSave}
+                className={styles.saveButton}
+                disabled={!currentEditItem?.title || !currentEditItem?.content || isSaving}
+              >
+                {isSaving ? (
+                  <span className={styles.spinner}></span>
+                ) : (
+                  <>
+                    <FiSave /> Save
+                  </>
+                )}
+              </button>
+              <button
+                onClick={handleCancelEdit}
+                className={styles.cancelButton}
+                disabled={isSaving}
+              >
+                <FiX /> Cancel
+              </button>
+            </div>
+          </div>
+          
+          <div className={styles.editorContent}>
+            <div className={styles.formGroup}>
+              <label>Title *</label>
+              <input
+                type="text"
+                name="title"
+                value={currentEditItem?.title || ''}
+                onChange={handleInputChange}
+                className={styles.input}
+                placeholder="Enter blog post title"
+              />
+            </div>
+            
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label>Date</label>
+                <input
+                  type="date"
+                  name="date"
+                  value={currentEditItem?.date || ''}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label>Read Time</label>
+                <input
+                  type="text"
+                  name="readTime"
+                  value={currentEditItem?.readTime || ''}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                  placeholder="e.g., 3 min read"
+                />
+              </div>
+            </div>
+            
+            <div className={styles.formGroup}>
+              <label>Excerpt</label>
+              <textarea
+                name="excerpt"
+                value={currentEditItem?.excerpt || ''}
+                onChange={handleInputChange}
+                className={styles.textarea}
+                rows="3"
+                placeholder="Brief description of the blog post"
+              />
+            </div>
+            
+            <div className={styles.formGroup}>
+              <label>Tags</label>
+              <div className={styles.tagsInputContainer}>
+                <div className={styles.tagsList}>
+                  {currentEditItem?.tags.map((tag, index) => (
+                    <span key={index} className={styles.tag}>
+                      {tag}
+                      <button 
+                        type="button" 
+                        onClick={() => removeTag(tag)}
+                        className={styles.removeTag}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className={styles.tagInput}>
+                  <input
+                    type="text"
+                    value={currentEditItem?.newTag || ''}
+                    onChange={handleTagChange}
+                    onKeyPress={handleKeyPress}
+                    className={styles.input}
+                    placeholder="Add a tag and press Enter"
+                  />
+                  <button 
+                    type="button" 
+                    onClick={addTag}
+                    className={styles.addTagButton}
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div className={styles.formGroup}>
+              <div className={styles.contentHeader}>
+                <label>Content *</label>
+                <div className={styles.formatHelp}>
+                  <span>Select text to format</span>
+                </div>
+              </div>
+              
+              {formattingToolbar && (
+                <div 
+                  className={styles.formatToolbar}
+                  style={{ top: `${formatPosition.top}px`, left: `${formatPosition.left}px` }}
+                >
+                  {formatOptions.map((option, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => applyFormatting(option.type)}
+                      className={styles.formatButton}
+                      title={option.type}
+                    >
+                      {option.icon}
+                    </button>
+                  ))}
+                </div>
+              )}
+              
+              <textarea
+                id="blogContent"
+                name="content"
+                value={currentEditItem?.content || ''}
+                onChange={handleContentChange}
+                onMouseUp={handleTextSelection}
+                onKeyUp={handleTextSelection}
+                className={styles.contentTextarea}
+                rows="15"
+                placeholder="Write your blog post content here..."
+              />
+              
+              <div className={styles.formattingGuide}>
+                <h4>Formatting Guide:</h4>
+                <ul>
+                  <li>Select text and use the formatting toolbar for <strong>bold</strong>, <em>italic</em>, and <code>code</code></li>
+                  <li>Use <code>&lt;h2&gt;Heading&lt;/h2&gt;</code> for section headings</li>
+                  <li>Use <code>&lt;ul&gt;&lt;li&gt;Item&lt;/li&gt;&lt;/ul&gt;</code> for bullet lists</li>
+                  <li>Use <code>&lt;div className="exampleBlock"&gt;&lt;h3&gt;Example&lt;/h3&gt;&lt;p&gt;Content&lt;/p&gt;&lt;/div&gt;</code> for examples</li>
+                  <li>Use <code>&lt;div className="codeBlock"&gt;...&lt;/div&gt;</code> for code blocks</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className={styles.contentList}>
+          <div className={styles.listHeader}>
+            <h3>Blog Posts</h3>
+            <button
+              onClick={() => handleEdit()}
+              className={styles.editButton}
+            >
+              <FiPlus /> Add Blog Post
+            </button>
+          </div>
+          
+          {blogPosts.map((post) => (
+            <div key={post.id} className={styles.listItem}>
+              <div className={styles.itemContent}>
+                <h4>{post.title}</h4>
+                <p>{post.excerpt}</p>
+                <div className={styles.itemMeta}>
+                  <span>{post.date}</span>
+                  <span>•</span>
+                  <span>{post.readTime}</span>
+                </div>
+                <div className={styles.itemTags}>
+                  {post.tags.map((tag, index) => (
+                    <span key={index} className={styles.tag}>{tag}</span>
+                  ))}
+                </div>
+              </div>
+              <div className={styles.itemActions}>
+                <button
+                  onClick={() => handleEdit(post)}
+                  className={styles.editButton}
+                >
+                  <FiEdit2 />
+                </button>
+                <button
+                  onClick={() => openDeleteModal(post)}
+                  className={styles.deleteButton}
+                >
+                  <FiTrash2 />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onRequestClose={closeDeleteModal}
+        className={styles.modal}
+        overlayClassName={styles.modalOverlay}
+      >
+        <h3>Confirm Delete</h3>
+        <p>Are you sure you want to delete the blog post "{itemToDelete?.title}"? This cannot be undone.</p>
+        <div className={styles.modalActions}>
+          <button onClick={closeDeleteModal} className={styles.cancelButton}>
+            Cancel
+          </button>
+          <button onClick={confirmDelete} className={styles.deleteButton}>
+            Confirm Delete
+          </button>
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
+export default BlogPostEditor;

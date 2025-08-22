@@ -296,3 +296,95 @@ export const deleteCertification = async (certification) => {
     throw error;
   }
 };
+
+// Add these functions to your existing contentService.js
+// Add these functions to your existing contentService.js
+export const getBlogPosts = async () => {
+  try {
+    const docRef = doc(db, 'content', 'blogPosts');
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return docSnap.data().posts || [];
+    } else {
+      // Initialize with empty array if document doesn't exist
+      await setDoc(docRef, { posts: [] });
+      return [];
+    }
+  } catch (error) {
+    console.error('Error getting blog posts:', error);
+    throw error;
+  }
+};
+
+export const getBlogPostBySlug = async (slug) => {
+  try {
+    const docRef = doc(db, 'content', 'blogPosts');
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      const posts = docSnap.data().posts || [];
+      return posts.find(post => post.slug === slug);
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting blog post by slug:', error);
+    throw error;
+  }
+};
+
+export const addBlogPost = async (post) => {
+  try {
+    const docRef = doc(db, 'content', 'blogPosts');
+    const docSnap = await getDoc(docRef);
+    
+    let currentPosts = [];
+    if (docSnap.exists()) {
+      currentPosts = docSnap.data().posts || [];
+    }
+    
+    const updatedPosts = [...currentPosts, post];
+    await setDoc(docRef, { posts: updatedPosts });
+    
+    return post;
+  } catch (error) {
+    console.error('Error adding blog post:', error);
+    throw error;
+  }
+};
+
+export const updateBlogPost = async (oldPost, newPost) => {
+  try {
+    const docRef = doc(db, 'content', 'blogPosts');
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      const currentPosts = docSnap.data().posts || [];
+      const updatedPosts = currentPosts.map(post => 
+        post.id === oldPost.id ? newPost : post
+      );
+      
+      await setDoc(docRef, { posts: updatedPosts });
+    }
+  } catch (error) {
+    console.error('Error updating blog post:', error);
+    throw error;
+  }
+};
+
+export const deleteBlogPost = async (postToDelete) => {
+  try {
+    const docRef = doc(db, 'content', 'blogPosts');
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      const currentPosts = docSnap.data().posts || [];
+      const updatedPosts = currentPosts.filter(post => post.id !== postToDelete.id);
+      
+      await setDoc(docRef, { posts: updatedPosts });
+    }
+  } catch (error) {
+    console.error('Error deleting blog post:', error);
+    throw error;
+  }
+};
