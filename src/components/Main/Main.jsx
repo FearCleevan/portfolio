@@ -12,6 +12,7 @@ import { useTechStack } from '../../firebase/hooks/useTechStack';
 import { useExperience } from '../../firebase/hooks/useExperience';
 import { useProjects } from '../../firebase/hooks/useProjects';
 import { useCertifications } from '../../firebase/hooks/useCertifications';
+import GitHubCalendar from '../Container/GitHubCalendar';
 
 export default function Main() {
     const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -163,8 +164,13 @@ export default function Main() {
                     </div>
                 </div>
             </main>
-            <Container isDarkMode={isDarkMode} projects={projects} certifications={certifications}/>
+            <Container isDarkMode={isDarkMode} projects={projects} certifications={certifications} />
             <ContainerSecond isDarkMode={isDarkMode} />
+            <GitHubCalendar
+                username={import.meta.env.VITE_GITHUB_USERNAME}
+                token={import.meta.env.VITE_GITHUB_TOKEN}
+                isDarkMode={isDarkMode}
+            />
             <Footer isDarkMode={isDarkMode} />
             <ChatButton isDarkMode={isDarkMode} />
         </div>
