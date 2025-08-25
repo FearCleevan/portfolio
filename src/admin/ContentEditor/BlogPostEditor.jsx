@@ -162,31 +162,31 @@ const BlogPostEditor = () => {
     }
   };
 
-const handleTextSelection = () => {
-  const textarea = contentTextareaRef.current;
-  if (!textarea) return;
-  
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  
-  if (start !== end) {
-    const selectedText = textarea.value.substring(start, end);
-    _setSelectedText(selectedText);
+  const handleTextSelection = () => {
+    const textarea = contentTextareaRef.current;
+    if (!textarea) return;
     
-    const rect = textarea.getBoundingClientRect();
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
     
-    setFormatPosition({
-      top: rect.top + scrollTop - 40,
-      left: rect.left
-    });
-    
-    setFormattingToolbar(true);
-  } else {
-    setFormattingToolbar(false);
-    _setSelectedText('');
-  }
-};
+    if (start !== end) {
+      const selectedText = textarea.value.substring(start, end);
+      _setSelectedText(selectedText);
+      
+      const rect = textarea.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      
+      setFormatPosition({
+        top: rect.top + scrollTop - 40,
+        left: rect.left
+      });
+      
+      setFormattingToolbar(true);
+    } else {
+      setFormattingToolbar(false);
+      _setSelectedText('');
+    }
+  };
 
   const applyFormatting = (formatType) => {
     const textarea = contentTextareaRef.current;
@@ -261,7 +261,6 @@ const handleTextSelection = () => {
         formattedText = selectedText;
     }
 
-
     const newContent =
       textarea.value.substring(0, start) +
       formattedText +
@@ -288,17 +287,30 @@ const handleTextSelection = () => {
     if (!textarea) return;
 
     const start = textarea.selectionStart;
-    const language = prompt('Enter programming language (e.g., javascript, python, html):', 'javascript');
+    
+    // Generic code block without language specification
+    let formattedText = `\n<div class="codeBlock" style="position: relative;">
+                            <div class="codeContainer" style="position: relative;">
+                              
+                              <div 
+                                style="position: absolute; top: 0.5rem; right: 0.5rem; z-index: 10; display: flex; justify-content: flex-end; align-items: center; padding: 0.5rem 1rem; color: #abb2bf; font-size: 0.875rem; border-radius: 0.375rem;"
+                              >
+                                <button 
+                                  onclick="copyCode(this)" 
+                                  style="color: #abb2bf; background: rgba(255, 255, 255, 0.1); border: none; padding: 0.375rem 0.75rem; border-radius: 0.375rem; cursor: pointer; font-size: 0.8125rem; transition: all 0.2s ease; display: flex; align-items: center; gap: 0.375rem;"
+                                  onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-1px)';"
+                                  onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)';"
+                                >
+                                  Copy
+                                </button>
+                              </div>
 
-    let formattedText = `\n<div class="codeBlock">
-  <div class="codeContainer">
-    <div class="codeHeader">
-      <span class="codeLanguage">${language || 'code'}</span>
-      <button class="codeCopy" onclick="copyCode(this)">Copy</button>
-    </div>
-    <pre><code class="language-${language || 'javascript'}">\n// Your code here\n\n</code></pre>
-  </div>
-</div>\n`;
+                              <pre><code class="language-javascript">
+                          // Your code here
+                              </code></pre>
+                            </div>
+                          </div>
+                          \n`;
 
     const newContent =
       textarea.value.substring(0, start) +

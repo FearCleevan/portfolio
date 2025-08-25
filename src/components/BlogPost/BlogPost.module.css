@@ -151,13 +151,13 @@
     border-top: 1px solid #eaeaea;
     margin: 2rem 0;
 }
-
 /* Code Block Styles */
 .codeBlock {
     margin: 1.5rem 0;
     background: #282c34;
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .codeContainer {
@@ -166,7 +166,7 @@
 
 .codeHeader {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     padding: 0.5rem 1rem;
     background: rgba(0, 0, 0, 0.2);
@@ -175,24 +175,31 @@
 }
 
 .codeCopy {
-    background: rgba(255, 255, 255, 0.1);
-    color: #abb2bf;
-    border: none;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    font-size: 0.75rem;
-    transition: background 0.2s ease;
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #abb2bf !important;
+    border: none !important;
+    padding: 0.375rem 0.75rem !important;
+    border-radius: 0.375rem !important;
+    cursor: pointer !important;
+    font-size: 0.8125rem !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.375rem !important;
 }
 
 .codeCopy:hover {
     background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
 }
+
+
 
 .codeContainer pre {
     margin: 0;
     padding: 1rem;
     overflow-x: auto;
+    background: #282c34 !important;
 }
 
 .codeContainer code {
@@ -200,9 +207,81 @@
     font-size: 0.875rem;
     line-height: 1.5;
     color: #abb2bf;
-    background: transparent;
+    background: transparent !important;
     padding: 0;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.3);
 }
+
+/* Prism.js syntax highlighting */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #5c6370;
+  font-style: italic;
+}
+
+.token.punctuation {
+  color: #abb2bf;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #d19a66;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #98c379;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #56b6c2;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #c678dd;
+}
+
+.token.function,
+.token.class-name {
+  color: #61afef;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #c678dd;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
 
 /* Example and Best Practice Blocks */
 .exampleBlock,
@@ -323,7 +402,9 @@
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes fadeIn {
@@ -331,6 +412,7 @@
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -442,15 +524,15 @@
     .blogPostContainer {
         padding: 1rem;
     }
-    
+
     .postTitle {
         font-size: 2rem;
     }
-    
+
     .postContent {
         padding: 1.5rem;
     }
-    
+
     .shareButtons {
         flex-wrap: wrap;
     }
@@ -460,13 +542,13 @@
     .postTitle {
         font-size: 1.75rem;
     }
-    
+
     .postMeta {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.25rem;
     }
-    
+
     .postSeparator {
         display: none;
     }

@@ -3,6 +3,15 @@ import React, { useState, useEffect } from 'react';
 import styles from './BlogPost.module.css';
 import { Link, useParams } from 'react-router-dom';
 import { getBlogPostBySlug } from '../../firebase/services/contentService';
+import Prism from 'prismjs';
+import 'prismjs/themes/prism-tomorrow.css';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-jsx';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-python';
+import 'prismjs/components/prism-java';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-markup';
 
 export default function BlogPost({ isDarkMode }) {
   const { slug } = useParams();
@@ -26,6 +35,16 @@ export default function BlogPost({ isDarkMode }) {
 
     fetchBlogPost();
   }, [slug]);
+
+  // Apply syntax highlighting after content is loaded
+  useEffect(() => {
+    if (post) {
+      // Use setTimeout to ensure DOM is fully rendered
+      setTimeout(() => {
+        Prism.highlightAll();
+      }, 0);
+    }
+  }, [post]);
 
   // Function to safely render HTML content
   const createMarkup = (htmlContent) => {
