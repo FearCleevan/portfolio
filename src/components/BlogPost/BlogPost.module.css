@@ -75,23 +75,19 @@
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-article {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    border: 1px solid #eaeaea;
-}
-
 .postContent {
     background: #fff;
     border-radius: 0.5rem;
-    padding: 1rem;
+    padding: 2rem;
     margin-bottom: 2rem;
+    line-height: 1.7;
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .postContent p {
     font-size: 1rem;
-    line-height: 1.7;
-    color: #374151;
     margin-bottom: 1.5rem;
+    color: #374151;
 }
 
 .postContent strong {
@@ -99,18 +95,24 @@ article {
     color: #111827;
 }
 
-.postContent ul {
-    list-style-type: disc;
+.postContent em {
+    font-style: italic;
+}
+
+.postContent u {
+    text-decoration: underline;
+}
+
+.postContent ul, .postContent ol {
     margin-left: 1.5rem;
     margin-bottom: 1.5rem;
 }
 
 .postContent li {
     margin-bottom: 0.5rem;
-    line-height: 1.6;
 }
 
-.postContent code {
+.postContent code:not(pre code) {
     font-family: 'Fira Code', 'Fira Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
     font-size: 0.875rem;
     padding: 0.125rem 0.25rem;
@@ -119,52 +121,117 @@ article {
     color: #4b5563;
 }
 
-.postContent pre {
-    background: #282c34;
-    color: #abb2bf;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    overflow: auto;
+.postContent h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem;
+    color: #111827;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 0.5rem;
+}
+
+.postContent h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 1.5rem 0 1rem;
+    color: #111827;
+}
+
+.postContent a {
+    color: #3b82f6;
+    text-decoration: underline;
+}
+
+.postContent a:hover {
+    color: #2563eb;
+}
+
+.postContent hr {
+    border: none;
+    border-top: 1px solid #eaeaea;
+    margin: 2rem 0;
+}
+
+/* Code Block Styles */
+.codeBlock {
     margin: 1.5rem 0;
+    background: #282c34;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.codeContainer {
     position: relative;
 }
 
-.postContent pre code {
-    background: transparent;
-    color: inherit;
-    padding: 0;
+.codeHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    color: #abb2bf;
+    font-size: 0.875rem;
 }
 
 .codeCopy {
-    position: absolute;
-    right: 0.5rem;
-    top: 0.5rem;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 0.25rem;
     color: #abb2bf;
     border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
     cursor: pointer;
-}
-
-.postContent pre:hover .codeCopy {
-    opacity: 1;
+    font-size: 0.75rem;
+    transition: background 0.2s ease;
 }
 
 .codeCopy:hover {
     background: rgba(255, 255, 255, 0.2);
 }
 
-.postContent h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 2rem 0 1rem;
-    color: #111827;
+.codeContainer pre {
+    margin: 0;
+    padding: 1rem;
+    overflow-x: auto;
 }
 
+.codeContainer code {
+    font-family: 'Fira Code', 'Fira Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #abb2bf;
+    background: transparent;
+    padding: 0;
+}
+
+/* Example and Best Practice Blocks */
+.exampleBlock,
+.bestPractice {
+    background: rgba(0, 0, 0, 0.03);
+    border-left: 4px solid #3b82f6;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.exampleBlock h3,
+.bestPractice h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: #3b82f6;
+    border-bottom: none;
+    padding: 0;
+}
+
+.exampleBlock p,
+.bestPractice p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Share Section */
 .shareSection {
     border-top: 1px solid #e5e7eb;
     padding-top: 2rem;
@@ -191,6 +258,8 @@ article {
     display: flex;
     align-items: center;
     justify-content: center;
+    border: none;
+    cursor: pointer;
 }
 
 .shareButton:hover {
@@ -236,6 +305,25 @@ article {
 .notFound p {
     color: #6b7280;
     margin-bottom: 2rem;
+}
+
+.loadingState {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: #3b82f6;
+    animation: spin 1s ease-in-out infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 @keyframes fadeIn {
@@ -293,9 +381,38 @@ article {
     color: #f0f0f0;
 }
 
-.darkMode .postContent code {
+.darkMode .postContent code:not(pre code) {
     background: rgba(255, 255, 255, 0.1);
     color: #d1d1d1;
+}
+
+.darkMode .postContent h2,
+.darkMode .postContent h3 {
+    color: #f0f0f0;
+    border-color: #444;
+}
+
+.darkMode .postContent a {
+    color: #60a5fa;
+}
+
+.darkMode .postContent a:hover {
+    color: #3b82f6;
+}
+
+.darkMode .postContent hr {
+    border-color: #444;
+}
+
+.darkMode .exampleBlock,
+.darkMode .bestPractice {
+    background: rgba(255, 255, 255, 0.05);
+    border-left-color: #60a5fa;
+}
+
+.darkMode .exampleBlock h3,
+.darkMode .bestPractice h3 {
+    color: #60a5fa;
 }
 
 .darkMode .shareTitle {
@@ -353,112 +470,4 @@ article {
     .postSeparator {
         display: none;
     }
-}
-
-/* Additional styles for code blocks */
-.codeBlock {
-  margin: 1.5rem 0;
-}
-
-.codeContainer {
-  position: relative;
-  background: #282c34;
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-.codeContainer pre {
-  margin: 0;
-  padding: 1rem;
-  overflow-x: auto;
-}
-
-.codeContainer code {
-  font-family: 'Fira Code', 'Fira Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: #abb2bf;
-  background: transparent;
-  padding: 0;
-}
-
-.codeCopy {
-  position: absolute;
-  right: 0.5rem;
-  top: 0.5rem;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.codeContainer:hover .codeCopy {
-  opacity: 1;
-}
-
-.codeCopy button {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 0.25rem;
-  color: #abb2bf;
-  border: none;
-  cursor: pointer;
-}
-
-.codeCopy button:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* Additional styles for example and best practice blocks */
-.exampleBlock,
-.bestPractice {
-  background: rgba(0, 0, 0, 0.03);
-  border-left: 4px solid #3b82f6;
-  padding: 1rem;
-  margin: 1rem 0;
-  border-radius: 0 0.25rem 0.25rem 0;
-}
-
-.darkMode .exampleBlock,
-.darkMode .bestPractice {
-  background: rgba(255, 255, 255, 0.05);
-  border-left-color: #60a5fa;
-}
-
-.exampleBlock h3,
-.bestPractice h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0 0 0.5rem 0;
-  color: #3b82f6;
-}
-
-.darkMode .exampleBlock h3,
-.darkMode .bestPractice h3 {
-  color: #60a5fa;
-}
-
-.exampleBlock p,
-.bestPractice p {
-  margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
-
-.tagsSection {
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
-  font-size: 0.9rem;
-}
-
-.darkMode .tagsSection {
-  border-top-color: #444;
-}
-
-.tagsSection strong {
-  color: #374151;
-}
-
-.darkMode .tagsSection strong {
-  color: #d1d1d1;
 }

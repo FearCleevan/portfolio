@@ -1,7 +1,10 @@
 // src/admin/ContentEditor/BlogPostEditor.jsx
-import React, { useState } from 'react';
-import { FiEdit2, FiSave, FiX, FiPlus, FiTrash2, FiBold, FiItalic, 
-  FiList, FiCode, FiType, FiImage, FiVideo } from 'react-icons/fi';
+import React, { useState, useRef } from 'react';
+import {
+  FiEdit2, FiSave, FiX, FiPlus, FiTrash2, FiBold, FiItalic,
+  FiList, FiCode, FiType, FiImage, FiVideo, FiUnderline,
+  FiAlignLeft, FiMinus, FiLink
+} from 'react-icons/fi';
 import { useBlogPosts } from '../../firebase/hooks/useBlogPosts';
 import styles from './BlogPostEditor.module.css';
 import Modal from 'react-modal';
@@ -20,14 +23,19 @@ const BlogPostEditor = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [formattingToolbar, setFormattingToolbar] = useState(false);
   const [formatPosition, setFormatPosition] = useState({ top: 0, left: 0 });
+  const [_selectedText, _setSelectedText] = useState('');
+  const contentTextareaRef = useRef(null);
 
   // Format options
   const formatOptions = [
     { type: 'bold', icon: <FiBold />, tag: 'strong' },
     { type: 'italic', icon: <FiItalic />, tag: 'em' },
+    { type: 'underline', icon: <FiUnderline />, tag: 'u' },
     { type: 'code', icon: <FiCode />, tag: 'code' },
     { type: 'bullet', icon: <FiList />, tag: 'ul' },
     { type: 'heading', icon: <FiType />, tag: 'h2' },
+    { type: 'divider', icon: <FiMinus />, tag: 'hr' },
+    { type: 'link', icon: <FiLink />, tag: 'a' },
   ];
 
   const handleEdit = (item = null) => {
@@ -56,7 +64,7 @@ const BlogPostEditor = () => {
     try {
       // Generate slug from title if new item
       const itemToSave = { ...currentEditItem };
-      
+
       if (newItem) {
         // Create slug from title
         itemToSave.slug = itemToSave.title
@@ -64,11 +72,11 @@ const BlogPostEditor = () => {
           .replace(/[^a-z0-9 -]/g, '')
           .replace(/\s+/g, '-')
           .replace(/-+/g, '-');
-        
+
         // Add ID and creation date
         itemToSave.id = Date.now().toString();
         itemToSave.createdAt = new Date().toISOString();
-        
+
         await addItem(itemToSave);
         toast.success('Blog post added successfully!');
       } else {
@@ -154,62 +162,192 @@ const BlogPostEditor = () => {
     }
   };
 
+const handleTextSelection = () => {
+  const textarea = contentTextareaRef.current;
+  if (!textarea) return;
+  
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  
+  if (start !== end) {
+    const selectedText = textarea.value.substring(start, end);
+    _setSelectedText(selectedText);
+    
+    const rect = textarea.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    
+    setFormatPosition({
+      top: rect.top + scrollTop - 40,
+      left: rect.left
+    });
+    
+    setFormattingToolbar(true);
+  } else {
+    setFormattingToolbar(false);
+    _setSelectedText('');
+  }
+};
+
   const applyFormatting = (formatType) => {
-    const textarea = document.getElementById('blogContent');
+    const textarea = contentTextareaRef.current;
+    if (!textarea) return;
+
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const selectedText = textarea.value.substring(start, end);
-    
+
     let formattedText = '';
-    
+    let newSelectionStart = start;
+    let newSelectionEnd = end;
+
     switch (formatType) {
       case 'bold':
         formattedText = `<strong>${selectedText}</strong>`;
+        newSelectionStart = start + 8;
+        newSelectionEnd = end + 8;
         break;
+
       case 'italic':
         formattedText = `<em>${selectedText}</em>`;
+        newSelectionStart = start + 4;
+        newSelectionEnd = end + 4;
         break;
+
+      case 'underline':
+        formattedText = `<u>${selectedText}</u>`;
+        newSelectionStart = start + 3;
+        newSelectionEnd = end + 3;
+        break;
+
       case 'code':
         formattedText = `<code>${selectedText}</code>`;
+        newSelectionStart = start + 6;
+        newSelectionEnd = end + 6;
         break;
-      case 'bullet':
-        formattedText = `\n<ul>\n  <li>${selectedText}</li>\n</ul>\n`;
+
+      case 'bullet': {
+        const bulletItems = selectedText.split('\n').filter(line => line.trim());
+        formattedText = `\n<ul>\n${bulletItems.map(item => `  <li>${item.trim()}</li>`).join('\n')}\n</ul>\n`;
+        newSelectionStart = start + 6;
+        newSelectionEnd = start + formattedText.length - 7;
         break;
+      }
+
       case 'heading':
         formattedText = `\n<h2>${selectedText}</h2>\n`;
+        newSelectionStart = start + 5;
+        newSelectionEnd = end + 5;
         break;
+
+      case 'divider':
+        formattedText = `\n<hr />\n`;
+        newSelectionStart = start + formattedText.length;
+        newSelectionEnd = newSelectionStart;
+        break;
+
+      case 'link': {
+        const url = prompt('Enter URL:', 'https://');
+        if (url) {
+          formattedText = `<a href="${url}" target="_blank" rel="noopener noreferrer">${selectedText}</a>`;
+          newSelectionStart = start + formattedText.length;
+          newSelectionEnd = newSelectionStart;
+        } else {
+          formattedText = selectedText;
+        }
+        break;
+      }
+
       default:
         formattedText = selectedText;
     }
-    
-    const newContent = 
-      textarea.value.substring(0, start) + 
-      formattedText + 
+
+
+    const newContent =
+      textarea.value.substring(0, start) +
+      formattedText +
       textarea.value.substring(end);
-    
+
     setCurrentEditItem(prev => ({
       ...prev,
       content: newContent
     }));
-    
+
+    // Restore cursor position after state update
+    setTimeout(() => {
+      if (textarea) {
+        textarea.focus();
+        textarea.setSelectionRange(newSelectionStart, newSelectionEnd);
+      }
+    }, 0);
+
     setFormattingToolbar(false);
   };
 
-  const handleTextSelection = () => {
-    const textarea = document.getElementById('blogContent');
-    if (textarea.selectionStart !== textarea.selectionEnd) {
-      const rect = textarea.getBoundingClientRect();
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      
-      setFormatPosition({
-        top: rect.top + scrollTop - 40,
-        left: rect.left
-      });
-      
-      setFormattingToolbar(true);
-    } else {
-      setFormattingToolbar(false);
-    }
+  const insertCodeBlock = () => {
+    const textarea = contentTextareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const language = prompt('Enter programming language (e.g., javascript, python, html):', 'javascript');
+
+    let formattedText = `\n<div class="codeBlock">
+  <div class="codeContainer">
+    <div class="codeHeader">
+      <span class="codeLanguage">${language || 'code'}</span>
+      <button class="codeCopy" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><code class="language-${language || 'javascript'}">\n// Your code here\n\n</code></pre>
+  </div>
+</div>\n`;
+
+    const newContent =
+      textarea.value.substring(0, start) +
+      formattedText +
+      textarea.value.substring(start);
+
+    setCurrentEditItem(prev => ({
+      ...prev,
+      content: newContent
+    }));
+
+    // Position cursor inside the code block
+    const codeStartPos = start + formattedText.indexOf('// Your code here');
+    setTimeout(() => {
+      if (textarea) {
+        textarea.focus();
+        textarea.setSelectionRange(codeStartPos, codeStartPos);
+      }
+    }, 0);
+  };
+
+  const insertExampleBlock = () => {
+    const textarea = contentTextareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const formattedText = `\n<div class="exampleBlock">
+  <h3>Example</h3>
+  <p>Your example content here</p>
+</div>\n`;
+
+    const newContent =
+      textarea.value.substring(0, start) +
+      formattedText +
+      textarea.value.substring(start);
+
+    setCurrentEditItem(prev => ({
+      ...prev,
+      content: newContent
+    }));
+
+    // Position cursor inside the example block
+    const contentStartPos = start + formattedText.indexOf('Your example content here');
+    setTimeout(() => {
+      if (textarea) {
+        textarea.focus();
+        textarea.setSelectionRange(contentStartPos, contentStartPos);
+      }
+    }, 0);
   };
 
   if (loading && !blogPosts.length) {
@@ -261,7 +399,7 @@ const BlogPostEditor = () => {
               </button>
             </div>
           </div>
-          
+
           <div className={styles.editorContent}>
             <div className={styles.formGroup}>
               <label>Title *</label>
@@ -274,7 +412,7 @@ const BlogPostEditor = () => {
                 placeholder="Enter blog post title"
               />
             </div>
-            
+
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label>Date</label>
@@ -286,7 +424,7 @@ const BlogPostEditor = () => {
                   className={styles.input}
                 />
               </div>
-              
+
               <div className={styles.formGroup}>
                 <label>Read Time</label>
                 <input
@@ -299,7 +437,7 @@ const BlogPostEditor = () => {
                 />
               </div>
             </div>
-            
+
             <div className={styles.formGroup}>
               <label>Excerpt</label>
               <textarea
@@ -311,7 +449,7 @@ const BlogPostEditor = () => {
                 placeholder="Brief description of the blog post"
               />
             </div>
-            
+
             <div className={styles.formGroup}>
               <label>Tags</label>
               <div className={styles.tagsInputContainer}>
@@ -319,8 +457,8 @@ const BlogPostEditor = () => {
                   {currentEditItem?.tags.map((tag, index) => (
                     <span key={index} className={styles.tag}>
                       {tag}
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         onClick={() => removeTag(tag)}
                         className={styles.removeTag}
                       >
@@ -338,8 +476,8 @@ const BlogPostEditor = () => {
                     className={styles.input}
                     placeholder="Add a tag and press Enter"
                   />
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={addTag}
                     className={styles.addTagButton}
                   >
@@ -348,17 +486,32 @@ const BlogPostEditor = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className={styles.formGroup}>
               <div className={styles.contentHeader}>
                 <label>Content *</label>
-                <div className={styles.formatHelp}>
-                  <span>Select text to format</span>
+                <div className={styles.contentActions}>
+                  <button
+                    type="button"
+                    onClick={insertCodeBlock}
+                    className={styles.insertButton}
+                    title="Insert code block"
+                  >
+                    <FiCode /> Code Block
+                  </button>
+                  <button
+                    type="button"
+                    onClick={insertExampleBlock}
+                    className={styles.insertButton}
+                    title="Insert example block"
+                  >
+                    <FiType /> Example
+                  </button>
                 </div>
               </div>
-              
+
               {formattingToolbar && (
-                <div 
+                <div
                   className={styles.formatToolbar}
                   style={{ top: `${formatPosition.top}px`, left: `${formatPosition.left}px` }}
                 >
@@ -375,8 +528,9 @@ const BlogPostEditor = () => {
                   ))}
                 </div>
               )}
-              
+
               <textarea
+                ref={contentTextareaRef}
                 id="blogContent"
                 name="content"
                 value={currentEditItem?.content || ''}
@@ -387,15 +541,16 @@ const BlogPostEditor = () => {
                 rows="15"
                 placeholder="Write your blog post content here..."
               />
-              
+
               <div className={styles.formattingGuide}>
                 <h4>Formatting Guide:</h4>
                 <ul>
-                  <li>Select text and use the formatting toolbar for <strong>bold</strong>, <em>italic</em>, and <code>code</code></li>
+                  <li>Select text and use the formatting toolbar for <strong>bold</strong>, <em>italic</em>, <u>underline</u>, and <code>code</code></li>
+                  <li>Use the "Code Block" button to insert syntax-highlighted code blocks</li>
+                  <li>Use the "Example" button to insert example blocks</li>
                   <li>Use <code>&lt;h2&gt;Heading&lt;/h2&gt;</code> for section headings</li>
                   <li>Use <code>&lt;ul&gt;&lt;li&gt;Item&lt;/li&gt;&lt;/ul&gt;</code> for bullet lists</li>
-                  <li>Use <code>&lt;div className="exampleBlock"&gt;&lt;h3&gt;Example&lt;/h3&gt;&lt;p&gt;Content&lt;/p&gt;&lt;/div&gt;</code> for examples</li>
-                  <li>Use <code>&lt;div className="codeBlock"&gt;...&lt;/div&gt;</code> for code blocks</li>
+                  <li>Use <code>&lt;hr /&gt;</code> for horizontal dividers</li>
                 </ul>
               </div>
             </div>
@@ -412,7 +567,7 @@ const BlogPostEditor = () => {
               <FiPlus /> Add Blog Post
             </button>
           </div>
-          
+
           {blogPosts.map((post) => (
             <div key={post.id} className={styles.listItem}>
               <div className={styles.itemContent}>

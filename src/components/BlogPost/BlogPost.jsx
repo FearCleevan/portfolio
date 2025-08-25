@@ -27,6 +27,33 @@ export default function BlogPost({ isDarkMode }) {
     fetchBlogPost();
   }, [slug]);
 
+  // Function to safely render HTML content
+  const createMarkup = (htmlContent) => {
+    return { __html: htmlContent };
+  };
+
+  // Function to copy code to clipboard
+  const copyCode = (button) => {
+    const codeBlock = button.parentElement.nextElementSibling;
+    const textToCopy = codeBlock.textContent;
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      const originalText = button.textContent;
+      button.textContent = 'Copied!';
+      
+      setTimeout(() => {
+        button.textContent = originalText;
+      }, 2000);
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
+  };
+
+  // Add copy functionality to window for code blocks
+  useEffect(() => {
+    window.copyCode = copyCode;
+  }, []);
+
   if (loading) {
     return (
       <div className={`${styles.blogPostContainer} ${isDarkMode ? styles.darkMode : ''}`}>
@@ -73,14 +100,21 @@ export default function BlogPost({ isDarkMode }) {
         </div>
       </header>
 
-      <article className={`${styles.postContent} ${isDarkMode ? styles.darkPostContent : ''}`}>
-        {post.content}
-      </article>
+      <article 
+        className={`${styles.postContent} ${isDarkMode ? styles.darkPostContent : ''}`}
+        dangerouslySetInnerHTML={createMarkup(post.content)}
+      />
 
       <div className={styles.shareSection}>
         <h2 className={`${styles.shareTitle} ${isDarkMode ? styles.darkText : ''}`}>Share this post</h2>
         <div className={styles.shareButtons}>
-          <button className={`${styles.shareButton} ${isDarkMode ? styles.darkShareButton : ''}`} title="Copy link">
+          <button 
+            className={`${styles.shareButton} ${isDarkMode ? styles.darkShareButton : ''}`} 
+            title="Copy link"
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+            }}
+          >
             <svg className={styles.shareIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"></path>
             </svg>
