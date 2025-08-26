@@ -45,16 +45,16 @@ html {
 /* Optional: Dark mode support */
 @media (prefers-color-scheme: dark) {
   ::-webkit-scrollbar-track {
-    background: #2d2d2d;
+    background: #f7f7f7;
   }
   
   ::-webkit-scrollbar-thumb {
-    background: #555;
-    border: 2px solid #2d2d2d;
+    background: #ffffff;
+    border: 2px solid #d3d3d3;
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    background: #666;
+    background: #cecece;
   }
   
   ::-webkit-scrollbar-thumb:active {
@@ -62,11 +62,11 @@ html {
   }
   
   ::-webkit-scrollbar-corner {
-    background: #2d2d2d;
+    background: #c5c5c5;
   }
   
   html {
-    scrollbar-color: #555 #2d2d2d;
+    scrollbar-color: #d4d4d4 #919191;
   }
 }
 

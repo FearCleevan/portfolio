@@ -10,6 +10,10 @@ import styles from './BlogPostEditor.module.css';
 import Modal from 'react-modal';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {
+  FaParagraph, FaListUl, FaListOl, FaHeading, FaListOl as FaListRoman,
+} from "react-icons/fa";
+import { MdFormatColorText, MdFormatSize } from 'react-icons/md';
 
 Modal.setAppElement('#root');
 
@@ -25,7 +29,47 @@ const BlogPostEditor = () => {
   const [formatPosition, setFormatPosition] = useState({ top: 0, left: 0 });
   const [_selectedText, _setSelectedText] = useState('');
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
+  const [codeBlockPosition, setCodeBlockPosition] = useState(0);
   const contentTextareaRef = useRef(null);
+
+  // Programming languages and frameworks
+  const programmingLanguages = [
+    { name: 'JavaScript', value: 'javascript' },
+    { name: 'TypeScript', value: 'typescript' },
+    { name: 'HTML', value: 'html' },
+    { name: 'CSS', value: 'css' },
+    { name: 'Python', value: 'python' },
+    { name: 'Java', value: 'java' },
+    { name: 'C#', value: 'csharp' },
+    { name: 'PHP', value: 'php' },
+    { name: 'Ruby', value: 'ruby' },
+    { name: 'Go', value: 'go' },
+    { name: 'Rust', value: 'rust' },
+    { name: 'Swift', value: 'swift' },
+    { name: 'Kotlin', value: 'kotlin' },
+    { name: 'SQL', value: 'sql' },
+    { name: 'Shell', value: 'shell' },
+    { name: 'JSON', value: 'json' },
+    { name: 'YAML', value: 'yaml' },
+    { name: 'Markdown', value: 'markdown' },
+  ];
+
+  const frameworks = [
+    { name: 'React', value: 'jsx' },
+    { name: 'Vue', value: 'vue' },
+    { name: 'Angular', value: 'typescript' },
+    { name: 'Svelte', value: 'javascript' },
+    { name: 'Next.js', value: 'jsx' },
+    { name: 'Nuxt.js', value: 'vue' },
+    { name: 'Express', value: 'javascript' },
+    { name: 'Django', value: 'python' },
+    { name: 'Flask', value: 'python' },
+    { name: 'Laravel', value: 'php' },
+    { name: 'Spring', value: 'java' },
+    { name: '.NET', value: 'csharp' },
+    { name: 'Flutter', value: 'dart' },
+    { name: 'React Native', value: 'jsx' },
+  ];
 
   // Format options
   const formatOptions = [
@@ -33,76 +77,26 @@ const BlogPostEditor = () => {
     { type: 'italic', icon: <FiItalic />, tag: 'em' },
     { type: 'underline', icon: <FiUnderline />, tag: 'u' },
     { type: 'code', icon: <FiCode />, tag: 'code' },
-    { type: 'bullet', icon: <FiList />, tag: 'ul' },
-    { type: 'heading', icon: <FiType />, tag: 'h2' },
-    { type: 'divider', icon: <FiMinus />, tag: 'hr' },
-    { type: 'link', icon: <FiLink />, tag: 'a' },
-  ];
+    { type: 'paragraph', icon: <FaParagraph />, tag: 'p' },
 
-  // Language options with categories
-  const languageOptions = [
-    {
-      category: 'Web Development',
-      languages: [
-        { value: 'javascript', label: 'JavaScript', icon: '🟨' },
-        { value: 'typescript', label: 'TypeScript', icon: '🔷' },
-        { value: 'html', label: 'HTML', icon: '🌐' },
-        { value: 'css', label: 'CSS', icon: '🎨' },
-        { value: 'jsx', label: 'JSX', icon: '⚛️' },
-        { value: 'tsx', label: 'TSX', icon: '⚛️' },
-      ]
-    },
-    {
-      category: 'Frameworks',
-      languages: [
-        { value: 'react', label: 'React', icon: '⚛️' },
-        { value: 'vue', label: 'Vue', icon: '🟢' },
-        { value: 'angular', label: 'Angular', icon: '🅰️' },
-        { value: 'svelte', label: 'Svelte', icon: '💨' },
-        { value: 'nextjs', label: 'Next.js', icon: '⏭️' },
-        { value: 'nuxtjs', label: 'Nuxt.js', icon: '🔄' },
-      ]
-    },
-    {
-      category: 'Backend',
-      languages: [
-        { value: 'python', label: 'Python', icon: '🐍' },
-        { value: 'java', label: 'Java', icon: '☕' },
-        { value: 'php', label: 'PHP', icon: '🐘' },
-        { value: 'ruby', label: 'Ruby', icon: '💎' },
-        { value: 'go', label: 'Go', icon: '🐹' },
-        { value: 'rust', label: 'Rust', icon: '🦀' },
-        { value: 'csharp', label: 'C#', icon: '🔷' },
-        { value: 'dotnet', label: '.NET', icon: '🔷' },
-        { value: 'nodejs', label: 'Node.js', icon: '🟢' },
-        { value: 'laravel', label: 'Laravel', icon: '🔶' },
-        { value: 'django', label: 'Django', icon: '🐍' },
-        { value: 'flask', label: 'Flask', icon: '🍶' },
-        { value: 'spring', label: 'Spring', icon: '🌱' },
-      ]
-    },
-    {
-      category: 'Mobile',
-      languages: [
-        { value: 'kotlin', label: 'Kotlin', icon: '🔶' },
-        { value: 'swift', label: 'Swift', icon: '🐦' },
-        { value: 'reactnative', label: 'React Native', icon: '📱' },
-        { value: 'flutter', label: 'Flutter', icon: '🦋' },
-      ]
-    },
-    {
-      category: 'Database & Others',
-      languages: [
-        { value: 'sql', label: 'SQL', icon: '🗃️' },
-        { value: 'mongodb', label: 'MongoDB', icon: '🍃' },
-        { value: 'graphql', label: 'GraphQL', icon: '📊' },
-        { value: 'bash', label: 'Bash/Shell', icon: '💻' },
-        { value: 'docker', label: 'Docker', icon: '🐳' },
-        { value: 'yaml', label: 'YAML', icon: '📄' },
-        { value: 'json', label: 'JSON', icon: '{}' },
-        { value: 'markdown', label: 'Markdown', icon: '📝' },
-      ]
-    }
+    // Lists
+    { type: 'bullet', icon: <FaListUl />, tag: 'ul' },
+    { type: 'ordered', icon: <FaListOl />, tag: 'ol' },
+    { type: 'roman', icon: <FaListRoman style={{ listStyleType: 'upper-roman' }} />, tag: 'ol-roman' },
+
+    // Headings & Dividers
+    { type: 'heading', icon: <FaHeading />, tag: 'h2' },
+    { type: 'divider', icon: <FiMinus />, tag: 'hr' },
+
+    // Links & Colors
+    { type: 'link', icon: <FiLink />, tag: 'a' },
+    { type: 'color', icon: <MdFormatColorText />, tag: 'color' },
+
+    // Font Sizes
+    { type: 'fontSmall', icon: <MdFormatSize style={{ fontSize: '12px' }} />, tag: 'font-sm' },
+    { type: 'fontMedium', icon: <MdFormatSize style={{ fontSize: '16px' }} />, tag: 'font-md' },
+    { type: 'fontLarge', icon: <MdFormatSize style={{ fontSize: '20px' }} />, tag: 'font-lg' },
+    { type: 'fontXLarge', icon: <MdFormatSize style={{ fontSize: '24px' }} />, tag: 'font-xl' },
   ];
 
   const handleEdit = (item = null) => {
@@ -232,22 +226,22 @@ const BlogPostEditor = () => {
   const handleTextSelection = () => {
     const textarea = contentTextareaRef.current;
     if (!textarea) return;
-    
+
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-    
+
     if (start !== end) {
       const selectedText = textarea.value.substring(start, end);
       _setSelectedText(selectedText);
-      
+
       const rect = textarea.getBoundingClientRect();
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      
+
       setFormatPosition({
         top: rect.top + scrollTop - 40,
         left: rect.left
       });
-      
+
       setFormattingToolbar(true);
     } else {
       setFormattingToolbar(false);
@@ -292,11 +286,33 @@ const BlogPostEditor = () => {
         newSelectionEnd = end + 6;
         break;
 
+      case 'paragraph':
+        formattedText = `<p>${selectedText}</p>`;
+        newSelectionStart = start + 3;
+        newSelectionEnd = end + 3;
+        break;
+
       case 'bullet': {
         const bulletItems = selectedText.split('\n').filter(line => line.trim());
         formattedText = `\n<ul>\n${bulletItems.map(item => `  <li>${item.trim()}</li>`).join('\n')}\n</ul>\n`;
         newSelectionStart = start + 6;
         newSelectionEnd = start + formattedText.length - 7;
+        break;
+      }
+
+      case 'ordered': {
+        const listItems = selectedText.split('\n').filter(line => line.trim());
+        formattedText = `\n<ol>\n${listItems.map(item => `  <li>${item.trim()}</li>`).join('\n')}\n</ol>\n`;
+        newSelectionStart = start + 5;
+        newSelectionEnd = start + formattedText.length - 6;
+        break;
+      }
+
+      case 'roman': {
+        const listItems = selectedText.split('\n').filter(line => line.trim());
+        formattedText = `\n<ol type="I">\n${listItems.map(item => `  <li>${item.trim()}</li>`).join('\n')}\n</ol>\n`;
+        newSelectionStart = start + 12;
+        newSelectionEnd = start + formattedText.length - 13;
         break;
       }
 
@@ -321,6 +337,46 @@ const BlogPostEditor = () => {
         } else {
           formattedText = selectedText;
         }
+        break;
+      }
+
+      case 'color': {
+        const color = prompt('Enter color (e.g., red, #ff0000, rgb(255,0,0)):', '#ff0000');
+        if (color) {
+          formattedText = `<span style="color: ${color}">${selectedText}</span>`;
+          newSelectionStart = start + formattedText.length;
+          newSelectionEnd = newSelectionStart;
+        } else {
+          formattedText = selectedText;
+        }
+        break;
+      }
+
+      case 'fontSmall': {
+        formattedText = `<span style="font-size: 0.875rem">${selectedText}</span>`;
+        newSelectionStart = start + formattedText.length;
+        newSelectionEnd = newSelectionStart;
+        break;
+      }
+
+      case 'fontMedium': {
+        formattedText = `<span style="font-size: 1rem">${selectedText}</span>`;
+        newSelectionStart = start + formattedText.length;
+        newSelectionEnd = newSelectionStart;
+        break;
+      }
+
+      case 'fontLarge': {
+        formattedText = `<span style="font-size: 1.25rem">${selectedText}</span>`;
+        newSelectionStart = start + formattedText.length;
+        newSelectionEnd = newSelectionStart;
+        break;
+      }
+
+      case 'fontXLarge': {
+        formattedText = `<span style="font-size: 1.5rem">${selectedText}</span>`;
+        newSelectionStart = start + formattedText.length;
+        newSelectionEnd = newSelectionStart;
         break;
       }
 
@@ -350,35 +406,39 @@ const BlogPostEditor = () => {
   };
 
   const openLanguageModal = () => {
-    setIsLanguageModalOpen(true);
-  };
-
-  const closeLanguageModal = () => {
-    setIsLanguageModalOpen(false);
-  };
-
-  const insertCodeBlock = (language) => {
     const textarea = contentTextareaRef.current;
     if (!textarea) return;
 
-    const start = textarea.selectionStart;
-    
-    const formattedText = `\n<div class="codeBlock">
-                            <div class="codeContainer">
-                              <div class="codeHeader">
-                                <span class="languageLabel">${language}</span>
-                                <button 
-                                  class="codeCopy" 
-                                  onclick="copyCode(this)"
-                                >
-                                  Copy
-                                </button>
-                              </div>
-                              <pre><code class="language-${language}">
-                          // Your ${language} code here
-                              </code></pre>
-                            </div>
-                          </div>\n`;
+    setCodeBlockPosition(textarea.selectionStart);
+    setIsLanguageModalOpen(true);
+  };
+
+  const insertCodeBlock = (language = 'javascript') => {
+    setIsLanguageModalOpen(false);
+
+    const textarea = contentTextareaRef.current;
+    if (!textarea) return;
+
+    const start = codeBlockPosition;
+
+    // In your insertCodeBlock function, use this structure:
+    let formattedText = `\n<div style="position: relative; border-radius: 10px; overflow: hidden;">
+  <div style="position: relative;">
+    <div style="position: absolute; top: 0.5rem; right: 0.5rem; z-index: 10; display: flex; justify-content: flex-end; align-items: center; padding: 0.5rem 1rem; color: #abb2bf; font-size: 0.875rem;">
+      <button 
+        onclick="copyCode(this)" 
+        style="color: #abb2bf; background: rgba(255, 255, 255, 0.1); border: none; padding: 0.375rem 0.75rem; border-radius: 0.375rem; cursor: pointer; font-size: 0.8125rem; transition: all 0.2s ease; display: flex; align-items: center; gap: 0.375rem;"
+        onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-1px)';"
+        onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)';"
+      >
+        Copy
+      </button>
+    </div>
+    <pre style="margin: 0; border-radius: 0 0 10px 10px !important; background: #2d2d2d !important;"><code class="language-${language}" style="border-radius: 10px !important; background: #2d2d2d !important;">
+// Your code here
+    </code></pre>
+  </div>
+</div>\n`;
 
     const newContent =
       textarea.value.substring(0, start) +
@@ -391,15 +451,13 @@ const BlogPostEditor = () => {
     }));
 
     // Position cursor inside the code block
-    const codeStartPos = start + formattedText.indexOf(`// Your ${language} code here`);
+    const codeStartPos = start + formattedText.indexOf('// Your') + 3;
     setTimeout(() => {
       if (textarea) {
         textarea.focus();
         textarea.setSelectionRange(codeStartPos, codeStartPos);
       }
     }, 0);
-
-    closeLanguageModal();
   };
 
   const insertExampleBlock = () => {
@@ -605,7 +663,7 @@ const BlogPostEditor = () => {
                       className={styles.formatButton}
                       title={option.type}
                     >
-                      {option.icon}
+                      {option.icon || option.label}
                     </button>
                   ))}
                 </div>
@@ -627,14 +685,52 @@ const BlogPostEditor = () => {
               <div className={styles.formattingGuide}>
                 <h4>Formatting Guide:</h4>
                 <ul>
-                  <li>Select text and use the formatting toolbar for <strong>bold</strong>, <em>italic</em>, <u>underline</u>, and <code>code</code></li>
-                  <li>Use the "Code Block" button to insert syntax-highlighted code blocks</li>
-                  <li>Use the "Example" button to insert example blocks</li>
-                  <li>Use <code>&lt;h2&gt;Heading&lt;/h2&gt;</code> for section headings</li>
-                  <li>Use <code>&lt;ul&gt;&lt;li&gt;Item&lt;/li&gt;&lt;/ul&gt;</code> for bullet lists</li>
-                  <li>Use <code>&lt;hr /&gt;</code> for horizontal dividers</li>
+                  <li>
+                    Select text and use the formatting toolbar for
+                    <strong> Bold</strong>, <em> Italic</em>, <u> Underline</u>, and
+                    <code> Inline Code</code>
+                  </li>
+                  <li>
+                    Use the <strong>"Paragraph"</strong> button for normal text
+                    (<code>&lt;p&gt;text&lt;/p&gt;</code>)
+                  </li>
+                  <li>
+                    Use the <strong>"Heading"</strong> button for section titles
+                    (<code>&lt;h2&gt;Heading&lt;/h2&gt;</code>)
+                  </li>
+                  <li>
+                    Use the <strong>"Bullet List"</strong> button for unordered lists
+                    (<code>&lt;ul&gt;&lt;li&gt;Item&lt;/li&gt;&lt;/ul&gt;</code>)
+                  </li>
+                  <li>
+                    Use the <strong>"Ordered List"</strong> button for numbered lists
+                    (<code>&lt;ol&gt;&lt;li&gt;Item&lt;/li&gt;&lt;/ol&gt;</code>)
+                  </li>
+                  <li>
+                    Use the <strong>"Roman List"</strong> button for roman numeral lists
+                    (<code>&lt;ol type="I"&gt;&lt;li&gt;Item&lt;/li&gt;&lt;/ol&gt;</code>)
+                  </li>
+                  <li>
+                    Use the <strong>"Link"</strong> button to add hyperlinks
+                    (<code>&lt;a href="#"&gt;Link&lt;/a&gt;</code>)
+                  </li>
+                  <li>
+                    Use the <strong>"Divider"</strong> button to insert a horizontal line
+                    (<code>&lt;hr /&gt;</code>)
+                  </li>
+                  <li>
+                    Use the <strong>"Color"</strong> button to change text color
+                    (<code>&lt;span style="color:red"&gt;text&lt;/span&gt;</code>)
+                  </li>
+                  <li>
+                    Use the <strong>"Font Size"</strong> buttons to adjust text size:
+                    <code>font-sm</code>, <code>font-md</code>, <code>font-lg</code>,
+                    <code>font-xl</code>
+                  </li>
                 </ul>
               </div>
+
+
             </div>
           </div>
         </div>
@@ -685,7 +781,6 @@ const BlogPostEditor = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
       <Modal
         isOpen={isDeleteModalOpen}
         onRequestClose={closeDeleteModal}
@@ -704,39 +799,53 @@ const BlogPostEditor = () => {
         </div>
       </Modal>
 
-      {/* Language Selection Modal */}
       <Modal
         isOpen={isLanguageModalOpen}
-        onRequestClose={closeLanguageModal}
+        onRequestClose={() => setIsLanguageModalOpen(false)}
         className={styles.languageModal}
         overlayClassName={styles.modalOverlay}
       >
-        <div className={styles.languageModalHeader}>
-          <h3>Select Programming Language</h3>
-          <button onClick={closeLanguageModal} className={styles.closeModalButton}>
-            <FiX />
-          </button>
-        </div>
-        
-        <div className={styles.languageModalContent}>
-          {languageOptions.map((category, categoryIndex) => (
-            <div key={categoryIndex} className={styles.languageCategory}>
-              <h4 className={styles.categoryTitle}>{category.category}</h4>
-              <div className={styles.languageGrid}>
-                {category.languages.map((language, langIndex) => (
-                  <button
-                    key={langIndex}
-                    className={styles.languageButton}
-                    onClick={() => insertCodeBlock(language.value)}
-                    title={language.label}
-                  >
-                    <span className={styles.languageIcon}>{language.icon}</span>
-                    <span className={styles.languageName}>{language.label}</span>
-                  </button>
-                ))}
-              </div>
+        <h3>Select Programming Language</h3>
+
+        <div className={styles.languageCategories}>
+          <div className={styles.languageCategory}>
+            <h4>Languages</h4>
+            <div className={styles.languageGrid}>
+              {programmingLanguages.map((lang) => (
+                <button
+                  key={lang.value}
+                  onClick={() => insertCodeBlock(lang.value)}
+                  className={styles.languageButton}
+                >
+                  {lang.name}
+                </button>
+              ))}
             </div>
-          ))}
+          </div>
+
+          <div className={styles.languageCategory}>
+            <h4>Frameworks</h4>
+            <div className={styles.languageGrid}>
+              {frameworks.map((framework) => (
+                <button
+                  key={framework.value}
+                  onClick={() => insertCodeBlock(framework.value)}
+                  className={styles.languageButton}
+                >
+                  {framework.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.modalActions}>
+          <button
+            onClick={() => setIsLanguageModalOpen(false)}
+            className={styles.cancelButton}
+          >
+            Cancel
+          </button>
         </div>
       </Modal>
     </div>
