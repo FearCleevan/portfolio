@@ -24,6 +24,7 @@ const BlogPostEditor = () => {
   const [formattingToolbar, setFormattingToolbar] = useState(false);
   const [formatPosition, setFormatPosition] = useState({ top: 0, left: 0 });
   const [_selectedText, _setSelectedText] = useState('');
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
   const contentTextareaRef = useRef(null);
 
   // Format options
@@ -36,6 +37,72 @@ const BlogPostEditor = () => {
     { type: 'heading', icon: <FiType />, tag: 'h2' },
     { type: 'divider', icon: <FiMinus />, tag: 'hr' },
     { type: 'link', icon: <FiLink />, tag: 'a' },
+  ];
+
+  // Language options with categories
+  const languageOptions = [
+    {
+      category: 'Web Development',
+      languages: [
+        { value: 'javascript', label: 'JavaScript', icon: '🟨' },
+        { value: 'typescript', label: 'TypeScript', icon: '🔷' },
+        { value: 'html', label: 'HTML', icon: '🌐' },
+        { value: 'css', label: 'CSS', icon: '🎨' },
+        { value: 'jsx', label: 'JSX', icon: '⚛️' },
+        { value: 'tsx', label: 'TSX', icon: '⚛️' },
+      ]
+    },
+    {
+      category: 'Frameworks',
+      languages: [
+        { value: 'react', label: 'React', icon: '⚛️' },
+        { value: 'vue', label: 'Vue', icon: '🟢' },
+        { value: 'angular', label: 'Angular', icon: '🅰️' },
+        { value: 'svelte', label: 'Svelte', icon: '💨' },
+        { value: 'nextjs', label: 'Next.js', icon: '⏭️' },
+        { value: 'nuxtjs', label: 'Nuxt.js', icon: '🔄' },
+      ]
+    },
+    {
+      category: 'Backend',
+      languages: [
+        { value: 'python', label: 'Python', icon: '🐍' },
+        { value: 'java', label: 'Java', icon: '☕' },
+        { value: 'php', label: 'PHP', icon: '🐘' },
+        { value: 'ruby', label: 'Ruby', icon: '💎' },
+        { value: 'go', label: 'Go', icon: '🐹' },
+        { value: 'rust', label: 'Rust', icon: '🦀' },
+        { value: 'csharp', label: 'C#', icon: '🔷' },
+        { value: 'dotnet', label: '.NET', icon: '🔷' },
+        { value: 'nodejs', label: 'Node.js', icon: '🟢' },
+        { value: 'laravel', label: 'Laravel', icon: '🔶' },
+        { value: 'django', label: 'Django', icon: '🐍' },
+        { value: 'flask', label: 'Flask', icon: '🍶' },
+        { value: 'spring', label: 'Spring', icon: '🌱' },
+      ]
+    },
+    {
+      category: 'Mobile',
+      languages: [
+        { value: 'kotlin', label: 'Kotlin', icon: '🔶' },
+        { value: 'swift', label: 'Swift', icon: '🐦' },
+        { value: 'reactnative', label: 'React Native', icon: '📱' },
+        { value: 'flutter', label: 'Flutter', icon: '🦋' },
+      ]
+    },
+    {
+      category: 'Database & Others',
+      languages: [
+        { value: 'sql', label: 'SQL', icon: '🗃️' },
+        { value: 'mongodb', label: 'MongoDB', icon: '🍃' },
+        { value: 'graphql', label: 'GraphQL', icon: '📊' },
+        { value: 'bash', label: 'Bash/Shell', icon: '💻' },
+        { value: 'docker', label: 'Docker', icon: '🐳' },
+        { value: 'yaml', label: 'YAML', icon: '📄' },
+        { value: 'json', label: 'JSON', icon: '{}' },
+        { value: 'markdown', label: 'Markdown', icon: '📝' },
+      ]
+    }
   ];
 
   const handleEdit = (item = null) => {
@@ -282,35 +349,36 @@ const BlogPostEditor = () => {
     setFormattingToolbar(false);
   };
 
-  const insertCodeBlock = () => {
+  const openLanguageModal = () => {
+    setIsLanguageModalOpen(true);
+  };
+
+  const closeLanguageModal = () => {
+    setIsLanguageModalOpen(false);
+  };
+
+  const insertCodeBlock = (language) => {
     const textarea = contentTextareaRef.current;
     if (!textarea) return;
 
     const start = textarea.selectionStart;
     
-    // Generic code block without language specification
-    let formattedText = `\n<div class="codeBlock" style="position: relative;">
-                            <div class="codeContainer" style="position: relative;">
-                              
-                              <div 
-                                style="position: absolute; top: 0.5rem; right: 0.5rem; z-index: 10; display: flex; justify-content: flex-end; align-items: center; padding: 0.5rem 1rem; color: #abb2bf; font-size: 0.875rem; border-radius: 0.375rem;"
-                              >
+    const formattedText = `\n<div class="codeBlock">
+                            <div class="codeContainer">
+                              <div class="codeHeader">
+                                <span class="languageLabel">${language}</span>
                                 <button 
-                                  onclick="copyCode(this)" 
-                                  style="color: #abb2bf; background: rgba(255, 255, 255, 0.1); border: none; padding: 0.375rem 0.75rem; border-radius: 0.375rem; cursor: pointer; font-size: 0.8125rem; transition: all 0.2s ease; display: flex; align-items: center; gap: 0.375rem;"
-                                  onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-1px)';"
-                                  onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)';"
+                                  class="codeCopy" 
+                                  onclick="copyCode(this)"
                                 >
                                   Copy
                                 </button>
                               </div>
-
-                              <pre><code class="language-javascript">
-                          // Your code here
+                              <pre><code class="language-${language}">
+                          // Your ${language} code here
                               </code></pre>
                             </div>
-                          </div>
-                          \n`;
+                          </div>\n`;
 
     const newContent =
       textarea.value.substring(0, start) +
@@ -323,13 +391,15 @@ const BlogPostEditor = () => {
     }));
 
     // Position cursor inside the code block
-    const codeStartPos = start + formattedText.indexOf('// Your code here');
+    const codeStartPos = start + formattedText.indexOf(`// Your ${language} code here`);
     setTimeout(() => {
       if (textarea) {
         textarea.focus();
         textarea.setSelectionRange(codeStartPos, codeStartPos);
       }
     }, 0);
+
+    closeLanguageModal();
   };
 
   const insertExampleBlock = () => {
@@ -505,8 +575,8 @@ const BlogPostEditor = () => {
                 <div className={styles.contentActions}>
                   <button
                     type="button"
-                    onClick={insertCodeBlock}
-                    className={styles.insertButton}
+                    onClick={openLanguageModal}
+                    className={styles.addTagButton}
                     title="Insert code block"
                   >
                     <FiCode /> Code Block
@@ -514,7 +584,7 @@ const BlogPostEditor = () => {
                   <button
                     type="button"
                     onClick={insertExampleBlock}
-                    className={styles.insertButton}
+                    className={styles.addTagButton}
                     title="Insert example block"
                   >
                     <FiType /> Example
@@ -615,6 +685,7 @@ const BlogPostEditor = () => {
         </div>
       )}
 
+      {/* Delete Confirmation Modal */}
       <Modal
         isOpen={isDeleteModalOpen}
         onRequestClose={closeDeleteModal}
@@ -630,6 +701,42 @@ const BlogPostEditor = () => {
           <button onClick={confirmDelete} className={styles.deleteButton}>
             Confirm Delete
           </button>
+        </div>
+      </Modal>
+
+      {/* Language Selection Modal */}
+      <Modal
+        isOpen={isLanguageModalOpen}
+        onRequestClose={closeLanguageModal}
+        className={styles.languageModal}
+        overlayClassName={styles.modalOverlay}
+      >
+        <div className={styles.languageModalHeader}>
+          <h3>Select Programming Language</h3>
+          <button onClick={closeLanguageModal} className={styles.closeModalButton}>
+            <FiX />
+          </button>
+        </div>
+        
+        <div className={styles.languageModalContent}>
+          {languageOptions.map((category, categoryIndex) => (
+            <div key={categoryIndex} className={styles.languageCategory}>
+              <h4 className={styles.categoryTitle}>{category.category}</h4>
+              <div className={styles.languageGrid}>
+                {category.languages.map((language, langIndex) => (
+                  <button
+                    key={langIndex}
+                    className={styles.languageButton}
+                    onClick={() => insertCodeBlock(language.value)}
+                    title={language.label}
+                  >
+                    <span className={styles.languageIcon}>{language.icon}</span>
+                    <span className={styles.languageName}>{language.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </Modal>
     </div>
