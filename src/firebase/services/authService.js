@@ -1,19 +1,27 @@
+// src/firebase/services/authService.js
 import { auth } from "../config";
 import { 
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
   setPersistence,
-  browserSessionPersistence
+  browserLocalPersistence // Changed to local persistence
 } from "firebase/auth";
 
-// Initialize session persistence
+// Initialize auth persistence
 export const initAuth = async () => {
-  await setPersistence(auth, browserSessionPersistence);
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+    console.log("Auth persistence set to local");
+  } catch (error) {
+    console.error("Error setting auth persistence:", error);
+  }
 };
 
 export const loginAdmin = async (email, password) => {
   try {
+    // Ensure persistence is set before signing in
+    await setPersistence(auth, browserLocalPersistence);
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return {
       uid: userCredential.user.uid,
@@ -24,6 +32,7 @@ export const loginAdmin = async (email, password) => {
   }
 };
 
+// Rest of the code remains the same...
 export const logoutAdmin = async () => {
   await signOut(auth);
 };
