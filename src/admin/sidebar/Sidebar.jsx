@@ -1,5 +1,6 @@
+// Update src/admin/sidebar/Sidebar.jsx
 import React from 'react';
-import { useLocation, Link } from 'react-router-dom'; // Add Link import
+import { useLocation, Link } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 
 const Sidebar = () => {
@@ -8,6 +9,7 @@ const Sidebar = () => {
   // Check if current route is dashboard or content editor
   const isDashboardActive = location.pathname === '/AdminPanel';
   const isContentEditorActive = location.pathname === '/AdminPanel/content';
+  const isPersonalDetailsActive = location.pathname === '/AdminPanel/personal-details';
 
   return (
     <aside className={styles.sidebar}>
@@ -26,6 +28,12 @@ const Sidebar = () => {
             <Link to="/AdminPanel/content" className={styles.navLink}>
               <span className={styles.navIcon}>✏️</span>
               Content Editor
+            </Link>
+          </li>
+          <li className={`${styles.navItem} ${isPersonalDetailsActive ? styles.active : ''}`}>
+            <Link to="/AdminPanel/personal-details" className={styles.navLink}>
+              <span className={styles.navIcon}>👤</span>
+              Personal Details
             </Link>
           </li>
           <li className={styles.navItem}>

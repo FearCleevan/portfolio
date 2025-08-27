@@ -7,6 +7,11 @@ import {
   setPersistence,
   browserLocalPersistence // Changed to local persistence
 } from "firebase/auth";
+import { 
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider
+} from "firebase/auth"
 
 // Initialize auth persistence
 export const initAuth = async () => {
@@ -47,3 +52,4 @@ export const getCurrentUser = () => {
   const user = auth.currentUser;
   return user ? { uid: user.uid, email: user.email } : null;
 };
+

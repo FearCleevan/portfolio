@@ -1,4 +1,4 @@
-//src/admin/ContentEditor/ContentEditor.jsx
+// Update src/admin/ContentEditor/ContentEditor.jsx
 import React, { useState, useEffect } from 'react';
 import { logoutAdmin } from '../../firebase/services/authService';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ import ExperienceEditor from './ExperienceEditor';
 import ProjectsEditor from './ProjectsEditor';
 import CertificationsEditor from './CertificationsEditor';
 import BlogPostEditor from './BlogPostEditor';
+import PersonalDetailEditor from './PersonalDetailEditor'; // Add this import
 
 const ContentEditor = () => {
   const navigate = useNavigate();
@@ -45,6 +46,8 @@ const ContentEditor = () => {
         return <CertificationsEditor />;
       case 'blogPosts':
         return <BlogPostEditor />;
+      case 'personalDetails': // Add this case
+        return <PersonalDetailEditor />;
       default:
         return null;
     }
@@ -115,6 +118,12 @@ const ContentEditor = () => {
                   onClick={() => setActiveTab('blogPosts')}
                 >
                   Blog Posts
+                </button>
+                <button // Add this button for Personal Details
+                  className={`${styles.tab} ${activeTab === 'personalDetails' ? styles.active : ''}`}
+                  onClick={() => setActiveTab('personalDetails')}
+                >
+                  Personal Details
                 </button>
               </div>
 
