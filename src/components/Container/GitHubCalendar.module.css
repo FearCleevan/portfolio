@@ -243,6 +243,9 @@
 @media (max-width: 768px) {
   .calendarContainer {
     padding: 16px;
+    margin-left: 20px;
+    margin-right: 20px;
+    max-width: 398px;
   }
   
   .calendarHeader {
