@@ -18,6 +18,10 @@ import { initAuth, getCurrentUser } from './firebase/services/authService';
 function App() {
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedMode = localStorage.getItem('darkMode');
+    return savedMode ? JSON.parse(savedMode) : false;
+  });
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -37,6 +41,14 @@ function App() {
 
     initializeApp();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(prev => !prev);
+  };
 
   // Show loading state while checking authentication
   if (!isAuthChecked) {
@@ -62,12 +74,55 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Main />} />
-        <Route path="/tech-stack" element={<FullTechStack />} />
-        <Route path="/projects" element={<AllProjects />} />
-        <Route path="/certifications" element={<AllCertifications />} />
-        <Route path="/blog" element={<RecentBlogs />} />
-        <Route path="/blog/:slug" element={<BlogPost />} />
+        <Route 
+          path="/" 
+          element={
+            <Main 
+              isDarkMode={isDarkMode} 
+              toggleDarkMode={toggleDarkMode} 
+            />
+          } 
+        />
+        <Route 
+          path="/tech-stack" 
+          element={
+            <FullTechStack 
+              isDarkMode={isDarkMode} 
+            />
+          } 
+        />
+        <Route 
+          path="/projects" 
+          element={
+            <AllProjects 
+              isDarkMode={isDarkMode} 
+            />
+          } 
+        />
+        <Route 
+          path="/certifications" 
+          element={
+            <AllCertifications 
+              isDarkMode={isDarkMode} 
+            />
+          } 
+        />
+        <Route 
+          path="/blog" 
+          element={
+            <RecentBlogs 
+              isDarkMode={isDarkMode} 
+            />
+          } 
+        />
+        <Route 
+          path="/blog/:slug" 
+          element={
+            <BlogPost 
+              isDarkMode={isDarkMode} 
+            />
+          } 
+        />
         <Route path="/LoginPanel" element={<LoginPage />} />
         <Route 
           path="/AdminPanel" 

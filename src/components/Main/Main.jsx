@@ -14,11 +14,7 @@ import { useProjects } from '../../firebase/hooks/useProjects';
 import { useCertifications } from '../../firebase/hooks/useCertifications';
 import GitHubCalendar from '../Container/GitHubCalendar';
 
-export default function Main() {
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        const savedMode = localStorage.getItem('darkMode');
-        return savedMode ? JSON.parse(savedMode) : false;
-    });
+export default function Main({ isDarkMode, toggleDarkMode }) {
     const [isMounted, setIsMounted] = useState(false);
     const { aboutContent, loading: aboutLoading, error: aboutError } = useAboutContent();
     const { techStack: allTechStack, loading: techStackLoading, error: techStackError } = useTechStack();
@@ -30,10 +26,6 @@ export default function Main() {
     const [isExiting, setIsExiting] = useState(false);
 
     useEffect(() => {
-        localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
-    }, [isDarkMode]);
-
-    useEffect(() => {
         setIsMounted(true);
     }, []);
 
@@ -41,8 +33,6 @@ export default function Main() {
         setIsExiting(false);
         return () => setIsExiting(true);
     }, [location]);
-
-    const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
 
     // Get first 3 groups and limit items to 5 per group
     const limitedTechStackData = {
@@ -54,7 +44,7 @@ export default function Main() {
 
     if (aboutLoading || techStackLoading || experienceLoading || projectsLoading || certLoading) {
         return (
-            <div className={styles.loadingOverlay}>
+            <div className={`${styles.loadingOverlay} ${isDarkMode ? styles.darkMode : ''}`}>
                 <div className={styles.spinner}></div>
                 <p>Loading portfolio...</p>
             </div>
@@ -63,7 +53,7 @@ export default function Main() {
 
     if (aboutError || techStackError || experienceError || projectsError || certError) {
         return (
-            <div className={styles.errorOverlay}>
+            <div className={`${styles.errorOverlay} ${isDarkMode ? styles.darkMode : ''}`}>
                 <p>Failed to load portfolio content.</p>
                 <button onClick={() => window.location.reload()}>
                     Retry

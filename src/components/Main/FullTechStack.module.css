@@ -1,4 +1,16 @@
 /* src/components/Main/FullTechStack.module.css */
+.pageWrapper {
+    min-height: 100vh;
+    width: 100%;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    background-color: #ffffff;
+}
+
+.pageWrapper.darkMode {
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+}
+
 .fullTechStackContainer {
     max-width: 896px;
     margin: 0 auto;
@@ -127,6 +139,7 @@
 
 .darkGridBox:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    transform: translateY(-2px);
 }
 
 .darkText {
@@ -174,7 +187,7 @@
     margin-bottom: 1rem;
 }
 
-.darkMode .spinner {
+.darkSpinner {
     border: 4px solid rgba(255, 255, 255, 0.1);
     border-top: 4px solid #fff;
 }
@@ -199,13 +212,13 @@
     background-color: #333;
 }
 
-.darkMode .errorOverlay button {
-    background-color: #fff;
-    color: #000;
+.darkButton {
+    background-color: #fff !important;
+    color: #000 !important;
 }
 
-.darkMode .errorOverlay button:hover {
-    background-color: #e5e5e5;
+.darkButton:hover {
+    background-color: #e5e5e5 !important;
 }
 
 /* Responsive Design */

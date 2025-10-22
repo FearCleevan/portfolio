@@ -9,10 +9,12 @@ export default function FullTechStack({ isDarkMode }) {
 
     if (loading) {
         return (
-            <div className={`${styles.fullTechStackContainer} ${isDarkMode ? styles.darkMode : ''}`}>
-                <div className={styles.loadingOverlay}>
-                    <div className={styles.spinner}></div>
-                    <p>Loading tech stack...</p>
+            <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
+                <div className={`${styles.fullTechStackContainer} ${isDarkMode ? styles.darkMode : ''}`}>
+                    <div className={styles.loadingOverlay}>
+                        <div className={`${styles.spinner} ${isDarkMode ? styles.darkSpinner : ''}`}></div>
+                        <p className={isDarkMode ? styles.darkText : ''}>Loading tech stack...</p>
+                    </div>
                 </div>
             </div>
         );
@@ -20,40 +22,47 @@ export default function FullTechStack({ isDarkMode }) {
     
     if (error) {
         return (
-            <div className={`${styles.fullTechStackContainer} ${isDarkMode ? styles.darkMode : ''}`}>
-                <div className={styles.errorOverlay}>
-                    <p>Error loading tech stack</p>
-                    <button onClick={() => window.location.reload()}>
-                        Retry
-                    </button>
+            <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
+                <div className={`${styles.fullTechStackContainer} ${isDarkMode ? styles.darkMode : ''}`}>
+                    <div className={styles.errorOverlay}>
+                        <p className={isDarkMode ? styles.darkText : ''}>Error loading tech stack</p>
+                        <button 
+                            className={isDarkMode ? styles.darkButton : ''}
+                            onClick={() => window.location.reload()}
+                        >
+                            Retry
+                        </button>
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className={`${styles.fullTechStackContainer} ${isDarkMode ? styles.darkMode : ''}`}>
-            <div className={styles.header}>
-                <Link to="/" className={`${styles.backButton} ${isDarkMode ? styles.darkLink : ''}`}>
-                    <svg className={styles.backIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    Back to Home
-                </Link>
-                <h1 className={`${styles.title} ${isDarkMode ? styles.darkText : ''}`}>Tech Stack</h1>
-            </div>
-            
-            <div className={styles.techStackGroups}>
-                {techStack.map((group, index) => (
-                    <div key={index} className={`${styles.techStackGroup} ${isDarkMode ? styles.darkGridBox : ''}`}>
-                        <h2 className={`${styles.groupTitle} ${isDarkMode ? styles.darkText : ''}`}>{group.title}</h2>
-                        <div className={styles.techStackTags}>
-                            {group.items.map((item, itemIndex) => (
-                                <span key={itemIndex} className={`${styles.techTag} ${isDarkMode ? styles.darkTechTag : ''}`}>{item}</span>
-                            ))}
+        <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
+            <div className={`${styles.fullTechStackContainer} ${isDarkMode ? styles.darkMode : ''}`}>
+                <div className={styles.header}>
+                    <Link to="/" className={`${styles.backButton} ${isDarkMode ? styles.darkLink : ''}`}>
+                        <svg className={styles.backIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Back to Home
+                    </Link>
+                    <h1 className={`${styles.title} ${isDarkMode ? styles.darkText : ''}`}>Tech Stack</h1>
+                </div>
+                
+                <div className={styles.techStackGroups}>
+                    {techStack.map((group, index) => (
+                        <div key={index} className={`${styles.techStackGroup} ${isDarkMode ? styles.darkGridBox : ''}`}>
+                            <h2 className={`${styles.groupTitle} ${isDarkMode ? styles.darkText : ''}`}>{group.title}</h2>
+                            <div className={styles.techStackTags}>
+                                {group.items.map((item, itemIndex) => (
+                                    <span key={itemIndex} className={`${styles.techTag} ${isDarkMode ? styles.darkTechTag : ''}`}>{item}</span>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </div>
     );
