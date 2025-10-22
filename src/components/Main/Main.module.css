@@ -227,6 +227,11 @@
   transition: background 0.3s ease, border-color 0.3s ease;
 }
 
+.timelineDot:hover {
+  background: #222;
+  border-color: #222;
+}
+
 .timelineDotActive {
   background: #222;
   border-color: #222;
@@ -320,6 +325,11 @@
 .darkTimelineDot {
   background-color: #2d2d2d !important;
   border-color: #555 !important;
+}
+
+.darkTimelineDot:hover {
+    background-color: #fff !important;
+  border-color: #fff !important;
 }
 
 .darkTimelineYear {
