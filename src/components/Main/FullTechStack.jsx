@@ -7,8 +7,29 @@ import { useTechStack } from '../../firebase/hooks/useTechStack';
 export default function FullTechStack({ isDarkMode }) {
     const { techStack, loading, error } = useTechStack();
 
-    if (loading) return <div className={styles.fullTechStackContainer}>Loading...</div>;
-    if (error) return <div className={styles.fullTechStackContainer}>Error loading tech stack</div>;
+    if (loading) {
+        return (
+            <div className={`${styles.fullTechStackContainer} ${isDarkMode ? styles.darkMode : ''}`}>
+                <div className={styles.loadingOverlay}>
+                    <div className={styles.spinner}></div>
+                    <p>Loading tech stack...</p>
+                </div>
+            </div>
+        );
+    }
+    
+    if (error) {
+        return (
+            <div className={`${styles.fullTechStackContainer} ${isDarkMode ? styles.darkMode : ''}`}>
+                <div className={styles.errorOverlay}>
+                    <p>Error loading tech stack</p>
+                    <button onClick={() => window.location.reload()}>
+                        Retry
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={`${styles.fullTechStackContainer} ${isDarkMode ? styles.darkMode : ''}`}>
@@ -24,7 +45,7 @@ export default function FullTechStack({ isDarkMode }) {
             
             <div className={styles.techStackGroups}>
                 {techStack.map((group, index) => (
-                    <div key={index} className={`${styles.techStackGroup} ${isDarkMode ? styles.darkBentoCard : ''}`}>
+                    <div key={index} className={`${styles.techStackGroup} ${isDarkMode ? styles.darkGridBox : ''}`}>
                         <h2 className={`${styles.groupTitle} ${isDarkMode ? styles.darkText : ''}`}>{group.title}</h2>
                         <div className={styles.techStackTags}>
                             {group.items.map((item, itemIndex) => (
