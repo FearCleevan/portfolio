@@ -1,8 +1,28 @@
+/* src/components/Container/AllCertifications.module.css */
+.pageWrapper {
+    min-height: 100vh;
+    width: 100%;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    background-color: #ffffff;
+}
+
+.pageWrapper.darkMode {
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+}
+
 .allCertificationsContainer {
     max-width: 896px;
     margin: 0 auto;
     padding: 2rem;
     animation: fadeIn 0.5s ease-out;
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.allCertificationsContainer.darkMode {
+    background-color: #1a1a1a;
+    color: #f0f0f0;
 }
 
 .header {
@@ -17,6 +37,8 @@
     text-decoration: none;
     margin-bottom: 1rem;
     transition: color 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .backButton:hover {
@@ -33,21 +55,22 @@
     font-weight: 700;
     margin: 0;
     color: #111827;
+    transition: color 0.3s ease;
 }
 
 .certificationsGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .certificationCard {
     background: #fff;
     border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     padding: 1.5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .certificationCard:hover {
@@ -68,17 +91,21 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    transition: color 0.3s ease;
 }
 
 .externalIcon {
     width: 1rem;
     height: 1rem;
+    color: #6b7280;
+    transition: color 0.3s ease;
 }
 
 .certificationIssuer {
     font-size: 0.875rem;
     color: #6b7280;
     margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
 }
 
 @keyframes fadeIn {
@@ -93,29 +120,163 @@
 }
 
 /* Dark mode styles */
-.darkMode .certificationCard,
-.darkMode .darkBentoCard {
-    background: #2d2d2d;
-    border-color: #444;
+.darkMode .backButton {
+    color: #a0a0a0;
 }
 
-.darkMode .title,
-.darkMode .certificationTitle,
-.darkMode .darkText {
+.darkMode .backButton:hover {
+    color: #3b82f6;
+}
+
+.darkMode .title {
     color: #f0f0f0;
 }
 
-.darkMode .certificationIssuer,
-.darkMode .darkSecondaryText {
+.darkBentoCard {
+    background-color: #2d2d2d !important;
+    border-color: #444 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.darkBentoCard:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    transform: translateY(-2px);
+}
+
+.darkText {
+    color: #f0f0f0 !important;
+}
+
+.darkSecondaryText {
+    color: #a0a0a0 !important;
+}
+
+.darkLink {
+    color: #a0a0a0 !important;
+}
+
+.darkLink:hover {
+    color: #3b82f6 !important;
+}
+
+.darkMode .externalIcon {
     color: #a0a0a0;
 }
 
-.darkMode .backButton,
-.darkMode .darkLink {
-    color: #a0a0a0;
+/* Loading and Error States */
+.loadingOverlay,
+.errorOverlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    min-height: 50vh;
 }
 
-.darkMode .backButton:hover,
-.darkMode .darkLink:hover {
-    color: #3b82f6;
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 4px solid #000;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.darkSpinner {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top: 4px solid #fff;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.errorOverlay button {
+    padding: 0.5rem 1rem;
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.errorOverlay button:hover {
+    background-color: #333;
+}
+
+.darkButton {
+    background-color: #fff !important;
+    color: #000 !important;
+}
+
+.darkButton:hover {
+    background-color: #e5e5e5 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .allCertificationsContainer {
+        padding: 1rem;
+    }
+    
+    .title {
+        font-size: 1.75rem;
+    }
+    
+    .certificationsGrid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .certificationCard {
+        padding: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .allCertificationsContainer {
+        padding: 0.75rem;
+    }
+    
+    .title {
+        font-size: 1.5rem;
+    }
+    
+    .certificationCard {
+        padding: 1rem;
+    }
+    
+    .certificationTitle {
+        font-size: 1.1rem;
+    }
+    
+    .backButton {
+        font-size: 13px;
+    }
+}
+
+/* Hover effects for certification cards */
+@media (hover: hover) {
+    .certificationCard:hover .externalIcon {
+        color: #3b82f6;
+    }
+    
+    .darkBentoCard:hover .externalIcon {
+        color: #60a5fa;
+    }
+    
+    .certificationCard:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+    
+    .darkBentoCard:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
 }
