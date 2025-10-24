@@ -281,6 +281,129 @@
   }
 }
 
+@media (max-width: 844px) {
+  .calendarContainer {
+    padding: 16px;
+    margin-left: 20px;
+    margin-right: 20px;
+    max-width: 358px;
+  }
+  
+  .calendarHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .yearFilter {
+    align-self: stretch;
+    justify-content: center;
+  }
+  
+  .weeks {
+    margin-left: 16px;
+  }
+  
+  .months {
+    margin-left: 16px;
+  }
+  
+  .day {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .legendColor {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .month {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 896px) {
+  .calendarContainer {
+    padding: 16px;
+    margin-left: 20px;
+    margin-right: 20px;
+    max-width: 382px;
+  }
+  
+  .calendarHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .yearFilter {
+    align-self: stretch;
+    justify-content: center;
+  }
+  
+  .weeks {
+    margin-left: 16px;
+  }
+  
+  .months {
+    margin-left: 16px;
+  }
+  
+  .day {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .legendColor {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .month {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 667px) {
+  .calendarContainer {
+    padding: 16px;
+    margin-left: 20px;
+    margin-right: 20px;
+    max-width: 343px;
+  }
+  
+  .calendarHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .yearFilter {
+    align-self: stretch;
+    justify-content: center;
+  }
+  
+  .weeks {
+    margin-left: 16px;
+  }
+  
+  .months {
+    margin-left: 16px;
+  }
+  
+  .day {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .legendColor {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .month {
+    font-size: 8px;
+  }
+}
+
 @media (max-width: 480px) {
   .weeks {
     margin-left: 14px;
