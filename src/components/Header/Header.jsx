@@ -34,16 +34,6 @@ function ThemeToggle({ isDarkMode, toggleDarkMode }) {
 
 const Header = ({ isDarkMode, toggleDarkMode }) => {
     const { personalDetails, error } = usePersonalDetails();
-    // const [profileImage, setProfileImage] = useState(defaultProfile);
-
-    // useEffect(() => {
-    //     // Check for locally stored profile image
-    //     const localImage = localStorage.getItem('profileImage');
-    //     if (localImage) {
-    //         setProfileImage(localImage);
-    //     }
-    // }, []);
-
     const handleScheduleCall = () => {
         const calendlyUrl = personalDetails?.calendlyUrl || "https://calendly.com/fearcleevan/30min";
         window.open(calendlyUrl, '_blank', 'noopener,noreferrer');
@@ -56,19 +46,6 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
 
         window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank', 'noopener,noreferrer');
     };
-
-    // if (loading) {
-    //     return (
-    //         <div className={`${styles.headerWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
-    //             <div className={styles.container}>
-    //                 <div className={styles.loadingState}>
-    //                     <div className={styles.spinner}></div>
-    //                     <p>Loading profile...</p>
-    //                 </div>
-    //             </div>
-    //         </div>
-    //     );
-    // }
 
     if (error) {
         return (

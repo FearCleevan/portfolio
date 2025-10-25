@@ -18,22 +18,8 @@ export const getPersonalDetails = async () => {
     if (docSnap.exists()) {
       return docSnap.data();
     } else {
-      // Initialize with default content if doesn't exist
-      const defaultDetails = {
-        fullName: "Peter Paul Abillar Lazan",
-        jobTitle: "Junior Web Developer",
-        email: "fearcleevan123@gmail.com",
-        secondaryEmail: "jonathan.mauring17@gmail.com",
-        phone: "+63 951 537 9127",
-        address: "Davao City, Philippines",
-        calendlyUrl: "https://calendly.com/fearcleevan/30min",
-        linkedinUrl: "https://linkedin.com/in/peterpaullazan",
-        githubUrl: "https://github.com/FearCleevan",
-        instagramUrl: "https://www.instagram.com/fearcleevan12345/",
-        facebookUrl: "https://www.facebook.com/FearCleevan"
-      };
-      await setDoc(docRef, defaultDetails);
-      return defaultDetails;
+      // Return null if no data exists, let the component handle defaults
+      return null;
     }
   } catch (error) {
     console.error("Error getting personal details:", error);
@@ -45,7 +31,7 @@ export const getPersonalDetails = async () => {
 export const updatePersonalDetails = async (details) => {
   try {
     const docRef = doc(db, PERSONAL_DETAILS_COLLECTION, "adminDetails");
-    await updateDoc(docRef, details);
+    await setDoc(docRef, details, { merge: true });
     return true;
   } catch (error) {
     console.error("Error updating personal details:", error);
