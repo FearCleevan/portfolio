@@ -9,6 +9,13 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     base: mode === 'admin' 
       ? (env.VITE_BASE_ADMIN_PATH || '/LoginPanel') 
-      : (env.VITE_BASE_PATH || '/portfolio')
+      : (env.VITE_BASE_PATH || '/portfolio'),
+
+    // ✅ Added Vitest config
+    test: {
+      environment: 'jsdom',
+      globals: true,
+      setupFiles: './src/setupTests.js',
+    },
   }
 })

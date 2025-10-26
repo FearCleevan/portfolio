@@ -97,7 +97,7 @@ const AdminPanel = () => {
                                         </div>
                                     ) : (
                                         <iframe
-                                            src="https://devpaul-sand.vercel.app/"
+                                            src="https://lazandev.vercel.app/"
                                             title="Portfolio Preview"
                                             className={styles.embeddedFrame}
                                             allow="fullscreen"
