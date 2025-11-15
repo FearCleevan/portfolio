@@ -368,3 +368,271 @@
 .darkSendButton:hover:not(:disabled) {
     background-color: #1e3a8a !important;
 }
+
+/* Add these to your existing CSS */
+
+.quickActions {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.quickActions p {
+    margin: 0 0 10px 0;
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+}
+
+.quickActionsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.quickActionBtn {
+    padding: 8px 12px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.quickActionBtn:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.darkQuickAction {
+    background: #374151;
+}
+
+.darkQuickAction:hover {
+    background: #4b5563;
+}
+
+.meetingForm {
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+}
+
+.darkMeetingForm {
+    background: #1f2937;
+    border-top-color: #374151;
+}
+
+.meetingForm h4 {
+    margin: 0 0 15px 0;
+    color: #111827;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.darkMeetingForm h4 {
+    color: #f9fafb;
+}
+
+.formGroup {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.formIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+    width: 100%;
+    padding: 10px 10px 10px 35px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+}
+
+.formGroup textarea {
+    padding-left: 10px;
+    resize: vertical;
+}
+
+.darkMeetingForm .formGroup input,
+.darkMeetingForm .formGroup select,
+.darkMeetingForm .formGroup textarea {
+    background: #374151;
+    border-color: #4b5563;
+    color: white;
+}
+
+.formActions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.cancelButton {
+    flex: 1;
+    padding: 10px;
+    background: #6b7280;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.submitButton {
+    flex: 1;
+    padding: 10px;
+    background: #059669;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.submitButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.meetingSummary {
+    background: rgba(59, 130, 246, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 4px solid #2563eb;
+}
+
+.meetingSummary h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #2563eb;
+}
+
+.meetingDetails p {
+    margin: 4px 0;
+    font-size: 12px;
+    color: #374151;
+}
+
+.darkMode .meetingDetails p {
+    color: #d1d5db;
+}
+
+/* Enhanced message styles */
+.messageContent {
+    line-height: 1.5;
+}
+
+.botMessage .messageContent {
+    white-space: pre-wrap;
+}
+
+/* Data Status Indicator */
+.dataStatus {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(34, 197, 94, 0.1);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 12px;
+    color: #059669;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.dataIndicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #059669;
+    animation: pulse 2s infinite;
+}
+
+.darkMode .dataStatus {
+    background: rgba(34, 197, 94, 0.15);
+    color: #6ee7b7;
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+/* Loading State */
+.loadingState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.loadingState .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(59, 130, 246, 0.3);
+    border-radius: 50%;
+    border-top-color: #2563eb;
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 16px;
+}
+
+.loadingState p {
+    color: #6b7280;
+    font-size: 14px;
+    margin: 0;
+}
+
+.darkMode .loadingState p {
+    color: #9ca3af;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Enhanced quick actions for data awareness */
+.quickActions p {
+    margin: 0 0 12px 0;
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 600;
+    text-align: center;
+}
+
+.quickActionBtn {
+    position: relative;
+    overflow: hidden;
+}
+
+.quickActionBtn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.quickActionBtn:hover::after {
+    left: 100%;
+}
