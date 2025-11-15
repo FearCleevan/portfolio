@@ -59,9 +59,9 @@
 }
 
 .yearButton.selected {
-  background: #0366d6;
+  background: #000;
   color: white;
-  border-color: #0366d6;
+  border-color: #000;
 }
 
 .darkYearButton {
@@ -76,9 +76,9 @@
 }
 
 .darkYearButton.selected {
-  background: #1a73e8;
+  background-color: #1a1a1a;
   color: white;
-  border-color: #1a73e8;
+  border-color: #444 !important;
 }
 
 .calendarWrapper {
