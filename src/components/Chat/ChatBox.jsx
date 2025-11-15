@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FiSend, FiCalendar, FiUser, FiMail, FiBriefcase, FiCode, FiAward } from 'react-icons/fi';
+import { FiSend, FiCalendar, FiUser, FiMail, FiBriefcase, FiCode, FiAward, FiMessageCircle } from 'react-icons/fi';
 import styles from './ChatBox.module.css';
 import profileImage from '../../assets/profile.png';
 import { aiService } from '../../services/aiService';
@@ -24,9 +24,9 @@ const ChatBox = ({ onClose, isDarkMode }) => {
     const { aboutContent, loading: aboutLoading } = useAboutContent();
 
     const [messages, setMessages] = useState([
-        { 
-            id: 1, 
-            text: "Hi there! 👋 I'm Peter's AI assistant. I have access to all his portfolio data and can help you learn about his skills, projects, experience, and schedule meetings. What would you like to know?", 
+        {
+            id: 1,
+            text: "Hi there! 👋 I'm Peter's AI assistant. I have access to all his portfolio data and can help you learn about his skills, projects, experience, and schedule meetings. What would you like to know?",
             sender: 'bot',
             timestamp: new Date(),
             type: 'text'
@@ -42,26 +42,60 @@ const ChatBox = ({ onClose, isDarkMode }) => {
         preferredTime: '',
         notes: ''
     });
+    const [apiStatus, setApiStatus] = useState('checking'); // checking, available, unavailable
     const messagesEndRef = useRef(null);
 
     // Combine all loading states
-    const isDataLoading = personalLoading || projectsLoading || experienceLoading || 
-                         techStackLoading || certsLoading || blogLoading || aboutLoading;
+    const isDataLoading = personalLoading || projectsLoading || experienceLoading ||
+        techStackLoading || certsLoading || blogLoading || aboutLoading;
 
     // Prepare user data for AI context
+    // In your ChatBox component
     const getUserData = () => {
         if (isDataLoading) return null;
-        
-        return {
+
+        // Log raw data for debugging
+        console.log('Raw Firebase Data:', {
             personalDetails,
             projects,
             experience,
             techStack,
             certifications,
             blogPosts,
-            aboutContent,
+            aboutContent
+        });
+
+        return {
+            personalDetails,
+            projects: projects || [],
+            experience: experience || [],
+            techStack: techStack || [],
+            certifications: certifications || [],
+            blogPosts: blogPosts || [],
+            aboutContent: aboutContent || [],
             lastUpdated: new Date().toISOString()
         };
+    };
+
+    // Test API connection on component mount
+    useEffect(() => {
+        testAPIConnection();
+    }, []);
+
+    const testAPIConnection = async () => {
+        try {
+            setApiStatus('checking');
+            // Send a test message to check API connectivity
+            const testResponse = await aiService.sendMessage('Hello', getUserData());
+            if (testResponse && !testResponse.includes('configuration error')) {
+                setApiStatus('available');
+            } else {
+                setApiStatus('unavailable');
+            }
+        } catch (error) {
+            console.error('API connection test failed:', error);
+            setApiStatus('unavailable');
+        }
     };
 
     const handleSendMessage = async (e) => {
@@ -75,7 +109,7 @@ const ChatBox = ({ onClose, isDarkMode }) => {
             timestamp: new Date(),
             type: 'text'
         };
-        
+
         setMessages(prev => [...prev, userMessage]);
         setNewMessage('');
         setIsLoading(true);
@@ -83,13 +117,13 @@ const ChatBox = ({ onClose, isDarkMode }) => {
         try {
             // Get current user data from Firebase
             const userData = getUserData();
-            console.log('Sending message with user data:', userData);
+            console.log('Sending message with user data');
 
             // Use the real Gemini AI service with Firebase data
             const aiResponse = await aiService.sendMessage(newMessage, userData);
-            
+
             // Check if the response suggests meeting scheduling
-            if (aiService.hasMeetingIntent(newMessage)) {
+            if (aiService.hasMeetingIntent(newMessage.toLowerCase())) {
                 setIsSchedulingMeeting(true);
             }
 
@@ -100,20 +134,29 @@ const ChatBox = ({ onClose, isDarkMode }) => {
                 timestamp: new Date(),
                 type: 'text'
             }]);
+
+            // Update API status if successful
+            if (apiStatus !== 'available') {
+                setApiStatus('available');
+            }
+
         } catch (error) {
             console.error('AI API error:', error);
-            
-            // More user-friendly error messages
+
             let errorMessage = "I apologize, but I'm having trouble connecting to the AI service right now. ";
-            
-            if (error.message.includes('API key')) {
-                errorMessage += "There seems to be an issue with the service configuration.";
-            } else if (error.message.includes('quota')) {
-                errorMessage += "The AI service is currently at capacity. Please try again later.";
+
+            if (error.message.includes('API key') || error.message.includes('quota') || error.message.includes('403')) {
+                errorMessage += "There seems to be an issue with the service configuration or quota.";
+                setApiStatus('unavailable');
+            } else if (error.message.includes('Rate limit') || error.message.includes('429')) {
+                errorMessage += "The service is currently busy. Please try again in a moment.";
+            } else if (error.message.includes('Model not found') || error.message.includes('404')) {
+                errorMessage += "The AI model is currently unavailable.";
+                setApiStatus('unavailable');
             } else {
                 errorMessage += "Please try again in a moment or check the other portfolio sections for information.";
             }
-            
+
             setMessages(prev => [...prev, {
                 id: Date.now() + 1,
                 text: errorMessage,
@@ -128,7 +171,19 @@ const ChatBox = ({ onClose, isDarkMode }) => {
 
     const handleMeetingSubmit = async (e) => {
         e.preventDefault();
-        
+
+        // Validate form
+        if (!meetingForm.name || !meetingForm.email || !meetingForm.purpose || !meetingForm.preferredTime) {
+            setMessages(prev => [...prev, {
+                id: Date.now(),
+                text: "Please fill in all required fields (Name, Email, Purpose, and Preferred Time) to schedule the meeting.",
+                sender: 'bot',
+                timestamp: new Date(),
+                type: 'text'
+            }]);
+            return;
+        }
+
         const meetingMessage = {
             id: Date.now(),
             text: `Meeting Request Submitted:\n\nName: ${meetingForm.name}\nEmail: ${meetingForm.email}\nPurpose: ${meetingForm.purpose}\nPreferred Time: ${meetingForm.preferredTime}\nNotes: ${meetingForm.notes || 'None'}`,
@@ -143,10 +198,11 @@ const ChatBox = ({ onClose, isDarkMode }) => {
         try {
             // Get user data for personalized response
             const userData = getUserData();
-            const userEmail = userData?.personalDetails?.email || 'his contact email';
-            
-            const confirmationMessage = `✅ Meeting request received! Peter will contact you at ${meetingForm.email} within 24 hours to confirm the schedule. \n\nYou can also reach out directly at: ${userEmail}`;
-            
+            const userEmail = userData?.personalDetails?.email || 'peter@example.com';
+            const userName = userData?.personalDetails?.name || 'Peter';
+
+            const confirmationMessage = `✅ Thank you ${meetingForm.name}! Your meeting request has been received. ${userName} will contact you at ${meetingForm.email} within 24 hours to confirm the schedule. \n\nYou can also reach out directly at: ${userEmail}`;
+
             setMessages(prev => [...prev, {
                 id: Date.now() + 1,
                 text: confirmationMessage,
@@ -158,7 +214,7 @@ const ChatBox = ({ onClose, isDarkMode }) => {
             // Here you would typically send this data to your backend
             console.log('Meeting scheduled details:', meetingForm);
             console.log('User data context:', userData);
-            
+
             // Reset form and state
             setMeetingForm({
                 name: '',
@@ -168,12 +224,12 @@ const ChatBox = ({ onClose, isDarkMode }) => {
                 notes: ''
             });
             setIsSchedulingMeeting(false);
-            
+
         } catch (error) {
             console.error('Meeting scheduling error:', error);
             setMessages(prev => [...prev, {
                 id: Date.now() + 1,
-                text: "There was an issue submitting your meeting request. Please try again or contact Peter directly.",
+                text: "There was an issue submitting your meeting request. Please try again or contact Peter directly via email.",
                 sender: 'bot',
                 timestamp: new Date(),
                 type: 'text'
@@ -186,7 +242,7 @@ const ChatBox = ({ onClose, isDarkMode }) => {
     // Generate dynamic quick actions based on available data
     const getQuickActions = () => {
         const actions = [];
-        
+
         if (techStack && techStack.length > 0) {
             actions.push({
                 label: "💻 Technical Skills",
@@ -194,7 +250,7 @@ const ChatBox = ({ onClose, isDarkMode }) => {
                 icon: <FiCode />
             });
         }
-        
+
         if (projects && projects.length > 0) {
             actions.push({
                 label: "🚀 Projects",
@@ -202,13 +258,13 @@ const ChatBox = ({ onClose, isDarkMode }) => {
                 icon: <FiBriefcase />
             });
         }
-        
+
         actions.push({
             label: "📅 Book Meeting",
             message: "I'd like to schedule a meeting with Peter",
             icon: <FiCalendar />
         });
-        
+
         if (experience && experience.length > 0) {
             actions.push({
                 label: "👨‍💻 Experience",
@@ -216,7 +272,7 @@ const ChatBox = ({ onClose, isDarkMode }) => {
                 icon: <FiUser />
             });
         }
-        
+
         if (certifications && certifications.length > 0) {
             actions.push({
                 label: "🏆 Certifications",
@@ -229,7 +285,7 @@ const ChatBox = ({ onClose, isDarkMode }) => {
             actions.push({
                 label: "📝 Blog Posts",
                 message: "What blog posts has Peter written?",
-                icon: <FiAward />
+                icon: <FiMessageCircle />
             });
         }
 
@@ -238,18 +294,25 @@ const ChatBox = ({ onClose, isDarkMode }) => {
 
     const handleQuickAction = (message) => {
         setNewMessage(message);
-        // Auto-send the quick action message
+        // Auto-send the quick action message after a short delay
         setTimeout(() => {
-            const fakeEvent = { preventDefault: () => {} };
+            const fakeEvent = { preventDefault: () => { } };
             handleSendMessage(fakeEvent);
         }, 100);
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSendMessage(e);
+        }
     };
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    // Show loading state while data is being fetched - ALL HOOKS LOADING STATES ARE USED
+    // Show loading state while data is being fetched
     if (isDataLoading && messages.length === 1) {
         return (
             <div className={`${styles.chatBox} ${isDarkMode ? styles.darkMode : ''}`}>
@@ -292,8 +355,15 @@ const ChatBox = ({ onClose, isDarkMode }) => {
                     <div className={styles.headerText}>
                         <h3>Peter's AI Assistant</h3>
                         <div className={styles.status}>
-                            <span className={styles.statusIndicator}></span>
-                            <span>{isLoading ? 'Typing...' : 'Online'}</span>
+                            <span className={`${styles.statusIndicator} ${apiStatus === 'available' ? styles.statusOnline :
+                                    apiStatus === 'unavailable' ? styles.statusOffline :
+                                        styles.statusChecking
+                                }`}></span>
+                            <span>
+                                {apiStatus === 'available' ? 'AI Online' :
+                                    apiStatus === 'unavailable' ? 'AI Offline' :
+                                        'Checking AI...'}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -308,6 +378,13 @@ const ChatBox = ({ onClose, isDarkMode }) => {
                     <div className={styles.dataStatus}>
                         <span className={styles.dataIndicator}></span>
                         <span>Connected to Firebase • {new Date().toLocaleTimeString()}</span>
+                    </div>
+                )}
+
+                {/* API Status Warning */}
+                {apiStatus === 'unavailable' && (
+                    <div className={styles.apiWarning}>
+                        <span>⚠️ AI service is currently offline. Using basic responses.</span>
                     </div>
                 )}
 
@@ -336,8 +413,8 @@ const ChatBox = ({ onClose, isDarkMode }) => {
                     <div
                         key={message.id}
                         className={`${styles.message} ${message.sender === 'bot'
-                                ? `${styles.botMessage} ${isDarkMode ? styles.darkBotMessage : ''}`
-                                : `${styles.userMessage} ${isDarkMode ? styles.darkUserMessage : ''}`
+                            ? `${styles.botMessage} ${isDarkMode ? styles.darkBotMessage : ''}`
+                            : `${styles.userMessage} ${isDarkMode ? styles.darkUserMessage : ''}`
                             }`}
                     >
                         {message.sender === 'bot' && (
@@ -476,14 +553,17 @@ const ChatBox = ({ onClose, isDarkMode }) => {
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
+                        onKeyPress={handleKeyPress}
                         placeholder="Ask about skills, projects, experience, or book a meeting..."
                         className={`${styles.messageInput} ${isDarkMode ? styles.darkInput : ''}`}
                         disabled={isLoading || isDataLoading}
                     />
                     <button
                         type="submit"
-                        className={`${styles.sendButton} ${isDarkMode ? styles.darkSendButton : ''}`}
-                        disabled={!newMessage.trim() || isLoading || isDataLoading}
+                        className={`${styles.sendButton} ${isDarkMode ? styles.darkSendButton : ''} ${apiStatus === 'unavailable' ? styles.sendButtonDisabled : ''
+                            }`}
+                        disabled={!newMessage.trim() || isLoading || isDataLoading || apiStatus === 'unavailable'}
+                        title={apiStatus === 'unavailable' ? 'AI service is currently unavailable' : 'Send message'}
                     >
                         {isLoading ? (
                             <div className={styles.spinner}></div>
