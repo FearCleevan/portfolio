@@ -3,7 +3,7 @@ import React from 'react';
 import styles from './Header.module.css';
 import profile from '../../assets/profile.png';
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaDownload } from 'react-icons/fa';
-import resume from '../../assets/PeterPaulLazan_CV.pdf';
+import resume from '../../assets/LazanPeterPaul_CV.pdf';
 import { usePersonalDetails } from '../../firebase/hooks/usePersonalDetails';
 
 
