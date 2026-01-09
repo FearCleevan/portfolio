@@ -1,6 +1,6 @@
 //src/admin/ContentEditor/ExperienceEditor.jsx
 import React, { useState } from 'react';
-import { FiEdit2, FiSave, FiX, FiPlus, FiTrash2 } from 'react-icons/fi';
+import { FiEdit2, FiSave, FiX, FiPlus, FiTrash2, FiArrowUp, FiArrowDown } from 'react-icons/fi';
 import { useExperience } from '../../firebase/hooks/useExperience';
 import styles from './ExperienceEditor.module.css';
 import Modal from 'react-modal';
@@ -10,23 +10,34 @@ import 'react-toastify/dist/ReactToastify.css';
 Modal.setAppElement('#root');
 
 const ExperienceEditor = () => {
-    const { experience, loading, error, addItem, updateItem, removeItem } = useExperience();
+    const { experience, loading, error, addItem, updateItem, removeItem, getNextOrderNumber, reorderItems } = useExperience();
     const [isEditing, setIsEditing] = useState(false);
     const [currentEditItem, setCurrentEditItem] = useState(null);
     const [newItem, setNewItem] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [isReordering, setIsReordering] = useState(false);
 
     const handleEdit = (item = null) => {
         setIsEditing(true);
-        setCurrentEditItem(item ? { ...item } : {
-            role: '',
-            company: '',
-            year: '',
-            status: 'active'
-        });
-        setNewItem(item === null);
+        if (item) {
+            setCurrentEditItem({ 
+                ...item,
+                order: item.order || 1
+            });
+            setNewItem(false);
+        } else {
+            const nextOrder = getNextOrderNumber();
+            setCurrentEditItem({
+                role: '',
+                company: '',
+                year: '',
+                status: 'active',
+                order: nextOrder
+            });
+            setNewItem(true);
+        }
     };
 
     const handleCancelEdit = () => {
@@ -36,6 +47,11 @@ const ExperienceEditor = () => {
     };
 
     const handleSave = async () => {
+        if (!currentEditItem?.role?.trim() || !currentEditItem?.company?.trim() || !currentEditItem?.year?.trim()) {
+            toast.error('Please fill in all required fields');
+            return;
+        }
+
         setIsSaving(true);
         try {
             if (newItem) {
@@ -44,7 +60,12 @@ const ExperienceEditor = () => {
             } else {
                 const originalItem = experience.find(item => item.id === currentEditItem.id);
                 if (originalItem) {
-                    await updateItem(originalItem, currentEditItem);
+                    // Preserve the order from original item
+                    const updatedItem = { 
+                        ...currentEditItem, 
+                        order: originalItem.order 
+                    };
+                    await updateItem(originalItem, updatedItem);
                     toast.success('Experience item updated successfully!');
                 }
             }
@@ -86,6 +107,68 @@ const ExperienceEditor = () => {
         }));
     };
 
+    const handleOrderChange = (value) => {
+        const order = parseInt(value);
+        if (isNaN(order) || order < 1) {
+            toast.error('Order must be a positive number');
+            return;
+        }
+        
+        // Check if order number already exists
+        const existingOrder = experience.find(item => 
+            item.order === order && 
+            (!currentEditItem || item.id !== currentEditItem.id)
+        );
+        
+        if (existingOrder) {
+            toast.error(`Order number ${order} is already used by "${existingOrder.role}"`);
+            return;
+        }
+
+        setCurrentEditItem(prev => ({
+            ...prev,
+            order
+        }));
+    };
+
+    const moveItemDown = async (item) => {
+        if (isReordering) return;
+        
+        setIsReordering(true);
+        try {
+            const currentIndex = experience.findIndex(i => i.id === item.id);
+            if (currentIndex < experience.length - 1) {
+                const itemBelow = experience[currentIndex + 1];
+                await reorderItems(item, itemBelow);
+                toast.success('Item moved down');
+            }
+        } catch (error) {
+            console.error('Error moving item down:', error);
+            toast.error('Failed to reorder experience item');
+        } finally {
+            setIsReordering(false);
+        }
+    };
+
+    const moveItemUp = async (item) => {
+        if (isReordering) return;
+        
+        setIsReordering(true);
+        try {
+            const currentIndex = experience.findIndex(i => i.id === item.id);
+            if (currentIndex > 0) {
+                const itemAbove = experience[currentIndex - 1];
+                await reorderItems(item, itemAbove);
+                toast.success('Item moved up');
+            }
+        } catch (error) {
+            console.error('Error moving item up:', error);
+            toast.error('Failed to reorder experience item');
+        } finally {
+            setIsReordering(false);
+        }
+    };
+
     if (loading && !experience.length) {
         return (
             <div className={styles.loadingOverlay}>
@@ -116,7 +199,7 @@ const ExperienceEditor = () => {
                             <button
                                 onClick={handleSave}
                                 className={styles.saveButton}
-                                disabled={!currentEditItem?.role || !currentEditItem?.company || !currentEditItem?.year || isSaving}
+                                disabled={!currentEditItem?.role?.trim() || !currentEditItem?.company?.trim() || !currentEditItem?.year?.trim() || isSaving}
                             >
                                 {isSaving ? (
                                     <span className={styles.spinner}></span>
@@ -137,7 +220,22 @@ const ExperienceEditor = () => {
                     </div>
                     <div className={styles.editorContent}>
                         <div className={styles.formGroup}>
-                            <label>Role</label>
+                            <label>Order Number (Higher number = top position)</label>
+                            <input
+                                type="number"
+                                name="order"
+                                value={currentEditItem?.order || 1}
+                                onChange={(e) => handleOrderChange(e.target.value)}
+                                className={styles.input}
+                                min="1"
+                                disabled={!newItem}
+                            />
+                            {!newItem && (
+                                <small className={styles.hint}>Order cannot be changed after creation. Use arrows to reorder.</small>
+                            )}
+                        </div>
+                        <div className={styles.formGroup}>
+                            <label>Role *</label>
                             <input
                                 type="text"
                                 name="role"
@@ -145,10 +243,11 @@ const ExperienceEditor = () => {
                                 onChange={handleInputChange}
                                 className={styles.input}
                                 placeholder="e.g., Frontend Developer"
+                                required
                             />
                         </div>
                         <div className={styles.formGroup}>
-                            <label>Company</label>
+                            <label>Company *</label>
                             <input
                                 type="text"
                                 name="company"
@@ -156,10 +255,11 @@ const ExperienceEditor = () => {
                                 onChange={handleInputChange}
                                 className={styles.input}
                                 placeholder="e.g., Tech Solutions Inc"
+                                required
                             />
                         </div>
                         <div className={styles.formGroup}>
-                            <label>Year</label>
+                            <label>Year *</label>
                             <input
                                 type="text"
                                 name="year"
@@ -167,6 +267,7 @@ const ExperienceEditor = () => {
                                 onChange={handleInputChange}
                                 className={styles.input}
                                 placeholder="e.g., 2022 - Present"
+                                required
                             />
                         </div>
                         <div className={styles.formGroup}>
@@ -187,7 +288,7 @@ const ExperienceEditor = () => {
             ) : (
                 <div className={styles.contentList}>
                     <div className={styles.listHeader}>
-                        <h3>Experience Items</h3>
+                        <h3>Experience Items (Higher order number = top position)</h3>
                         <button
                             onClick={() => handleEdit()}
                             className={styles.editButton}
@@ -195,29 +296,58 @@ const ExperienceEditor = () => {
                             <FiPlus /> Add Experience
                         </button>
                     </div>
-                    {experience.map((exp) => (
-                        <div key={exp.id} className={`${styles.listItem} ${styles[exp.status]}`}>
-                            <div className={styles.itemContent}>
-                                <h4>{exp.role}</h4>
-                                <p>{exp.company}</p>
-                                <span>{exp.year}</span>
+                    {experience.map((exp, index) => {
+                        // Create a composite key to ensure uniqueness
+                        const uniqueKey = `${exp.id}-${exp.order}-${index}`;
+                        return (
+                            <div key={uniqueKey} className={`${styles.listItem} ${styles[exp.status]}`}>
+                                <div className={styles.itemContent}>
+                                    <div className={styles.itemHeader}>
+                                        <span className={styles.orderBadge}>Order: {exp.order || 1}</span>
+                                        <h4>{exp.role}</h4>
+                                    </div>
+                                    <p>{exp.company}</p>
+                                    <span>{exp.year}</span>
+                                </div>
+                                <div className={styles.itemActions}>
+                                    <div className={styles.orderControls}>
+                                        <button
+                                            onClick={() => moveItemUp(exp)}
+                                            disabled={index === 0 || isReordering}
+                                            className={styles.orderButton}
+                                            title="Move up"
+                                        >
+                                            <FiArrowUp />
+                                        </button>
+                                        <button
+                                            onClick={() => moveItemDown(exp)}
+                                            disabled={index === experience.length - 1 || isReordering}
+                                            className={styles.orderButton}
+                                            title="Move down"
+                                        >
+                                            <FiArrowDown />
+                                        </button>
+                                    </div>
+                                    <button
+                                        onClick={() => handleEdit(exp)}
+                                        className={styles.editButton}
+                                        title="Edit"
+                                        disabled={isReordering}
+                                    >
+                                        <FiEdit2 />
+                                    </button>
+                                    <button
+                                        onClick={() => openDeleteModal(exp)}
+                                        className={styles.deleteButton}
+                                        title="Delete"
+                                        disabled={isReordering}
+                                    >
+                                        <FiTrash2 />
+                                    </button>
+                                </div>
                             </div>
-                            <div className={styles.itemActions}>
-                                <button
-                                    onClick={() => handleEdit(exp)}
-                                    className={styles.editButton}
-                                >
-                                    <FiEdit2 />
-                                </button>
-                                <button
-                                    onClick={() => openDeleteModal(exp)}
-                                    className={styles.deleteButton}
-                                >
-                                    <FiTrash2 />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
 

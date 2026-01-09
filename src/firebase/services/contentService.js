@@ -1,5 +1,6 @@
 //src/firebase/services/contentService.js
 import { db } from "../config";
+import { v4 as uuidv4 } from 'uuid';
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 
 // Collection name for content
@@ -97,6 +98,11 @@ export const deleteTechStackGroup = async (group) => {
   }
 };
 
+const generateUniqueId = () => {
+  return uuidv4();
+};
+
+
 // Experience functions
 export const getExperience = async () => {
   try {
@@ -104,16 +110,23 @@ export const getExperience = async () => {
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
-      return docSnap.data().items || [];
+      const items = docSnap.data().items || [];
+      // Ensure each item has an order field and unique ID
+      return items.map(item => ({
+        ...item,
+        id: item.id || generateUniqueId(),
+        order: item.order || 0
+      }));
     } else {
       // Initialize with default experience if doesn't exist
       const defaultExperience = [
         {
-          id: Date.now().toString(),
+          id: generateUniqueId(),
           role: "Frontend Developer",
           company: "The Launchpad Inc",
           year: "2022 - Present",
-          status: "current"
+          status: "current",
+          order: 1
         }
       ];
       await setDoc(docRef, { items: defaultExperience });
@@ -128,9 +141,19 @@ export const getExperience = async () => {
 export const addExperienceItem = async (item) => {
   try {
     const docRef = doc(db, CONTENT_COLLECTION, "experience");
+    // Ensure the item has all required fields with unique ID
+    const completeItem = {
+      id: item.id || generateUniqueId(),
+      role: item.role || '',
+      company: item.company || '',
+      year: item.year || '',
+      status: item.status || 'active',
+      order: item.order || 0
+    };
     await updateDoc(docRef, {
-      items: arrayUnion(item)
+      items: arrayUnion(completeItem)
     });
+    return completeItem;
   } catch (error) {
     console.error("Error adding experience item:", error);
     throw error;
@@ -140,12 +163,26 @@ export const addExperienceItem = async (item) => {
 export const updateExperienceItem = async (oldItem, newItem) => {
   try {
     const docRef = doc(db, CONTENT_COLLECTION, "experience");
+    
+    // Ensure newItem has all required fields
+    const completeNewItem = {
+      id: newItem.id || oldItem.id,
+      role: newItem.role || oldItem.role || '',
+      company: newItem.company || oldItem.company || '',
+      year: newItem.year || oldItem.year || '',
+      status: newItem.status || oldItem.status || 'active',
+      order: newItem.order !== undefined ? newItem.order : oldItem.order
+    };
+    
     await updateDoc(docRef, {
       items: arrayRemove(oldItem)
     });
+    
     await updateDoc(docRef, {
-      items: arrayUnion(newItem)
+      items: arrayUnion(completeNewItem)
     });
+    
+    return completeNewItem;
   } catch (error) {
     console.error("Error updating experience item:", error);
     throw error;
