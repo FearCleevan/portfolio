@@ -163,26 +163,19 @@ export const addExperienceItem = async (item) => {
 export const updateExperienceItem = async (oldItem, newItem) => {
   try {
     const docRef = doc(db, CONTENT_COLLECTION, "experience");
+    const docSnap = await getDoc(docRef);
     
-    // Ensure newItem has all required fields
-    const completeNewItem = {
-      id: newItem.id || oldItem.id,
-      role: newItem.role || oldItem.role || '',
-      company: newItem.company || oldItem.company || '',
-      year: newItem.year || oldItem.year || '',
-      status: newItem.status || oldItem.status || 'active',
-      order: newItem.order !== undefined ? newItem.order : oldItem.order
-    };
-    
-    await updateDoc(docRef, {
-      items: arrayRemove(oldItem)
-    });
-    
-    await updateDoc(docRef, {
-      items: arrayUnion(completeNewItem)
-    });
-    
-    return completeNewItem;
+    if (docSnap.exists()) {
+      const currentItems = docSnap.data().items || [];
+      
+      // Map through items and replace the old one
+      const updatedItems = currentItems.map(item => 
+        item.id === oldItem.id ? newItem : item
+      );
+      
+      await setDoc(docRef, { items: updatedItems });
+      return newItem;
+    }
   } catch (error) {
     console.error("Error updating experience item:", error);
     throw error;
@@ -192,9 +185,22 @@ export const updateExperienceItem = async (oldItem, newItem) => {
 export const deleteExperienceItem = async (item) => {
   try {
     const docRef = doc(db, CONTENT_COLLECTION, "experience");
-    await updateDoc(docRef, {
-      items: arrayRemove(item)
-    });
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      const currentItems = docSnap.data().items || [];
+      
+      // Find the exact item to remove (by ID)
+      const itemToRemove = currentItems.find(i => i.id === item.id);
+      
+      if (itemToRemove) {
+        await updateDoc(docRef, {
+          items: arrayRemove(itemToRemove)
+        });
+      } else {
+        throw new Error('Item not found in database');
+      }
+    }
   } catch (error) {
     console.error("Error deleting experience item:", error);
     throw error;
