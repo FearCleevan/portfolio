@@ -186,9 +186,10 @@
 
 .descriptionItem {
     display: flex;
-    align-items: flex-start;
-    margin-bottom: 5px;
+    align-items: center;
+    margin-bottom: 0.5rem;
     line-height: 1.5;
+
 }
 
 .descriptionItem::before {
