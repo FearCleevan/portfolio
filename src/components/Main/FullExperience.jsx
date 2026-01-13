@@ -20,14 +20,14 @@ export default function FullExperience({ isDarkMode }) {
             </div>
         );
     }
-    
+
     if (error) {
         return (
             <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
                 <div className={`${styles.fullExperienceContainer} ${isDarkMode ? styles.darkMode : ''}`}>
                     <div className={styles.errorOverlay}>
                         <p className={isDarkMode ? styles.darkText : ''}>Error loading experience</p>
-                        <button 
+                        <button
                             className={isDarkMode ? styles.darkButton : ''}
                             onClick={() => window.location.reload()}
                         >
@@ -51,13 +51,13 @@ export default function FullExperience({ isDarkMode }) {
                     </Link>
                     <h1 className={`${styles.title} ${isDarkMode ? styles.darkText : ''}`}>Experience</h1>
                 </div>
-                
+
                 <div className={styles.experienceList}>
                     {experience.map((item) => {
-                        const statusClass = item.status === 'active' 
-                            ? styles.experienceItemActive 
-                            : item.status === 'current' 
-                                ? styles.experienceItemCurrent 
+                        const statusClass = item.status === 'active'
+                            ? styles.experienceItemActive
+                            : item.status === 'current'
+                                ? styles.experienceItemCurrent
                                 : styles.experienceItem;
 
                         const dotClass = item.status === 'active'
@@ -71,8 +71,8 @@ export default function FullExperience({ isDarkMode }) {
                             : styles.experienceRole;
 
                         return (
-                            <div 
-                                key={item.id} 
+                            <div
+                                key={item.id}
                                 className={`${statusClass} ${isDarkMode ? styles.darkGridBox : ''}`}
                             >
                                 <div className={styles.experienceHeader}>
@@ -96,17 +96,22 @@ export default function FullExperience({ isDarkMode }) {
                                         </div>
                                     </div>
                                 </div>
-                                
+
+                                {/* Show all description points */}
                                 {item.description && item.description.length > 0 && (
                                     <div className={styles.experienceDescription}>
                                         {item.description.map((paragraph, index) => (
-                                            <p key={index} className={`${styles.descriptionText} ${isDarkMode ? styles.darkText : ''}`}>
-                                                {paragraph}
-                                            </p>
+                                            <div key={index} className={styles.descriptionItem}>
+                                                <span className={styles.descriptionBullet}>•</span>
+                                                <p className={`${styles.descriptionText} ${isDarkMode ? styles.darkText : ''}`}>
+                                                    {paragraph}
+                                                </p>
+                                            </div>
                                         ))}
                                     </div>
                                 )}
-                                
+
+                                {/* Show all technologies */}
                                 {item.technologies && item.technologies.length > 0 && (
                                     <div className={styles.technologies}>
                                         <h3 className={`${styles.technologiesTitle} ${isDarkMode ? styles.darkText : ''}`}>Technologies Used</h3>

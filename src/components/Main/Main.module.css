@@ -513,3 +513,66 @@
 .darkMode .timelineDescription {
     color: #a0a0a0;
 }
+
+/* Main.module.css additions */
+
+.timelineDescription {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+.techPreview {
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.techLabel {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.techTagsMini {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.techTagMini {
+    font-size: 0.7rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.moreTech {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* Dark mode styles */
+.darkMode .timelineDescription {
+    color: #a0a0a0;
+}
+
+.darkMode .techLabel {
+    color: #a0a0a0;
+}
+
+.darkMode .techTagMini {
+    background-color: #444;
+    border-color: #555;
+    color: #e5e7eb;
+}
+
+.darkMode .moreTech {
+    color: #888;
+}

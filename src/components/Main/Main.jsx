@@ -158,14 +158,32 @@ export default function Main({ isDarkMode, toggleDarkMode }) {
                                                     <span className={`${styles.timelineYear} ${isDarkMode ? styles.darkTimelineYear : ''}`}>{item.year}</span>
                                                 </div>
                                                 {/* Show first description point if available */}
-                                                {item.description && item.description.length > 0 && (
+                                                {/* {item.description && item.description.length > 0 && (
                                                     <p className={`${styles.timelineDescription} ${isDarkMode ? styles.darkText : ''}`}>
-                                                        {item.description[0].length > 100 
+                                                        {item.description[0].length > 100
                                                             ? `${item.description[0].substring(0, 100)}...`
                                                             : item.description[0]
                                                         }
                                                     </p>
-                                                )}
+                                                )} */}
+                                                {/* Show technology preview */}
+                                                {/* {item.technologies && item.technologies.length > 0 && (
+                                                    <div className={styles.techPreview}>
+                                                        <span className={`${styles.techLabel} ${isDarkMode ? styles.darkText : ''}`}>Tech:</span>
+                                                        <div className={styles.techTagsMini}>
+                                                            {item.technologies.slice(0, 2).map((tech, idx) => (
+                                                                <span key={idx} className={`${styles.techTagMini} ${isDarkMode ? styles.darkTechTag : ''}`}>
+                                                                    {tech}
+                                                                </span>
+                                                            ))}
+                                                            {item.technologies.length > 2 && (
+                                                                <span className={`${styles.moreTech} ${isDarkMode ? styles.darkText : ''}`}>
+                                                                    +{item.technologies.length - 2} more
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )} */}
                                             </div>
                                         </div>
                                     );

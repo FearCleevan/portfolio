@@ -1,6 +1,6 @@
-//src/admin/ContentEditor/ExperienceEditor.jsx
+// src/admin/ContentEditor/ExperienceEditor.jsx
 import React, { useState } from 'react';
-import { FiEdit2, FiSave, FiX, FiPlus, FiTrash2, FiArrowUp, FiArrowDown } from 'react-icons/fi';
+import { FiEdit2, FiSave, FiX, FiPlus, FiTrash2, FiArrowUp, FiArrowDown, FiChevronUp, FiChevronDown } from 'react-icons/fi';
 import { useExperience } from '../../firebase/hooks/useExperience';
 import styles from './ExperienceEditor.module.css';
 import Modal from 'react-modal';
@@ -18,13 +18,16 @@ const ExperienceEditor = () => {
     const [itemToDelete, setItemToDelete] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
     const [isReordering, setIsReordering] = useState(false);
+    const [newDescriptionPoint, setNewDescriptionPoint] = useState('');
 
     const handleEdit = (item = null) => {
         setIsEditing(true);
         if (item) {
             setCurrentEditItem({ 
                 ...item,
-                order: item.order || 1
+                order: item.order || 1,
+                description: item.description || [],
+                technologies: item.technologies || []
             });
             setNewItem(false);
         } else {
@@ -34,7 +37,9 @@ const ExperienceEditor = () => {
                 company: '',
                 year: '',
                 status: 'active',
-                order: nextOrder
+                order: nextOrder,
+                description: [],
+                technologies: []
             });
             setNewItem(true);
         }
@@ -44,6 +49,7 @@ const ExperienceEditor = () => {
         setIsEditing(false);
         setCurrentEditItem(null);
         setNewItem(false);
+        setNewDescriptionPoint('');
     };
 
     const handleSave = async () => {
@@ -169,6 +175,80 @@ const ExperienceEditor = () => {
         }
     };
 
+    // Description management functions
+    const addDescriptionPoint = () => {
+        if (!newDescriptionPoint.trim()) {
+            toast.error('Please enter a description point');
+            return;
+        }
+
+        setCurrentEditItem(prev => ({
+            ...prev,
+            description: [...(prev.description || []), newDescriptionPoint.trim()]
+        }));
+        setNewDescriptionPoint('');
+        toast.success('Description point added');
+    };
+
+    const removeDescriptionPoint = (index) => {
+        setCurrentEditItem(prev => ({
+            ...prev,
+            description: prev.description.filter((_, i) => i !== index)
+        }));
+        toast.success('Description point removed');
+    };
+
+    const moveDescriptionPointUp = (index) => {
+        if (index === 0) return;
+        
+        setCurrentEditItem(prev => {
+            const newDescription = [...prev.description];
+            [newDescription[index], newDescription[index - 1]] = [newDescription[index - 1], newDescription[index]];
+            return {
+                ...prev,
+                description: newDescription
+            };
+        });
+    };
+
+    const moveDescriptionPointDown = (index) => {
+        if (index === currentEditItem.description.length - 1) return;
+        
+        setCurrentEditItem(prev => {
+            const newDescription = [...prev.description];
+            [newDescription[index], newDescription[index + 1]] = [newDescription[index + 1], newDescription[index]];
+            return {
+                ...prev,
+                description: newDescription
+            };
+        });
+    };
+
+    // Technologies management functions
+    const [newTechnology, setNewTechnology] = useState('');
+
+    const addTechnology = () => {
+        if (!newTechnology.trim()) {
+            toast.error('Please enter a technology');
+            return;
+        }
+
+        setCurrentEditItem(prev => ({
+            ...prev,
+            technologies: [...(prev.technologies || []), newTechnology.trim()]
+        }));
+        setNewTechnology('');
+        toast.success('Technology added');
+    };
+
+    const removeTechnology = (index) => {
+        setCurrentEditItem(prev => ({
+            ...prev,
+            technologies: prev.technologies.filter((_, i) => i !== index)
+        }));
+        toast.success('Technology removed');
+    };
+
     if (loading && !experience.length) {
         return (
             <div className={styles.loadingOverlay}>
@@ -283,6 +363,105 @@ const ExperienceEditor = () => {
                                 <option value="inactive">Inactive</option>
                             </select>
                         </div>
+
+                        {/* Description Section */}
+                        <div className={styles.section}>
+                            <h4>Description Points</h4>
+                            <p className={styles.sectionHint}>Add bullet points describing your responsibilities and achievements</p>
+                            
+                            <div className={styles.addItemForm}>
+                                <textarea
+                                    value={newDescriptionPoint}
+                                    onChange={(e) => setNewDescriptionPoint(e.target.value)}
+                                    className={styles.textarea}
+                                    placeholder="Enter a description point (e.g., Led development of responsive web applications using React.js)"
+                                    rows="2"
+                                />
+                                <button
+                                    onClick={addDescriptionPoint}
+                                    className={styles.addButton}
+                                >
+                                    <FiPlus /> Add Point
+                                </button>
+                            </div>
+
+                            {currentEditItem?.description?.length > 0 && (
+                                <div className={styles.listContainer}>
+                                    {currentEditItem.description.map((point, index) => (
+                                        <div key={index} className={styles.listItemCard}>
+                                            <div className={styles.listItemContent}>
+                                                <span className={styles.bullet}>•</span>
+                                                <span className={styles.listItemText}>{point}</span>
+                                            </div>
+                                            <div className={styles.listItemActions}>
+                                                <button
+                                                    onClick={() => moveDescriptionPointUp(index)}
+                                                    disabled={index === 0}
+                                                    className={styles.smallButton}
+                                                    title="Move up"
+                                                >
+                                                    <FiChevronUp />
+                                                </button>
+                                                <button
+                                                    onClick={() => moveDescriptionPointDown(index)}
+                                                    disabled={index === currentEditItem.description.length - 1}
+                                                    className={styles.smallButton}
+                                                    title="Move down"
+                                                >
+                                                    <FiChevronDown />
+                                                </button>
+                                                <button
+                                                    onClick={() => removeDescriptionPoint(index)}
+                                                    className={styles.smallDeleteButton}
+                                                    title="Remove"
+                                                >
+                                                    <FiTrash2 />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Technologies Section */}
+                        <div className={styles.section}>
+                            <h4>Technologies Used</h4>
+                            <p className={styles.sectionHint}>Add technologies used in this role</p>
+                            
+                            <div className={styles.addItemForm}>
+                                <input
+                                    type="text"
+                                    value={newTechnology}
+                                    onChange={(e) => setNewTechnology(e.target.value)}
+                                    className={styles.input}
+                                    placeholder="e.g., React.js, Node.js, TypeScript"
+                                />
+                                <button
+                                    onClick={addTechnology}
+                                    className={styles.addButton}
+                                >
+                                    <FiPlus /> Add Technology
+                                </button>
+                            </div>
+
+                            {currentEditItem?.technologies?.length > 0 && (
+                                <div className={styles.techTags}>
+                                    {currentEditItem.technologies.map((tech, index) => (
+                                        <div key={index} className={styles.techTagItem}>
+                                            <span className={styles.techTag}>{tech}</span>
+                                            <button
+                                                onClick={() => removeTechnology(index)}
+                                                className={styles.removeTechButton}
+                                                title="Remove"
+                                            >
+                                                <FiX />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             ) : (
@@ -305,9 +484,23 @@ const ExperienceEditor = () => {
                                     <div className={styles.itemHeader}>
                                         <span className={styles.orderBadge}>Order: {exp.order || 1}</span>
                                         <h4>{exp.role}</h4>
+                                        <span className={styles.descriptionCount}>
+                                            {exp.description?.length || 0} points
+                                        </span>
                                     </div>
                                     <p>{exp.company}</p>
                                     <span>{exp.year}</span>
+                                    {exp.technologies?.length > 0 && (
+                                        <div className={styles.techPreview}>
+                                            <span className={styles.techLabel}>Tech:</span>
+                                            {exp.technologies.slice(0, 3).map((tech, idx) => (
+                                                <span key={idx} className={styles.techBadge}>{tech}</span>
+                                            ))}
+                                            {exp.technologies.length > 3 && (
+                                                <span className={styles.moreTech}>+{exp.technologies.length - 3} more</span>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                                 <div className={styles.itemActions}>
                                     <div className={styles.orderControls}>
