@@ -206,10 +206,11 @@
   background-color: #216e39;
 }
 
+
 .months {
   display: flex;
   justify-content: flex-start;
-  margin-left: 20px; /* Match the weeks container */
+  margin-left: 20px;
   margin-bottom: 8px;
   gap: 0;
   width: calc(100% - 20px);
