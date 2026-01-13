@@ -1,4 +1,4 @@
-//src/App.jsx
+// src/App.jsx
 import { Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,6 +8,7 @@ import AdminPanel from './admin/dashboard/AdminPanel';
 import ContentEditor from './admin/ContentEditor/ContentEditor';
 import ProtectedRoute from './components/ProtectedRoute';
 import FullTechStack from './components/Main/FullTechStack';
+import FullExperience from './components/Main/FullExperience'; // Import the new component
 import AllProjects from './components/Container/AllProjects';
 import AllCertifications from './components/Container/AllCertifications';
 import RecentBlogs from './components/RecentBlogs/RecentBlogs';
@@ -87,6 +88,14 @@ function App() {
           path="/tech-stack" 
           element={
             <FullTechStack 
+              isDarkMode={isDarkMode} 
+            />
+          } 
+        />
+        <Route 
+          path="/experience" 
+          element={
+            <FullExperience 
               isDarkMode={isDarkMode} 
             />
           } 

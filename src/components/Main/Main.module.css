@@ -455,3 +455,61 @@
         transform: translateY(10px);
     }
 }
+
+/* Add to existing Main.module.css */
+
+/* Experience Header Styles */
+.experienceHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.experienceTitleRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.experienceLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #111827;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.experienceLink:hover {
+    color: #3b82f6;
+}
+
+.experienceArrow {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Timeline Description */
+.timelineDescription {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.4;
+    font-style: italic;
+}
+
+/* Dark mode for new styles */
+.darkMode .experienceLink {
+    color: #a0a0a0;
+}
+
+.darkMode .experienceLink:hover {
+    color: #3b82f6;
+}
+
+.darkMode .timelineDescription {
+    color: #a0a0a0;
+}

@@ -42,6 +42,9 @@ export default function Main({ isDarkMode, toggleDarkMode }) {
         }))
     };
 
+    // Limit experience to show only 3 items in main view
+    const limitedExperience = experienceData.slice(0, 3);
+
     if (aboutLoading || techStackLoading || experienceLoading || projectsLoading || certLoading) {
         return (
             <div className={`${styles.loadingOverlay} ${isDarkMode ? styles.darkMode : ''}`}>
@@ -115,11 +118,21 @@ export default function Main({ isDarkMode, toggleDarkMode }) {
                         {/* Experience Section */}
                         <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
                             <div className={styles.experienceHeader}>
-                                <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}> <span className={styles.gridIcon}>💼</span> Experience</h2>
+                                <div className={styles.experienceTitleRow}>
+                                    <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}> <span className={styles.gridIcon}>💼</span> Experience</h2>
+                                </div>
+                                {experienceData.length > 3 && (
+                                    <Link to="/experience" className={`${styles.experienceLink} ${isDarkMode ? styles.darkLink : ''}`}>
+                                        View All
+                                        <svg className={styles.experienceArrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </Link>
+                                )}
                             </div>
                             <div className={styles.timelineBox}>
                                 <div className={`${styles.timelineLine} ${isDarkMode ? styles.darkTimelineLine : ''}`}></div>
-                                {experienceData.map((item) => {
+                                {limitedExperience.map((item) => {
                                     const itemClass = item.status === 'active'
                                         ? styles.timelineItemActive
                                         : item.status === 'current'
@@ -145,6 +158,15 @@ export default function Main({ isDarkMode, toggleDarkMode }) {
                                                     <span className={`${styles.timelineCompany} ${isDarkMode ? styles.darkText : ''}`}>{item.company}</span>
                                                     <span className={`${styles.timelineYear} ${isDarkMode ? styles.darkTimelineYear : ''}`}>{item.year}</span>
                                                 </div>
+                                                {/* Add description preview if available */}
+                                                {item.description && item.description.length > 0 && (
+                                                    <p className={`${styles.timelineDescription} ${isDarkMode ? styles.darkText : ''}`}>
+                                                        {item.description[0].length > 100 
+                                                            ? `${item.description[0].substring(0, 100)}...`
+                                                            : item.description[0]
+                                                        }
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
                                     );

@@ -1,0 +1,403 @@
+/* src/components/Main/FullExperience.module.css */
+.pageWrapper {
+    min-height: 100vh;
+    width: 100%;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    background-color: #ffffff;
+}
+
+.pageWrapper.darkMode {
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+}
+
+.fullExperienceContainer {
+    max-width: 896px;
+    margin: 0 auto;
+    padding: 2rem;
+    animation: fadeIn 0.5s ease-out;
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.fullExperienceContainer.darkMode {
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.backButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #111827;
+    text-decoration: none;
+    margin-bottom: 1rem;
+    transition: color 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.backButton:hover {
+    color: #3b82f6;
+}
+
+.backIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: #111827;
+    transition: color 0.3s ease;
+}
+
+.experienceList {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.experienceItem,
+.experienceItemActive,
+.experienceItemCurrent {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.3s ease;
+}
+
+.experienceItem:hover,
+.experienceItemActive:hover,
+.experienceItemCurrent:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.experienceItemActive {
+    border-left: 4px solid #10b981;
+}
+
+.experienceItemCurrent {
+    border-left: 4px solid #3b82f6;
+}
+
+.experienceHeader {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.experienceDotContainer {
+    padding-top: 0.5rem;
+}
+
+.experienceDot,
+.experienceDotActive,
+.experienceDotCurrent {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #e5e7eb;
+}
+
+.experienceDotActive {
+    background-color: #10b981;
+    border-color: #10b981;
+}
+
+.experienceDotCurrent {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.experienceTitle {
+    flex: 1;
+}
+
+.experienceRole,
+.experienceRoleActive {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: #111827;
+    transition: color 0.3s ease;
+}
+
+.experienceRoleActive {
+    color: #10b981;
+}
+
+.experienceMeta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.875rem;
+}
+
+.company {
+    font-weight: 500;
+    color: #374151;
+    transition: color 0.3s ease;
+}
+
+.year {
+    color: #6b7280;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    background: #f3f4f6;
+    border-radius: 0.375rem;
+    transition: all 0.3s ease;
+}
+
+.location {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #6b7280;
+    transition: color 0.3s ease;
+}
+
+.locationIcon {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+.experienceDescription {
+    margin-bottom: 1.5rem;
+}
+
+.descriptionText {
+    margin: 0.75rem 0;
+    line-height: 1.6;
+    color: #4b5563;
+    transition: color 0.3s ease;
+}
+
+.technologies {
+    margin-top: 1.5rem;
+}
+
+.technologiesTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #374151;
+    transition: color 0.3s ease;
+}
+
+.techTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.techTag {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    color: #111827;
+    font-weight: 500;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.techTag:hover {
+    background: #e9ecef;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dark mode styles */
+.darkMode .backButton {
+    color: #a0a0a0;
+}
+
+.darkMode .backButton:hover {
+    color: #3b82f6;
+}
+
+.darkMode .title {
+    color: #f0f0f0;
+}
+
+.darkGridBox {
+    background-color: #2d2d2d !important;
+    border-color: #444 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.darkGridBox:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    transform: translateY(-2px);
+}
+
+.darkText {
+    color: #f0f0f0 !important;
+}
+
+.darkLink {
+    color: #a0a0a0 !important;
+}
+
+.darkLink:hover {
+    color: #3b82f6 !important;
+}
+
+.darkTechTag {
+    background-color: #444 !important;
+    border-color: #555 !important;
+    color: #f0f0f0 !important;
+}
+
+.darkTechTag:hover {
+    background-color: #555 !important;
+    border-color: #666 !important;
+}
+
+.darkYear {
+    background-color: #444 !important;
+    color: #d1d5db !important;
+}
+
+.darkDot {
+    border-color: #666 !important;
+}
+
+.darkDotActive {
+    background-color: #10b981 !important;
+    border-color: #10b981 !important;
+}
+
+/* Loading and Error States */
+.loadingOverlay,
+.errorOverlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    min-height: 50vh;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 4px solid #000;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.darkSpinner {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top: 4px solid #fff;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.errorOverlay button {
+    padding: 0.5rem 1rem;
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.errorOverlay button:hover {
+    background-color: #333;
+}
+
+.darkButton {
+    background-color: #fff !important;
+    color: #000 !important;
+}
+
+.darkButton:hover {
+    background-color: #e5e5e5 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .fullExperienceContainer {
+        padding: 1rem;
+    }
+    
+    .title {
+        font-size: 1.75rem;
+    }
+    
+    .experienceItem,
+    .experienceItemActive,
+    .experienceItemCurrent {
+        padding: 1.5rem;
+    }
+    
+    .experienceList {
+        gap: 1.5rem;
+    }
+    
+    .experienceMeta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .fullExperienceContainer {
+        padding: 0.75rem;
+    }
+    
+    .title {
+        font-size: 1.5rem;
+    }
+    
+    .experienceItem,
+    .experienceItemActive,
+    .experienceItemCurrent {
+        padding: 1rem;
+    }
+    
+    .techTag {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .backButton {
+        font-size: 13px;
+    }
+    
+    .experienceRole,
+    .experienceRoleActive {
+        font-size: 1.1rem;
+    }
+}
