@@ -173,15 +173,39 @@
     height: 0.875rem;
 }
 
+/* FIXED: Description List Styles */
 .experienceDescription {
     margin-bottom: 1.5rem;
 }
 
+.descriptionList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.descriptionItem {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.descriptionItem::before {
+    content: "•";
+    color: #3b82f6;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-right: 0.75rem;
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+}
+
 .descriptionText {
-    margin: 0.75rem 0;
-    line-height: 1.6;
     color: #4b5563;
     transition: color 0.3s ease;
+    flex: 1;
+    line-height: 1.6;
 }
 
 .technologies {
@@ -289,6 +313,14 @@
     border-color: #10b981 !important;
 }
 
+.darkMode .descriptionText {
+    color: #e5e7eb !important;
+}
+
+.darkMode .descriptionItem::before {
+    color: #60a5fa !important;
+}
+
 /* Loading and Error States */
 .loadingOverlay,
 .errorOverlay {
@@ -370,6 +402,14 @@
         align-items: flex-start;
         gap: 0.5rem;
     }
+    
+    .descriptionItem {
+        margin-bottom: 0.75rem;
+    }
+    
+    .descriptionItem::before {
+        margin-right: 0.5rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -399,5 +439,10 @@
     .experienceRole,
     .experienceRoleActive {
         font-size: 1.1rem;
+    }
+    
+    .descriptionItem::before {
+        font-size: 1rem;
+        margin-right: 0.5rem;
     }
 }
