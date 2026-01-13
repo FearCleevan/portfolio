@@ -34,7 +34,7 @@ export default function Main({ isDarkMode, toggleDarkMode }) {
         return () => setIsExiting(true);
     }, [location]);
 
-    // Get first 3 groups and limit items to 5 per group
+    // Get first 3 groups and limit items to 5 per group for Tech Stack
     const limitedTechStackData = {
         groups: allTechStack.slice(0, 3).map(group => ({
             ...group,
@@ -42,8 +42,8 @@ export default function Main({ isDarkMode, toggleDarkMode }) {
         }))
     };
 
-    // Limit experience to show only 3 items in main view
-    const limitedExperience = experienceData.slice(0, 3);
+    // Show ALL experience items in main view
+    const fullExperience = experienceData;
 
     if (aboutLoading || techStackLoading || experienceLoading || projectsLoading || certLoading) {
         return (
@@ -121,18 +121,17 @@ export default function Main({ isDarkMode, toggleDarkMode }) {
                                 <div className={styles.experienceTitleRow}>
                                     <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}> <span className={styles.gridIcon}>💼</span> Experience</h2>
                                 </div>
-                                {experienceData.length > 3 && (
-                                    <Link to="/experience" className={`${styles.experienceLink} ${isDarkMode ? styles.darkLink : ''}`}>
-                                        View All
-                                        <svg className={styles.experienceArrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path>
-                                        </svg>
-                                    </Link>
-                                )}
+                                {/* Optional: Add View All link if you still want detailed view */}
+                                <Link to="/experience" className={`${styles.experienceLink} ${isDarkMode ? styles.darkLink : ''}`}>
+                                    View All
+                                    <svg className={styles.experienceArrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </Link>
                             </div>
                             <div className={styles.timelineBox}>
                                 <div className={`${styles.timelineLine} ${isDarkMode ? styles.darkTimelineLine : ''}`}></div>
-                                {limitedExperience.map((item) => {
+                                {fullExperience.map((item) => {
                                     const itemClass = item.status === 'active'
                                         ? styles.timelineItemActive
                                         : item.status === 'current'
@@ -158,7 +157,7 @@ export default function Main({ isDarkMode, toggleDarkMode }) {
                                                     <span className={`${styles.timelineCompany} ${isDarkMode ? styles.darkText : ''}`}>{item.company}</span>
                                                     <span className={`${styles.timelineYear} ${isDarkMode ? styles.darkTimelineYear : ''}`}>{item.year}</span>
                                                 </div>
-                                                {/* Add description preview if available */}
+                                                {/* Show first description point if available */}
                                                 {item.description && item.description.length > 0 && (
                                                     <p className={`${styles.timelineDescription} ${isDarkMode ? styles.darkText : ''}`}>
                                                         {item.description[0].length > 100 
