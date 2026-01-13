@@ -1,9 +1,20 @@
 /* src/components/Container/GitHubCalendar.module.css */
+.container {
+    width: 100%;
+    max-width: 895px;
+    margin-bottom: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 16px;
+    margin-bottom: 20px;
+}
+
 .calendarContainer {
   width: 100%;
   max-width: 865px;
-  margin: 20px auto;
-  padding: 20px;
+  margin-top: 20px;
+  padding: 16px;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -99,7 +110,35 @@
   margin-bottom: 8px;
   margin-left: 20px; /* Space for month labels */
   flex-wrap: nowrap;
-  overflow: visible;
+  overflow-x: auto; /* Add this for horizontal scrolling */
+  overflow-y: visible;
+  padding-bottom: 8px; /* Add space for scrollbar */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
+}
+
+/* Optional: Custom scrollbar styling */
+.weeks::-webkit-scrollbar {
+  height: 4px;
+}
+
+.weeks::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 2px;
+}
+
+.weeks::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 2px;
+}
+
+.weeks::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Firefox scrollbar */
+.weeks {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f1f5f9;
 }
 
 .week {
@@ -243,8 +282,8 @@
 @media (max-width: 768px) {
   .calendarContainer {
     padding: 16px;
-    margin-left: 20px;
-    margin-right: 20px;
+    /* margin-left: 20px;
+    margin-right: 20px; */
     max-width: 398px;
   }
   
@@ -284,9 +323,9 @@
 @media (max-width: 844px) {
   .calendarContainer {
     padding: 16px;
-    margin-left: 20px;
-    margin-right: 20px;
-    max-width: 358px;
+    /* margin-left: 20px;
+    margin-right: 20px; */
+    max-width: 788px;
   }
   
   .calendarHeader {
@@ -325,9 +364,9 @@
 @media (max-width: 896px) {
   .calendarContainer {
     padding: 16px;
-    margin-left: 20px;
-    margin-right: 20px;
-    max-width: 382px;
+    /* margin-left: 20px;
+    margin-right: 20px; */
+    max-width: 788px;
   }
   
   .calendarHeader {
@@ -366,9 +405,11 @@
 @media (max-width: 667px) {
   .calendarContainer {
     padding: 16px;
-    margin-left: 20px;
-    margin-right: 20px;
-    max-width: 343px;
+    /* margin-left: 20px;
+    margin-right: 20px; */
+    margin-top: 20px;
+    /* margin-bottom: 20px; */
+    max-width: 398px;
   }
   
   .calendarHeader {
@@ -404,7 +445,16 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 540px) {
+  .calendarContainer {
+    padding: 16px;
+    /* margin-left: 20px;
+    margin-right: 20px; */
+    margin-top: 20px;
+    /* margin-bottom: 20px; */
+    max-width: 508px;
+  }
+
   .weeks {
     margin-left: 14px;
   }
