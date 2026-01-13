@@ -126,7 +126,7 @@
 
 .experienceRole,
 .experienceRoleActive {
-    font-size: 1.25rem;
+    font-size: 15px;
     font-weight: 600;
     margin: 0 0 0.5rem 0;
     color: #111827;
@@ -187,7 +187,7 @@
 .descriptionItem {
     display: flex;
     align-items: flex-start;
-    margin-bottom: 0.5rem;
+    margin-bottom: 5px;
     line-height: 1.5;
 }
 
@@ -203,6 +203,7 @@
 
 .descriptionText {
     color: #4b5563;
+    font-size: 13px !important;
     transition: color 0.3s ease;
     flex: 1;
     line-height: 1.6;
