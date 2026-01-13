@@ -74,23 +74,23 @@ const GitHubCalendar = ({ username, token, isDarkMode }) => {
             const endDate = new Date(year, 11, 31); // December 31st of selected year
 
             const query = `
-        query {
-          user(login: "${username}") {
-            contributionsCollection(from: "${startDate.toISOString()}", to: "${endDate.toISOString()}") {
-              contributionCalendar {
-                totalContributions
-                weeks {
-                  contributionDays {
-                    contributionCount
-                    date
-                    weekday
-                  }
-                }
-              }
-            }
-          }
-        }
-      `;
+                            query {
+                            user(login: "${username}") {
+                                contributionsCollection(from: "${startDate.toISOString()}", to: "${endDate.toISOString()}") {
+                                contributionCalendar {
+                                    totalContributions
+                                    weeks {
+                                    contributionDays {
+                                        contributionCount
+                                        date
+                                        weekday
+                                    }
+                                    }
+                                }
+                                }
+                            }
+                            }
+                        `;
 
             const response = await fetch('https://api.github.com/graphql', {
                 method: 'POST',
@@ -182,9 +182,8 @@ const GitHubCalendar = ({ username, token, isDarkMode }) => {
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', {
-            weekday: 'long',
             year: 'numeric',
-            month: 'long',
+            month: 'numeric',
             day: 'numeric'
         });
     };
