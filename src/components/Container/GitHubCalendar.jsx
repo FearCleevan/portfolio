@@ -23,12 +23,12 @@ const GitHubCalendar = ({ username, token, isDarkMode }) => {
 
                 // First, get user creation date to determine available years
                 const userQuery = `
-          query {
-            user(login: "${username}") {
-              createdAt
-            }
-          }
-        `;
+                                    query {
+                                        user(login: "${username}") {
+                                        createdAt
+                                        }
+                                    }
+                                `;
 
                 const userResponse = await fetch('https://api.github.com/graphql', {
                     method: 'POST',
