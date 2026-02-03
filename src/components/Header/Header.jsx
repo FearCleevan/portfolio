@@ -82,7 +82,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                         <span>{personalDetails?.address || "Davao City, Philippines"}</span>
                     </div>
                     <p className={`${styles.title} ${isDarkMode ? styles.darkText : ''}`}>
-                        {personalDetails?.jobTitle || "Junior Web Developer"}
+                        {personalDetails?.jobTitle || "Full Stack Developer"}
                     </p>
                     <div className={styles.buttons}>
                         <button

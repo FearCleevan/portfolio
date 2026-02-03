@@ -29,7 +29,7 @@ function App() {
       try {
         // Initialize Firebase auth with persistence
         await initAuth();
-        
+
         // Get the current user if already logged in
         const user = getCurrentUser();
         setCurrentUser(user);
@@ -54,15 +54,15 @@ function App() {
   // Show loading state while checking authentication
   if (!isAuthChecked) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: '100vh',
         background: '#fffff'
       }}>
-        <div style={{ 
-          color: 'white', 
+        <div style={{
+          color: 'white',
           fontSize: '18px',
           textAlign: 'center'
         }}>
@@ -75,71 +75,74 @@ function App() {
   return (
     <>
       <Routes>
-        <Route 
-          path="/" 
+        <Route
+          path="/"
           element={
-            <Main 
-              isDarkMode={isDarkMode} 
-              toggleDarkMode={toggleDarkMode} 
+            <Main
+              isDarkMode={isDarkMode}
+              toggleDarkMode={toggleDarkMode}
             />
-          } 
+          }
         />
-        <Route 
-          path="/tech-stack" 
+        <Route
+          path="/tech-stack"
           element={
-            <FullTechStack 
-              isDarkMode={isDarkMode} 
+            <FullTechStack
+              isDarkMode={isDarkMode}
             />
-          } 
+          }
         />
-        <Route 
-          path="/experience" 
+        <Route
+          path="/experience"
           element={
-            <FullExperience 
-              isDarkMode={isDarkMode} 
+            <FullExperience
+              isDarkMode={isDarkMode}
             />
-          } 
+          }
         />
-        <Route 
-          path="/projects" 
+        <Route
+          path="/projects"
           element={
-            <AllProjects 
-              isDarkMode={isDarkMode} 
+            <AllProjects
+              isDarkMode={isDarkMode}
             />
-          } 
+          }
         />
-        <Route 
-          path="/certifications" 
+        <Route
+          path="/certifications"
           element={
-            <AllCertifications 
-              isDarkMode={isDarkMode} 
+            <AllCertifications
+              isDarkMode={isDarkMode}
             />
-          } 
+          }
         />
-        <Route 
-          path="/blog" 
+        <Route
+          path="/blog"
           element={
-            <RecentBlogs 
-              isDarkMode={isDarkMode} 
+            <RecentBlogs
+              isDarkMode={isDarkMode}
             />
-          } 
+          }
         />
-        <Route 
-          path="/blog/:slug" 
+        <Route
+          path="/blog/:slug"
           element={
-            <BlogPost 
-              isDarkMode={isDarkMode} 
+            <BlogPost
+              isDarkMode={isDarkMode}
             />
-          } 
+          }
         />
-        <Route path="/LoginPanel" element={<LoginPage />} />
-        <Route 
-          path="/AdminPanel" 
-          element={<ProtectedRoute element={AdminPanel} />} 
+        <Route
+          path="/LoginPanel"
+          element={<LoginPage />}
         />
-        <Route 
-          path="/AdminPanel/content" 
-          element={<ProtectedRoute element={ContentEditor} />} 
+        <Route
+          path="/AdminPanel"
+          element={<ProtectedRoute element={AdminPanel} />}
+        />
+        <Route
+          path="/AdminPanel/content"
+          element={<ProtectedRoute element={ContentEditor} />}
         />
       </Routes>
       <ToastContainer
