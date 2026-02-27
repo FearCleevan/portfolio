@@ -1,6 +1,12 @@
 // src/services/aiService.js
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyBm6hjZtO5UXECsPwa4sOG3FDupZA-ZM9w';
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-1.5-flash'];
+
+const REQUEST_TIMEOUT_MS = 30000;
+
+const POPULAR_LANGUAGES = [
+  'javascript', 'typescript', 'python', 'java', 'c', 'cpp', 'csharp', 'go', 'rust', 'php', 'ruby', 'kotlin', 'swift', 'sql', 'bash'
+];
 
 export class AIService {
   constructor() {
@@ -8,782 +14,309 @@ export class AIService {
     this.conversationHistory = [];
   }
 
-  // SMART DATA MAPPING - Converts your Firebase structure to AI-expected format
   mapFirebaseDataToAIContext(firebaseData) {
-    if (!firebaseData) {
-      console.log('No Firebase data provided to mapper');
-      return null;
-    }
+    if (!firebaseData) return null;
 
-    console.log('🔍 Raw Firebase Data Received:', firebaseData);
-    
-    const {
-      personalDetails,
-      projects,
-      experience,
-      techStack,
-      certifications,
-      blogPosts,
-      aboutContent
-    } = firebaseData;
+    const personal = firebaseData.personalDetails || {};
+    const aboutContent = Array.isArray(firebaseData.aboutContent) ? firebaseData.aboutContent : [];
 
-    // Map personal details with proper fallbacks
-    const mappedPersonalDetails = personalDetails ? {
-      name: personalDetails.fullName || 'Peter Paul Abillar Lazan',
-      title: personalDetails.jobTitle || 'Junior Web Developer',
-      email: personalDetails.email || 'fearcleevan123@gmail.com',
-      phone: personalDetails.phone || '+63 951 537 9127',
-      location: personalDetails.address || 'Davao City, Philippines',
-      bio: aboutContent && aboutContent.length > 0 ? aboutContent[0] : 'Passionate developer specializing in modern web technologies and creating innovative solutions',
-      availability: 'Available for new projects and opportunities',
-      calendlyUrl: personalDetails.calendlyUrl || 'https://calendly.com/fearcleevan/30min',
-      linkedinUrl: personalDetails.linkedinUrl || 'https://linkedin.com/in/peterpaullazan',
-      githubUrl: personalDetails.githubUrl || 'https://github.com/FearCleevan',
-      instagramUrl: personalDetails.instagramUrl || 'https://www.instagram.com/fearcleevan12345/',
-      facebookUrl: personalDetails.facebookUrl || 'https://www.facebook.com/FearCleevan'
-    } : {
-      name: 'Peter Paul Abillar Lazan',
-      title: 'Junior Web Developer',
-      email: 'fearcleevan123@gmail.com',
-      phone: '+63 951 537 9127',
-      location: 'Davao City, Philippines',
-      bio: 'Passionate developer specializing in modern web technologies',
-      availability: 'Available for new projects and opportunities',
-      calendlyUrl: 'https://calendly.com/fearcleevan/30min',
-      linkedinUrl: 'https://linkedin.com/in/peterpaullazan',
-      githubUrl: 'https://github.com/FearCleevan'
-    };
-
-    // Map projects with validation
-    const mappedProjects = (projects && Array.isArray(projects)) ? projects.map(project => ({
-      title: project.title || 'Untitled Project',
-      description: project.description || 'A web development project',
-      technologies: project.domain ? [project.domain] : ['Web Technologies'],
-      githubUrl: project.url || '',
-      liveUrl: project.url || '',
-      category: project.category || 'Web Development'
-    })) : [
-      {
-        title: 'Portfolio Website',
-        description: 'Personal portfolio website built with React and Firebase',
-        technologies: ['React', 'Firebase', 'CSS'],
-        githubUrl: 'https://github.com/FearCleevan',
-        liveUrl: window.location.origin,
-        category: 'Web Development'
-      }
-    ];
-
-    // Map experience with date parsing
-    const mappedExperience = (experience && Array.isArray(experience)) ? experience.map(exp => ({
-      title: exp.role || 'Developer',
-      company: exp.company || 'Technology Company',
-      startDate: this.extractYearFromExperience(exp.year) || '2022',
-      endDate: exp.status === 'active' || exp.status === 'current' ? 'Present' : this.extractEndYear(exp.year) || '2023',
-      description: `${exp.role} at ${exp.company} from ${exp.year}`,
-      technologies: exp.technologies || []
-    })) : [
-      {
-        title: 'Web Developer',
-        company: 'Various Projects',
-        startDate: '2022',
-        endDate: 'Present',
-        description: 'Working on various web development projects and building portfolio',
-        technologies: ['React', 'JavaScript', 'Firebase']
-      }
-    ];
-
-    // Map tech stack with grouping
-    const mappedTechStack = (techStack && Array.isArray(techStack)) ? techStack.map(group => ({
-      category: group.title || 'Technologies',
-      items: (group.items && Array.isArray(group.items)) ? group.items.map(item => ({
-        name: typeof item === 'string' ? item : item.name || 'Technology',
-        level: 'Proficient',
-        description: ''
-      })) : []
-    })) : [
-      {
-        category: 'Frontend',
-        items: [
-          { name: 'React', level: 'Proficient', description: '' },
-          { name: 'JavaScript', level: 'Proficient', description: '' },
-          { name: 'HTML5', level: 'Proficient', description: '' },
-          { name: 'CSS3', level: 'Proficient', description: '' }
-        ]
+    return {
+      personalDetails: {
+        name: personal.fullName || 'Peter Paul Abillar Lazan',
+        title: personal.jobTitle || 'Web Developer',
+        email: personal.email || 'fearcleevan123@gmail.com',
+        phone: personal.phone || '+63 951 537 9127',
+        location: personal.address || 'Davao City, Philippines',
+        calendlyUrl: personal.calendlyUrl || 'https://calendly.com/fearcleevan/30min',
+        linkedinUrl: personal.linkedinUrl || '',
+        githubUrl: personal.githubUrl || '',
+        bio: aboutContent.join(' ').trim() || 'Passionate developer focused on modern web engineering.'
       },
-      {
-        category: 'Backend',
-        items: [
-          { name: 'Node.js', level: 'Proficient', description: '' },
-          { name: 'Firebase', level: 'Proficient', description: '' },
-          { name: 'Express', level: 'Proficient', description: '' }
-        ]
-      }
-    ];
-
-    // Map certifications
-    const mappedCertifications = (certifications && Array.isArray(certifications)) ? certifications.map(cert => ({
-      name: cert.title || 'Web Development Certification',
-      issuer: cert.issuer || 'Online Platform',
-      date: 'Completed',
-      description: cert.description || '',
-      url: cert.url || ''
-    })) : [
-      {
-        name: 'Full Stack Development',
-        issuer: 'Online Learning Platform',
-        date: '2023',
-        description: 'Comprehensive web development certification',
-        url: ''
-      }
-    ];
-
-    // Map blog posts
-    const mappedBlogPosts = (blogPosts && Array.isArray(blogPosts)) ? blogPosts.map(post => ({
-      title: post.title || 'Blog Post',
-      publishDate: 'Recent',
-      excerpt: post.description || post.excerpt || 'Read more about web development topics',
-      tags: post.tags || []
-    })) : [];
-
-    // Map about content
-    const mappedAboutContent = (aboutContent && Array.isArray(aboutContent)) ? aboutContent.map((content, index) => ({
-      title: `About Peter ${index + 1}`,
-      content: content
-    })) : [
-      {
-        title: 'About Peter',
-        content: 'Passionate web developer with experience in modern technologies and a focus on creating user-friendly applications.'
-      }
-    ];
-
-    const mappedData = {
-      personalDetails: mappedPersonalDetails,
-      projects: mappedProjects,
-      experience: mappedExperience,
-      techStack: mappedTechStack,
-      certifications: mappedCertifications,
-      blogPosts: mappedBlogPosts,
-      aboutContent: mappedAboutContent
-    };
-
-    console.log('✅ Mapped AI Data:', mappedData);
-    return mappedData;
-  }
-
-  // Helper methods for date extraction
-  extractYearFromExperience(yearString) {
-    if (!yearString) return '2022';
-    const match = yearString.match(/\d{4}/);
-    return match ? match[0] : '2022';
-  }
-
-  extractEndYear(yearString) {
-    if (!yearString) return '2023';
-    const matches = yearString.match(/\d{4}/g);
-    return matches && matches.length > 1 ? matches[1] : '2023';
-  }
-
-  // SMART CONTEXT FILTERING - Only includes relevant data based on user query
-  generateSmartContext(userData, userMessage) {
-    const mappedData = this.mapFirebaseDataToAIContext(userData);
-    if (!mappedData) {
-      console.log('🚨 Using fallback context - no mapped data available');
-      return this.getFallbackContext();
-    }
-
-    const lowerMessage = userMessage.toLowerCase();
-    const contextParts = [];
-
-    console.log(`🎯 Analyzing user intent for: "${userMessage}"`);
-
-    // Always include personal details for contact info
-    contextParts.push(this.getPersonalDetailsContext(mappedData.personalDetails));
-
-    // Add relevant sections based on user intent
-    if (this.hasSkillIntent(lowerMessage) || this.hasTechIntent(lowerMessage)) {
-      console.log('🎯 Including tech stack context');
-      contextParts.push(this.getTechStackContext(mappedData.techStack));
-    }
-
-    if (this.hasProjectIntent(lowerMessage)) {
-      console.log('🎯 Including projects context');
-      contextParts.push(this.getProjectsContext(mappedData.projects));
-    }
-
-    if (this.hasExperienceIntent(lowerMessage)) {
-      console.log('🎯 Including experience context');
-      contextParts.push(this.getExperienceContext(mappedData.experience));
-    }
-
-    if (this.hasCertificationIntent(lowerMessage)) {
-      console.log('🎯 Including certifications context');
-      contextParts.push(this.getCertificationsContext(mappedData.certifications));
-    }
-
-    if (this.hasAboutIntent(lowerMessage)) {
-      console.log('🎯 Including about context');
-      contextParts.push(this.getAboutContext(mappedData.aboutContent));
-    }
-
-    // If no specific intent detected or it's a greeting, include condensed version of all data
-    if (contextParts.length === 1 || this.hasGreetingIntent(lowerMessage)) {
-      console.log('🎯 Including comprehensive context (general query)');
-      contextParts.push(
-        this.getCondensedTechContext(mappedData.techStack),
-        this.getCondensedProjectsContext(mappedData.projects),
-        this.getCondensedExperienceContext(mappedData.experience)
-      );
-    }
-
-    const fullContext = `
-# PERSONAL AI ASSISTANT FOR PETER LAZAN
-
-You are Peter Lazan's AI assistant for his portfolio website. Your role is to help visitors learn about Peter's skills, projects, experience, and facilitate meetings.
-
-## CRITICAL INSTRUCTIONS:
-- Use ONLY the information provided below
-- DO NOT make up or assume any information not present in the data
-- If information is missing, politely say "I don't have that specific information in my database"
-- Be professional, friendly, and engaging
-- Always maintain a helpful, solution-oriented approach
-
-## AVAILABLE INFORMATION:
-${contextParts.join('\n\n')}
-
-## RESPONSE GUIDELINES:
-1. Use natural, conversational language with occasional emojis 🚀💻👨‍💻
-2. Break complex information into readable chunks
-3. Be enthusiastic about Peter's work and achievements
-4. Encourage further engagement and questions
-5. For meeting requests, direct to Calendly: ${mappedData.personalDetails.calendlyUrl}
-6. If asked about something not in the data, redirect to what you do know
-7. Always be truthful about what information is available
-
-## MEETING BOOKING:
-- Primary: Use Calendly: ${mappedData.personalDetails.calendlyUrl}
-- Alternative: Email: ${mappedData.personalDetails.email}
-- Phone: ${mappedData.personalDetails.phone}
-`;
-
-    console.log('📝 Generated smart context with', contextParts.length, 'sections');
-    return fullContext;
-  }
-
-  // Individual context generators for smart filtering
-  getPersonalDetailsContext(personalDetails) {
-    return `## PERSONAL DETAILS 👨‍💼
-**Name:** ${personalDetails.name}
-**Title:** ${personalDetails.title}
-**Email:** ${personalDetails.email}
-**Phone:** ${personalDetails.phone}
-**Location:** ${personalDetails.location}
-**Bio:** ${personalDetails.bio}
-**Availability:** ${personalDetails.availability}
-
-**Contact Links:**
-- 📅 Schedule Meeting: ${personalDetails.calendlyUrl}
-- 💼 LinkedIn: ${personalDetails.linkedinUrl}
-- 💻 GitHub: ${personalDetails.githubUrl}
-- 📷 Instagram: ${personalDetails.instagramUrl}
-- 👥 Facebook: ${personalDetails.facebookUrl}`;
-  }
-
-  getTechStackContext(techStack) {
-    const techContent = techStack && techStack.length > 0 ? techStack.map(group => `
-**${group.category}:**
-${group.items && group.items.length > 0 ? group.items.map(item => `• ${item.name}`).join('\n') : '• No specific technologies listed'}`).join('\n') : '• Technical skills information not currently available';
-
-    return `## TECHNICAL SKILLS 🛠️
-${techContent}`;
-  }
-
-  getCondensedTechContext(techStack) {
-    if (!techStack || techStack.length === 0) return '';
-
-    const mainTech = techStack.flatMap(group => 
-      group.items ? group.items.slice(0, 3).map(item => item.name) : []
-    ).filter(Boolean);
-
-    return `## KEY TECHNOLOGIES 💻
-${mainTech.length > 0 ? mainTech.map(tech => `• ${tech}`).join('\n') : 'Technical details available in Skills section'}`;
-  }
-
-  getProjectsContext(projects) {
-    const projectsContent = projects && projects.length > 0 ? projects.map(project => `
-**${project.title}** ${project.category ? `(${project.category})` : ''}
-${project.description ? `📝 ${project.description}` : ''}
-${project.technologies && project.technologies.length > 0 ? `🛠️ Technologies: ${project.technologies.join(', ')}` : ''}
-${project.liveUrl ? `🌐 Live Demo: ${project.liveUrl}` : ''}
-${project.githubUrl ? `📂 GitHub: ${project.githubUrl}` : ''}`).join('\n\n') : '• Project details not currently available';
-
-    return `## PROJECTS PORTFOLIO 🚀
-${projectsContent}`;
-  }
-
-  getCondensedProjectsContext(projects) {
-    if (!projects || projects.length === 0) return '';
-
-    const recentProjects = projects.slice(0, 2);
-    return `## RECENT PROJECTS 📂
-${recentProjects.map(project => `• **${project.title}**: ${project.description || 'Web development project'}`).join('\n')}`;
-  }
-
-  getExperienceContext(experience) {
-    const experienceContent = experience && experience.length > 0 ? experience.map(exp => `
-**${exp.title}** at **${exp.company}**
-⏰ ${exp.startDate} - ${exp.endDate}
-${exp.description ? `📋 ${exp.description}` : ''}
-${exp.technologies && exp.technologies.length > 0 ? `🛠️ Technologies: ${exp.technologies.join(', ')}` : ''}`).join('\n\n') : '• Experience details not currently available';
-
-    return `## PROFESSIONAL EXPERIENCE 👨‍💻
-${experienceContent}`;
-  }
-
-  getCondensedExperienceContext(experience) {
-    if (!experience || experience.length === 0) return '';
-
-    const recentExp = experience.slice(0, 2);
-    return `## WORK EXPERIENCE 💼
-${recentExp.map(exp => `• **${exp.title}** at ${exp.company} (${exp.startDate}-${exp.endDate})`).join('\n')}`;
-  }
-
-  getCertificationsContext(certifications) {
-    const certsContent = certifications && certifications.length > 0 ? certifications.map(cert => `
-**${cert.name}** from ${cert.issuer}
-📅 ${cert.date}
-${cert.description ? `📋 ${cert.description}` : ''}
-${cert.url ? `🔗 ${cert.url}` : ''}`).join('\n\n') : '• Certification details not currently available';
-
-    return `## CERTIFICATIONS 🏆
-${certsContent}`;
-  }
-
-  getAboutContext(aboutContent) {
-    const aboutContentText = aboutContent && aboutContent.length > 0 ? aboutContent.map(section => section.content).join('\n\n') : 'About information not currently available';
-
-    return `## ABOUT PETER 📖
-${aboutContentText}`;
-  }
-
-  // Enhanced context generator (fallback to full context)
-  generateContext(userData) {
-    const mappedData = this.mapFirebaseDataToAIContext(userData);
-    
-    if (!mappedData) {
-      return this.getFallbackContext();
-    }
-
-    const {
-      personalDetails,
-      projects,
-      experience,
-      techStack,
-      certifications,
-      blogPosts,
+      projects: Array.isArray(firebaseData.projects)
+        ? firebaseData.projects.map((project) => ({
+            id: project.id,
+            title: project.title || 'Untitled Project',
+            description: project.description || 'No description provided.',
+            url: project.url || '',
+            domain: project.domain || '',
+            technologies: Array.isArray(project.technologies) ? project.technologies : []
+          }))
+        : [],
+      experience: Array.isArray(firebaseData.experience)
+        ? firebaseData.experience.map((exp) => ({
+            role: exp.role || 'Developer',
+            company: exp.company || '',
+            year: exp.year || '',
+            status: exp.status || 'active'
+          }))
+        : [],
+      techStack: Array.isArray(firebaseData.techStack) ? firebaseData.techStack : [],
+      certifications: Array.isArray(firebaseData.certifications) ? firebaseData.certifications : [],
+      blogPosts: Array.isArray(firebaseData.blogPosts) ? firebaseData.blogPosts : [],
       aboutContent
-    } = mappedData;
-
-    return `
-You are Peter Lazan's AI assistant for his portfolio website. You help visitors learn about Peter's skills, projects, experience, and facilitate meetings.
-
-CRITICAL: Use ONLY the information provided below. Do not make up or assume any information not present in the data.
-
-PERSONAL DETAILS:
-- Name: ${personalDetails.name}
-- Title: ${personalDetails.title}
-- Email: ${personalDetails.email}
-- Phone: ${personalDetails.phone}
-- Location: ${personalDetails.location}
-- Bio: ${personalDetails.bio}
-- Availability: ${personalDetails.availability}
-- Calendly: ${personalDetails.calendlyUrl}
-- LinkedIn: ${personalDetails.linkedinUrl}
-- GitHub: ${personalDetails.githubUrl}
-
-TECHNICAL SKILLS & EXPERTISE:
-${techStack && techStack.length > 0 ? techStack.map(group => `
-${group.category}:
-${group.items && group.items.length > 0 ? group.items.map(item => `- ${item.name}`).join('\n') : '- No specific technologies listed'}
-`).join('\n') : 'Technical skills information not currently available'}
-
-PROFESSIONAL EXPERIENCE:
-${experience && experience.length > 0 ? experience.map(exp => `
-- ${exp.title} at ${exp.company} (${exp.startDate} - ${exp.endDate})
-  ${exp.description ? `Description: ${exp.description}` : ''}
-  ${exp.technologies && exp.technologies.length > 0 ? `Technologies: ${exp.technologies.join(', ')}` : ''}
-`).join('\n') : 'Experience details not available'}
-
-PROJECTS PORTFOLIO:
-${projects && projects.length > 0 ? projects.map(project => `
-- ${project.title}${project.category ? ` (${project.category})` : ''}
-  ${project.description ? `Description: ${project.description}` : ''}
-  ${project.technologies && project.technologies.length > 0 ? `Technologies: ${project.technologies.join(', ')}` : ''}
-  ${project.githubUrl ? `GitHub: ${project.githubUrl}` : ''}
-  ${project.liveUrl ? `Live Demo: ${project.liveUrl}` : ''}
-`).join('\n') : 'Project details not available'}
-
-CERTIFICATIONS:
-${certifications && certifications.length > 0 ? certifications.map(cert => `
-- ${cert.name} from ${cert.issuer} (${cert.date})
-  ${cert.description ? `Details: ${cert.description}` : ''}
-  ${cert.url ? `URL: ${cert.url}` : ''}
-`).join('\n') : 'Certification details not available'}
-
-BLOG POSTS/ARTICLES:
-${blogPosts && blogPosts.length > 0 ? blogPosts.map(post => `
-- ${post.title} (${post.publishDate})
-  ${post.excerpt ? `Excerpt: ${post.excerpt}` : ''}
-  ${post.tags && post.tags.length > 0 ? `Tags: ${post.tags.join(', ')}` : ''}
-`).join('\n') : 'Blog posts not available'}
-
-ABOUT CONTENT:
-${aboutContent && aboutContent.length > 0 ? aboutContent.map(section => `
-${section.title}:
-${section.content}
-`).join('\n') : 'About information not available'}
-
-CONVERSATION GUIDELINES:
-1. Be professional, friendly, and engaging
-2. Use ONLY the information provided above - do not invent or assume details
-3. If information is missing, say "I don't have that specific information in my database"
-4. For technical questions, provide detailed explanations based on the skills listed
-5. When discussing projects, highlight relevant technologies and achievements
-6. For meeting requests, guide users to the Calendly link
-7. Always maintain a helpful, solution-oriented approach
-8. If someone asks about something not in the data, politely redirect to what you do know
-
-MEETING BOOKING PROCESS:
-When someone wants to schedule a meeting:
-1. Direct them to Peter's Calendly: ${personalDetails.calendlyUrl}
-2. Alternatively, provide Peter's email: ${personalDetails.email}
-3. Understand the purpose (project discussion, job opportunity, consultation)
-4. Confirm they can use the provided scheduling options
-
-RESPONSE STYLE:
-- Use natural, conversational language
-- Include emojis occasionally to keep it friendly 🚀💻👨‍💻
-- Break complex information into readable chunks
-- Be enthusiastic about Peter's work
-- Encourage further engagement and questions
-- Always be truthful about what information is available
-`;
+    };
   }
 
-  getFallbackContext() {
-    return `
-You are Peter Lazan's AI assistant. Since I cannot access the current portfolio data, please:
-
-1. Be helpful and professional
-2. Let users know you're experiencing technical difficulties with data access
-3. Suggest they check the main portfolio sections for detailed information
-4. Still help with general inquiries about web development, projects, or scheduling meetings
-5. Direct them to contact Peter directly for specific information
-
-For now, focus on:
-- General web development discussions
-- Meeting scheduling assistance using Calendly: https://calendly.com/fearcleevan/30min
-- Directing to portfolio sections
-- Being transparent about data limitations
-
-Peter's basic contact information:
-- Email: fearcleevan123@gmail.com
-- Phone: +63 951 537 9127
-- Location: Davao City, Philippines
-`;
+  hasMeetingIntent(message) {
+    return /\b(meeting|schedule|book|appointment|call|hire|interview|contact|talk)\b/i.test(message);
   }
 
-  async sendMessage(message, userData = null) {
-    try {
-      console.log('🤖 AI Service: Processing message:', message);
-      console.log('📊 User Data Available:', !!userData);
+  hasProjectIntent(message) {
+    return /\b(project|portfolio|work|built|build|app|website|demo|github)\b/i.test(message);
+  }
 
-      // Use smart context that filters data based on user query
-      const context = userData 
-        ? this.generateSmartContext(userData, message)
-        : this.getFallbackContext();
-      
-      // Add to conversation history
-      this.conversationHistory.push({
-        role: "user",
-        parts: [{ text: message }]
-      });
+  hasExperienceIntent(message) {
+    return /\b(experience|career|background|resume|cv|job|company|role)\b/i.test(message);
+  }
 
-      // Prepare the full prompt with context and conversation history
-      const conversationContext = this.conversationHistory
-        .slice(-6) // Keep last 6 messages for context
-        .map(msg => `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.parts[0].text}`)
-        .join('\n');
+  hasSkillIntent(message) {
+    return /\b(skill|skills|tech|technology|stack|framework|language|expertise)\b/i.test(message);
+  }
 
-      const fullPrompt = `${context}
+  hasCertificationIntent(message) {
+    return /\b(certification|certificate|credential|qualification|course)\b/i.test(message);
+  }
 
-Recent Conversation:
-${conversationContext}
+  hasAboutIntent(message) {
+    return /\b(who are you|about|introduce|bio|profile)\b/i.test(message);
+  }
 
-User: ${message}
+  hasGreetingIntent(message) {
+    return /\b(hello|hi|hey|yo|good morning|good afternoon|good evening)\b/i.test(message);
+  }
 
-Assistant:`;
+  hasCodeIntent(message) {
+    return /\b(code|snippet|function|algorithm|debug|refactor|example|implement|write)\b/i.test(message);
+  }
 
-      console.log('🚀 Sending request to Gemini API...');
-      
-      const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: fullPrompt
-                }
-              ]
-            }
-          ],
-          generationConfig: {
-            maxOutputTokens: 1000,
-            temperature: 0.7,
-            topP: 0.8,
-            topK: 40,
-          },
-          safetySettings: [
-            {
-              category: "HARM_CATEGORY_HARASSMENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_HATE_SPEECH",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            }
-          ]
-        })
-      });
+  hasJokeIntent(message) {
+    return /\b(joke|funny|humor|laugh)\b/i.test(message);
+  }
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ API Response Error:', response.status, errorText);
-        
-        if (response.status === 404) {
-          throw new Error('Model not found. Please check the model name.');
-        } else if (response.status === 403) {
-          throw new Error('API key invalid or quota exceeded.');
-        } else if (response.status === 429) {
-          throw new Error('Rate limit exceeded. Please try again later.');
-        } else {
-          throw new Error(`API error: ${response.status} ${response.statusText}`);
-        }
-      }
+  extractLanguagePreference(message) {
+    const lower = message.toLowerCase();
+    const match = POPULAR_LANGUAGES.find((lang) => lower.includes(lang));
+    return match || null;
+  }
 
-      const data = await response.json();
-      
-      if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-        console.error('❌ Unexpected API response format:', data);
-        throw new Error('Invalid response from AI service');
-      }
+  flattenTechStack(techStack) {
+    return techStack
+      .flatMap((group) => (Array.isArray(group.items) ? group.items : []))
+      .map((item) => (typeof item === 'string' ? item : item?.name || ''))
+      .filter(Boolean);
+  }
 
-      const aiResponse = data.candidates[0].content.parts[0].text;
-      
-      // Add AI response to conversation history
-      this.conversationHistory.push({
-        role: "model",
-        parts: [{ text: aiResponse }]
-      });
+  buildDynamicContext(userData, userMessage) {
+    const mapped = this.mapFirebaseDataToAIContext(userData);
+    if (!mapped) return this.getFallbackContext();
 
-      console.log('✅ Successfully received AI response');
-      return aiResponse;
+    const sections = [];
+    const q = userMessage.toLowerCase();
 
-    } catch (error) {
-      console.error('❌ AI Service Error:', error);
-      
-      // More specific error handling
-      if (error.message.includes('API key') || error.message.includes('quota') || error.message.includes('403')) {
-        throw new Error('AI service configuration error. Please check the API key and quota.');
-      } else if (error.message.includes('404') || error.message.includes('Model not found')) {
-        return this.tryFallbackModel(message, userData);
-      } else if (error.message.includes('Rate limit') || error.message.includes('429')) {
-        throw new Error('AI service is currently busy. Please try again in a moment.');
-      } else {
-        return this.getFallbackResponse(message);
-      }
+    sections.push(`PERSONAL\nName: ${mapped.personalDetails.name}\nTitle: ${mapped.personalDetails.title}\nEmail: ${mapped.personalDetails.email}\nPhone: ${mapped.personalDetails.phone}\nLocation: ${mapped.personalDetails.location}\nCalendly: ${mapped.personalDetails.calendlyUrl}\nLinkedIn: ${mapped.personalDetails.linkedinUrl}\nGitHub: ${mapped.personalDetails.githubUrl}`);
+
+    if (this.hasAboutIntent(q) || this.hasGreetingIntent(q)) {
+      sections.push(`ABOUT\n${mapped.personalDetails.bio}`);
     }
+
+    if (this.hasProjectIntent(q) || this.hasSkillIntent(q)) {
+      const projectRows = mapped.projects.slice(0, 8).map((project) =>
+        `- ${project.title}: ${project.description} | Technologies: ${(project.technologies || []).join(', ') || 'N/A'} | URL: ${project.url || 'N/A'}`
+      );
+      sections.push(`PROJECTS\n${projectRows.join('\n') || 'No project data available.'}`);
+    }
+
+    if (this.hasExperienceIntent(q)) {
+      const expRows = mapped.experience.map((exp) => `- ${exp.role} at ${exp.company} (${exp.year || 'N/A'})`);
+      sections.push(`EXPERIENCE\n${expRows.join('\n') || 'No experience data available.'}`);
+    }
+
+    if (this.hasSkillIntent(q) || this.hasCodeIntent(q)) {
+      const technologies = this.flattenTechStack(mapped.techStack);
+      sections.push(`TECH STACK\n${technologies.length ? technologies.join(', ') : 'No stack data available.'}`);
+    }
+
+    if (this.hasCertificationIntent(q)) {
+      const certRows = mapped.certifications.map((cert) => `- ${cert.title || cert.name || 'Certification'} (${cert.issuer || 'Unknown issuer'})`);
+      sections.push(`CERTIFICATIONS\n${certRows.join('\n') || 'No certifications data available.'}`);
+    }
+
+    if (/\b(blog|article|post)\b/i.test(q)) {
+      const blogRows = mapped.blogPosts.map((post) => `- ${post.title || 'Blog Post'} (${post.slug || post.date || 'No date'})`);
+      sections.push(`BLOG POSTS\n${blogRows.join('\n') || 'No blog posts available.'}`);
+    }
+
+    return sections.join('\n\n');
   }
 
-  async tryFallbackModel(message, userData) {
-    console.log('🔄 Trying fallback model: gemini-1.5-flash');
-    try {
-      const fallbackUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
-      
-      const context = userData ? this.generateSmartContext(userData, message) : this.getFallbackContext();
-      const fullPrompt = `${context}\n\nUser: ${message}\n\nAssistant:`;
+  buildSystemInstruction(userMessage, userData) {
+    const languagePref = this.extractLanguagePreference(userMessage);
+    const mapped = this.mapFirebaseDataToAIContext(userData);
 
-      const response = await fetch(`${fallbackUrl}?key=${GEMINI_API_KEY}`, {
+    return [
+      'You are Peter Lazan\'s AI portfolio assistant.',
+      'Primary rule: be accurate and use only the provided context for personal credentials, projects, or claims about Peter.',
+      'If requested information is not in context, explicitly say you do not have that data.',
+      'You may answer general software questions using standard engineering knowledge.',
+      'When user asks for code, return a runnable code block in markdown fences.',
+      languagePref ? `Preferred code language: ${languagePref}.` : 'If language is unspecified, choose a common language suited to the task and mention your choice.',
+      'Use concise structure: short intro, answer, optional next step.',
+      'You can be friendly and occasionally use light humor when appropriate.',
+      mapped ? `Meeting link for contact requests: ${mapped.personalDetails.calendlyUrl}` : 'Meeting link for contact requests: https://calendly.com/fearcleevan/30min'
+    ].join(' ');
+  }
+
+  async callGemini(model, prompt) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: fullPrompt
-                }
-              ]
-            }
-          ],
+          contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
-            maxOutputTokens: 1000,
+            maxOutputTokens: 1200,
             temperature: 0.7,
+            topP: 0.9,
+            topK: 40
           }
         })
       });
 
       if (!response.ok) {
-        throw new Error(`Fallback model also failed: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`Gemini ${model} error: ${response.status} ${errorText}`);
       }
 
       const data = await response.json();
-      const aiResponse = data.candidates[0].content.parts[0].text;
-      
-      // Add to conversation history
-      this.conversationHistory.push({
-        role: "model",
-        parts: [{ text: aiResponse }]
-      });
-
-      return aiResponse;
-
-    } catch (fallbackError) {
-      console.error('❌ Fallback model also failed:', fallbackError);
-      return this.getFallbackResponse(message);
+      return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
-  getFallbackResponse(message) {
-    const lowerMessage = message.toLowerCase();
-    
-    if (this.hasMeetingIntent(lowerMessage)) {
-      return "I'd be happy to help you schedule a meeting with Peter! 🗓️ You can book directly through his Calendly: https://calendly.com/fearcleevan/30min or email him at fearcleevan123@gmail.com. He's available for project discussions, job opportunities, or technical consultations!";
+  buildLocalFallback(message, userData) {
+    const mapped = this.mapFirebaseDataToAIContext(userData);
+    const lower = message.toLowerCase();
+
+    if (this.hasJokeIntent(lower)) {
+      return 'Why do developers love dark mode? Because light attracts bugs.';
     }
-    
-    if (this.hasSkillIntent(lowerMessage)) {
-      return "Peter is a skilled web developer with expertise in modern technologies including React, JavaScript, Node.js, and Firebase. He specializes in full-stack web development and creating responsive, user-friendly applications. You can check the Skills section for detailed information about his technical capabilities. 💻";
+
+    if (!mapped) {
+      return 'I do not have portfolio context right now, but I can still help with general coding questions.';
     }
-    
-    if (this.hasProjectIntent(lowerMessage)) {
-      return "Peter has worked on various web development projects including his portfolio website, web applications, and other creative solutions. His projects typically use technologies like React, Firebase, and modern CSS. Please visit the Projects section to see his work with live demos and GitHub repositories. 🚀";
+
+    if (this.hasMeetingIntent(lower)) {
+      return `You can book a meeting with Peter here: ${mapped.personalDetails.calendlyUrl} or email ${mapped.personalDetails.email}.`;
     }
-    
-    if (this.hasExperienceIntent(lowerMessage)) {
-      return "Peter has experience in web development roles working with various technologies and frameworks. He's passionate about creating efficient and scalable web solutions. The Experience section contains detailed information about his work history and professional background. 👨‍💻";
+
+    if (this.hasProjectIntent(lower)) {
+      if (!mapped.projects.length) return 'I do not have project data right now.';
+      const top = mapped.projects.slice(0, 3).map((p) => `- ${p.title}: ${p.description}`).join('\n');
+      return `Here are some of Peter's projects:\n${top}`;
     }
-    
-    if (this.hasGreetingIntent(lowerMessage)) {
-      return "Hello! I'm Peter's AI assistant. 😊 I can help you learn about his technical skills, projects, work experience, or schedule a meeting. What would you like to know about Peter's portfolio?";
+
+    if (this.hasSkillIntent(lower)) {
+      const tech = this.flattenTechStack(mapped.techStack);
+      return tech.length
+        ? `Peter's known stack includes: ${tech.slice(0, 15).join(', ')}.`
+        : 'I do not have detailed tech stack data right now.';
     }
-    
-    return "I'm here to help you learn about Peter's portfolio! I can tell you about his technical skills, projects, work experience, certifications, or help schedule a meeting. What would you like to know? 🤔";
+
+    if (this.hasExperienceIntent(lower)) {
+      const exp = mapped.experience.slice(0, 3).map((e) => `- ${e.role} at ${e.company} (${e.year || 'N/A'})`).join('\n');
+      return exp || 'I do not have experience details right now.';
+    }
+
+    if (this.hasCodeIntent(lower)) {
+      return "Sure. Tell me the language and problem, and I'll return a full code snippet in a proper code block.";
+    }
+
+    if (this.hasGreetingIntent(lower)) {
+      return `Hi. I can help with Peter's credentials, projects, experience, and coding questions. You can also reach Peter at ${mapped.personalDetails.email}.`;
+    }
+
+    return 'I can help with portfolio info, coding, architecture, debugging, and interview prep. Ask anything specific.';
   }
 
-  // Enhanced intent detection
-  hasSkillIntent(message) {
-    const skillKeywords = [
-      'skill', 'expertise', 'technology', 'tech stack', 'framework',
-      'language', 'tool', 'what can you do', 'experience', 'proficient', 'technologies',
-      'stack', 'programming', 'coding', 'develop'
-    ];
-    return skillKeywords.some(keyword => message.includes(keyword));
+  async sendMessage(message, userData = null) {
+    const context = this.buildDynamicContext(userData, message);
+    const systemInstruction = this.buildSystemInstruction(message, userData);
+
+    this.conversationHistory.push({ role: 'user', text: message });
+    this.conversationHistory = this.conversationHistory.slice(-8);
+
+    const recentConversation = this.conversationHistory
+      .slice(-6)
+      .map((entry) => `${entry.role === 'user' ? 'User' : 'Assistant'}: ${entry.text}`)
+      .join('\n');
+
+    const fullPrompt = [
+      systemInstruction,
+      '',
+      'Context:',
+      context,
+      '',
+      'Recent Conversation:',
+      recentConversation,
+      '',
+      `User: ${message}`,
+      'Assistant:'
+    ].join('\n');
+
+    if (!GEMINI_API_KEY) {
+      const local = this.buildLocalFallback(message, userData);
+      this.conversationHistory.push({ role: 'assistant', text: local });
+      return local;
+    }
+
+    for (const model of GEMINI_MODELS) {
+      try {
+        const result = await this.callGemini(model, fullPrompt);
+        if (result) {
+          this.conversationHistory.push({ role: 'assistant', text: result });
+          this.conversationHistory = this.conversationHistory.slice(-8);
+          return result;
+        }
+      } catch {
+        // Try next model.
+      }
+    }
+
+    const fallback = this.buildLocalFallback(message, userData);
+    this.conversationHistory.push({ role: 'assistant', text: fallback });
+    return fallback;
   }
 
-  hasTechIntent(message) {
-    const techKeywords = [
-      'react', 'javascript', 'node', 'python', 'html', 'css', 'firebase',
-      'database', 'frontend', 'backend', 'fullstack', 'web development',
-      'typescript', 'mongodb', 'sql', 'api', 'git'
-    ];
-    return techKeywords.some(keyword => message.includes(keyword));
-  }
-
-  hasProjectIntent(message) {
-    const projectKeywords = [
-      'project', 'work', 'portfolio', 'what have you built',
-      'examples', 'case study', 'github', 'build', 'application',
-      'website', 'app', 'demo', 'show me your work'
-    ];
-    return projectKeywords.some(keyword => message.includes(keyword));
-  }
-
-  hasExperienceIntent(message) {
-    const experienceKeywords = [
-      'experience', 'work history', 'career', 'background',
-      'professional', 'job', 'position', 'employed', 'work',
-      'company', 'role', 'cv', 'resume'
-    ];
-    return experienceKeywords.some(keyword => message.includes(keyword));
-  }
-
-  hasCertificationIntent(message) {
-    const certKeywords = [
-      'certification', 'certificate', 'course', 'learning',
-      'qualification', 'credential', 'certified'
-    ];
-    return certKeywords.some(keyword => message.includes(keyword));
-  }
-
-  hasAboutIntent(message) {
-    const aboutKeywords = [
-      'about', 'who are you', 'background', 'story',
-      'introduce', 'tell me about', 'yourself'
-    ];
-    return aboutKeywords.some(keyword => message.includes(keyword));
-  }
-
-  hasMeetingIntent(message) {
-    const meetingKeywords = [
-      'meeting', 'schedule', 'book', 'call', 'discuss', 'consultation',
-      'interview', 'appointment', 'connect', 'talk', 'demo', 'hire', 'meet',
-      'contact', 'reach', 'available'
-    ];
-    return meetingKeywords.some(keyword => message.includes(keyword));
-  }
-
-  hasGreetingIntent(message) {
-    const greetingKeywords = [
-      'hello', 'hi', 'hey', 'greetings', 'good morning', 'good afternoon',
-      'good evening', 'howdy', 'what\'s up', 'yo', 'hi there'
-    ];
-    return greetingKeywords.some(keyword => message.includes(keyword));
-  }
-
-  // Clear conversation history
   clearHistory() {
     this.conversationHistory = [];
-    console.log('🗑️ Conversation history cleared');
   }
 
-  // Get conversation history (for debugging)
   getHistory() {
     return this.conversationHistory;
   }
 
-  // Check if service is ready
   isReady() {
-    return this.isInitialized && GEMINI_API_KEY;
+    return this.isInitialized;
+  }
+
+  getFallbackContext() {
+    return 'No live portfolio context is available.';
   }
 }
 
-// Create singleton instance
 export const aiService = new AIService();
 
-// Export a function to check if AI service is available
 export const isAIServiceAvailable = () => {
-  return aiService.isInitialized && GEMINI_API_KEY && GEMINI_API_KEY !== 'AIzaSyBm6hjZtO5UXECsPwa4sOG3FDupZA-ZM9w';
+  return Boolean(GEMINI_API_KEY);
 };
 
-// Export for debugging
 export const debugAIService = {
-  getApiKey: () => GEMINI_API_KEY ? '✅ API Key Set' : '❌ API Key Missing',
-  getApiUrl: () => GEMINI_API_URL,
+  getApiKey: () => (GEMINI_API_KEY ? 'API Key Set' : 'API Key Missing'),
   getHistory: () => aiService.getHistory(),
   clearHistory: () => aiService.clearHistory(),
   isReady: () => aiService.isReady()

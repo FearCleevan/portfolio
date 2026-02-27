@@ -540,6 +540,39 @@
     white-space: pre-wrap;
 }
 
+.codeBlockWrap {
+    margin-top: 8px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #d1d5db;
+}
+
+.codeLang {
+    background: #111827;
+    color: #f9fafb;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 10px;
+    text-transform: lowercase;
+}
+
+.codeBlock {
+    margin: 0;
+    padding: 10px;
+    background: #0b1220;
+    color: #e5e7eb;
+    font-size: 12px;
+    overflow-x: auto;
+}
+
+.darkMode .codeBlockWrap {
+    border-color: #374151;
+}
+
+.darkMode .codeBlock {
+    background: #030712;
+}
+
 /* Data Status Indicator */
 .dataStatus {
     display: flex;
