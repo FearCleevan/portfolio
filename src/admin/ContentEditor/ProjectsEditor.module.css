@@ -313,6 +313,30 @@
     font-size: 0.75rem;
 }
 
+.techChipContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.techChip {
+    border: 1px solid #dbeafe;
+    background: #eff6ff;
+    color: #1e3a8a;
+    border-radius: 999px;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.techChip:hover {
+    background: #dbeafe;
+}
+
 .imageGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));

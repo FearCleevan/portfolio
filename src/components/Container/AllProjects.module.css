@@ -90,6 +90,26 @@
     gap: 0.5rem;
 }
 
+.techList {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.techChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    border: 1px solid #dbeafe;
+    background: #eff6ff;
+    color: #1e3a8a;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
 .projectImageButton {
     border: none;
     padding: 0;
@@ -211,6 +231,12 @@
 
 .darkMode .projectImageButton {
     border-color: #4b5563;
+}
+
+.darkTechChip {
+    border-color: #1e3a8a !important;
+    background: rgba(30, 58, 138, 0.28) !important;
+    color: #dbeafe !important;
 }
 
 /* Loading and Error States */

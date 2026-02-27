@@ -271,6 +271,7 @@ export const getProjects = async () => {
           description: "Landscaping Services Landing Page",
           url: "https://scapedbm.com",
           domain: "scapedbm.com",
+          technologies: [],
           sampleImages: []
         }
       ];
@@ -286,9 +287,18 @@ export const getProjects = async () => {
 export const addProject = async (project) => {
   try {
     const docRef = doc(db, CONTENT_COLLECTION, "projects");
-    await updateDoc(docRef, {
-      items: arrayUnion(project)
-    });
+    const docSnap = await getDoc(docRef);
+    const currentItems = docSnap.exists() ? (docSnap.data().items || []) : [];
+    const existingIndex = currentItems.findIndex((item) => item.id === project.id);
+
+    if (existingIndex >= 0) {
+      const updatedItems = [...currentItems];
+      updatedItems[existingIndex] = project;
+      await setDoc(docRef, { items: updatedItems }, { merge: true });
+      return;
+    }
+
+    await setDoc(docRef, { items: [...currentItems, project] }, { merge: true });
   } catch (error) {
     console.error("Error adding project:", error);
     throw error;
@@ -298,12 +308,13 @@ export const addProject = async (project) => {
 export const updateProject = async (oldProject, newProject) => {
   try {
     const docRef = doc(db, CONTENT_COLLECTION, "projects");
-    await updateDoc(docRef, {
-      items: arrayRemove(oldProject)
-    });
-    await updateDoc(docRef, {
-      items: arrayUnion(newProject)
-    });
+    const docSnap = await getDoc(docRef);
+    const currentItems = docSnap.exists() ? (docSnap.data().items || []) : [];
+    const updatedItems = currentItems.map((item) =>
+      item.id === oldProject.id ? { ...item, ...newProject, id: oldProject.id } : item
+    );
+
+    await setDoc(docRef, { items: updatedItems }, { merge: true });
   } catch (error) {
     console.error("Error updating project:", error);
     throw error;
@@ -313,9 +324,10 @@ export const updateProject = async (oldProject, newProject) => {
 export const deleteProject = async (project) => {
   try {
     const docRef = doc(db, CONTENT_COLLECTION, "projects");
-    await updateDoc(docRef, {
-      items: arrayRemove(project)
-    });
+    const docSnap = await getDoc(docRef);
+    const currentItems = docSnap.exists() ? (docSnap.data().items || []) : [];
+    const updatedItems = currentItems.filter((item) => item.id !== project.id);
+    await setDoc(docRef, { items: updatedItems }, { merge: true });
   } catch (error) {
     console.error("Error deleting project:", error);
     throw error;

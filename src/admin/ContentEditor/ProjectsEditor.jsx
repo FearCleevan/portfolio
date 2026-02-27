@@ -11,6 +11,21 @@ import 'react-toastify/dist/ReactToastify.css';
 Modal.setAppElement('#root');
 const MAX_SAMPLE_IMAGES = 6;
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+const TECH_SUGGESTIONS = [
+    'React JS',
+    'Next.js',
+    'Vue.js',
+    'Angular',
+    'JavaScript',
+    'TypeScript',
+    'Tailwind CSS',
+    'Node.js',
+    'Express.js',
+    'Firebase',
+    'MongoDB',
+    'MySQL',
+    'PostgreSQL'
+];
 
 const ProjectsEditor = () => {
     const { projects, loading, error, addItem, updateItem, removeItem, uploadSampleImages } = useProjects();
@@ -21,11 +36,13 @@ const ProjectsEditor = () => {
     const [deleteCandidate, setDeleteCandidate] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
     const [isUploadingImages, setIsUploadingImages] = useState(false);
+    const [techInput, setTechInput] = useState('');
 
     const handleEdit = (item = null) => {
         setIsEditing(true);
         setCurrentEditItem(item ? {
             ...item,
+            technologies: Array.isArray(item.technologies) ? item.technologies : [],
             sampleImages: Array.isArray(item.sampleImages) ? item.sampleImages : []
         } : {
             id: Date.now().toString(),
@@ -33,8 +50,10 @@ const ProjectsEditor = () => {
             description: '',
             url: '',
             domain: '',
+            technologies: [],
             sampleImages: []
         });
+        setTechInput('');
         setNewItem(item === null);
     };
 
@@ -42,6 +61,7 @@ const ProjectsEditor = () => {
         setIsEditing(false);
         setCurrentEditItem(null);
         setNewItem(false);
+        setTechInput('');
     };
 
     const handleSave = async () => {
@@ -103,6 +123,46 @@ const ProjectsEditor = () => {
         setCurrentEditItem(prev => ({
             ...prev,
             [name]: value
+        }));
+    };
+
+    const addTechnology = (rawValue) => {
+        const value = rawValue.trim();
+        if (!value) return;
+
+        setCurrentEditItem((prev) => {
+            const currentTech = prev.technologies || [];
+            const alreadyExists = currentTech.some((tech) => tech.toLowerCase() === value.toLowerCase());
+            if (alreadyExists) {
+                toast.info('Technology already added.');
+                return prev;
+            }
+
+            return {
+                ...prev,
+                technologies: [...currentTech, value]
+            };
+        });
+        setTechInput('');
+    };
+
+    const handleTechInputKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            addTechnology(techInput);
+        }
+    };
+
+    const handleTechInputBlur = () => {
+        if (techInput.trim()) {
+            addTechnology(techInput);
+        }
+    };
+
+    const handleRemoveTechnology = (technology) => {
+        setCurrentEditItem((prev) => ({
+            ...prev,
+            technologies: (prev.technologies || []).filter((tech) => tech !== technology)
         }));
     };
 
@@ -289,6 +349,41 @@ const ProjectsEditor = () => {
                             />
                         </div>
                         <div className={styles.formGroup}>
+                            <label>Technologies</label>
+                            <div className={styles.techChipContainer}>
+                                {(currentEditItem?.technologies || []).map((technology) => (
+                                    <button
+                                        key={technology}
+                                        type="button"
+                                        className={styles.techChip}
+                                        onClick={() => handleRemoveTechnology(technology)}
+                                        disabled={isSaving || isUploadingImages}
+                                        title="Remove technology"
+                                    >
+                                        <span>{technology}</span>
+                                        <FiX />
+                                    </button>
+                                ))}
+                            </div>
+                            <input
+                                type="text"
+                                value={techInput}
+                                onChange={(event) => setTechInput(event.target.value)}
+                                onKeyDown={handleTechInputKeyDown}
+                                onBlur={handleTechInputBlur}
+                                list="technology-suggestions"
+                                className={styles.input}
+                                placeholder="Type technology and press Enter (e.g., React JS)"
+                                disabled={isSaving || isUploadingImages}
+                            />
+                            <datalist id="technology-suggestions">
+                                {TECH_SUGGESTIONS.map((tech) => (
+                                    <option key={tech} value={tech} />
+                                ))}
+                            </datalist>
+                            <p className={styles.uploadHint}>Press Enter to add a chip. Click a chip to remove it.</p>
+                        </div>
+                        <div className={styles.formGroup}>
                             <label>Sample Images ({currentEditItem?.sampleImages?.length || 0}/{MAX_SAMPLE_IMAGES})</label>
                             <label className={styles.uploadButton} htmlFor="projectSampleImages">
                                 <FiUpload /> {isUploadingImages ? 'Uploading...' : 'Upload Images'}
@@ -306,8 +401,8 @@ const ProjectsEditor = () => {
 
                             {!!currentEditItem?.sampleImages?.length && (
                                 <div className={styles.imageGrid}>
-                                    {currentEditItem.sampleImages.map((image) => (
-                                        <div key={image.id || image.url} className={styles.imageTile}>
+                                    {currentEditItem.sampleImages.map((image, index) => (
+                                        <div key={`${currentEditItem.id}-editor-sample-${image.id || image.url || 'image'}-${index}`} className={styles.imageTile}>
                                             <img src={image.url} alt="Project sample" />
                                             <button
                                                 type="button"
@@ -335,8 +430,8 @@ const ProjectsEditor = () => {
                             <FiPlus /> Add Project
                         </button>
                     </div>
-                    {projects.map((project) => (
-                        <div key={project.id} className={styles.listItem}>
+                    {projects.map((project, projectIndex) => (
+                        <div key={`${project.id}-${projectIndex}`} className={styles.listItem}>
                             <div className={styles.itemContent}>
                                 <h4>{project.title}</h4>
                                 <p>{project.description}</p>
@@ -345,6 +440,9 @@ const ProjectsEditor = () => {
                                 </a>
                                 <p className={styles.imageCount}>
                                     {Array.isArray(project.sampleImages) ? project.sampleImages.length : 0} sample image(s)
+                                </p>
+                                <p className={styles.imageCount}>
+                                    {Array.isArray(project.technologies) ? project.technologies.length : 0} technology chip(s)
                                 </p>
                             </div>
                             <div className={styles.itemActions}>

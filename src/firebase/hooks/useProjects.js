@@ -10,6 +10,11 @@ import {
 
 const normalizeProject = (project) => ({
   ...project,
+  technologies: Array.isArray(project.technologies)
+    ? project.technologies
+        .map((tech) => (typeof tech === 'string' ? tech.trim() : ''))
+        .filter(Boolean)
+    : [],
   sampleImages: Array.isArray(project.sampleImages)
     ? project.sampleImages
         .map((image) => (typeof image === 'string' ? { id: image, url: image } : image))

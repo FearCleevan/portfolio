@@ -3,7 +3,26 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './AllProjects.module.css';
 import { Link } from 'react-router-dom';
 import { useProjects } from '../../firebase/hooks/useProjects';
-import { FiChevronLeft, FiChevronRight, FiX } from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight, FiCode, FiX } from 'react-icons/fi';
+import { SiAngular, SiExpress, SiFirebase, SiJavascript, SiMongodb, SiMysql, SiNextdotjs, SiNodedotjs, SiPostgresql, SiReact, SiTailwindcss, SiTypescript, SiVuedotjs } from 'react-icons/si';
+
+const getTechIcon = (technology = '') => {
+    const key = technology.toLowerCase();
+    if (key.includes('react')) return SiReact;
+    if (key.includes('next')) return SiNextdotjs;
+    if (key.includes('vue')) return SiVuedotjs;
+    if (key.includes('angular')) return SiAngular;
+    if (key.includes('javascript')) return SiJavascript;
+    if (key.includes('typescript')) return SiTypescript;
+    if (key.includes('tailwind')) return SiTailwindcss;
+    if (key.includes('node')) return SiNodedotjs;
+    if (key.includes('express')) return SiExpress;
+    if (key.includes('firebase')) return SiFirebase;
+    if (key.includes('mongodb')) return SiMongodb;
+    if (key.includes('mysql')) return SiMysql;
+    if (key.includes('postgres')) return SiPostgresql;
+    return FiCode;
+};
 
 export default function AllProjects({ isDarkMode }) {
     const { projects, loading, error } = useProjects();
@@ -104,8 +123,8 @@ export default function AllProjects({ isDarkMode }) {
                 </div>
 
                 <div className={styles.projectsGrid}>
-                    {projects.map((project) => (
-                        <div key={project.id} className={`${styles.projectCard} ${isDarkMode ? styles.darkBentoCard : ''}`}>
+                    {projects.map((project, projectIndex) => (
+                        <div key={`${project.id}-${projectIndex}`} className={`${styles.projectCard} ${isDarkMode ? styles.darkBentoCard : ''}`}>
                             <a target="_blank" rel="noopener noreferrer" className={styles.projectLink} href={project.url}>
                                 <h3 className={`${styles.projectTitle} ${isDarkMode ? styles.darkText : ''}`}>
                                     {project.title}
@@ -116,11 +135,24 @@ export default function AllProjects({ isDarkMode }) {
                                 <p className={`${styles.projectDescription} ${isDarkMode ? styles.darkSecondaryText : ''}`}>{project.description}</p>
                                 <p className={`${styles.projectDomain} ${isDarkMode ? styles.darkDomain : ''}`}>{project.domain}</p>
                             </a>
+                            {!!project.technologies?.length && (
+                                <div className={styles.techList}>
+                                    {project.technologies.map((technology) => {
+                                        const TechIcon = getTechIcon(technology);
+                                        return (
+                                            <span key={technology} className={`${styles.techChip} ${isDarkMode ? styles.darkTechChip : ''}`}>
+                                                <TechIcon />
+                                                {technology}
+                                            </span>
+                                        );
+                                    })}
+                                </div>
+                            )}
                             {!!project.sampleImages?.length && (
                                 <div className={styles.projectImageGrid}>
                                     {project.sampleImages.map((image, index) => (
                                         <button
-                                            key={image.id || image.url}
+                                            key={`${project.id}-sample-${image.id || image.url || 'image'}-${index}`}
                                             type="button"
                                             className={styles.projectImageButton}
                                             onClick={() => openPreview(project.id, index)}
