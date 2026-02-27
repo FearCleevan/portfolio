@@ -1,11 +1,63 @@
 // src/components/Container/AllProjects.jsx
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './AllProjects.module.css';
 import { Link } from 'react-router-dom';
 import { useProjects } from '../../firebase/hooks/useProjects';
+import { FiChevronLeft, FiChevronRight, FiX } from 'react-icons/fi';
 
 export default function AllProjects({ isDarkMode }) {
     const { projects, loading, error } = useProjects();
+    const [previewState, setPreviewState] = useState({ projectId: null, imageIndex: 0 });
+
+    const selectedProject = useMemo(
+        () => projects.find((project) => project.id === previewState.projectId),
+        [projects, previewState.projectId]
+    );
+
+    const selectedImages = selectedProject?.sampleImages || [];
+    const activeImage = selectedImages[previewState.imageIndex];
+    const isPreviewOpen = Boolean(activeImage);
+
+    const openPreview = (projectId, imageIndex) => {
+        setPreviewState({ projectId, imageIndex });
+    };
+
+    const closePreview = useCallback(() => {
+        setPreviewState({ projectId: null, imageIndex: 0 });
+    }, []);
+
+    const showNextImage = useCallback(() => {
+        if (!selectedImages.length) return;
+        setPreviewState((prev) => ({
+            ...prev,
+            imageIndex: (prev.imageIndex + 1) % selectedImages.length
+        }));
+    }, [selectedImages.length]);
+
+    const showPrevImage = useCallback(() => {
+        if (!selectedImages.length) return;
+        setPreviewState((prev) => ({
+            ...prev,
+            imageIndex: (prev.imageIndex - 1 + selectedImages.length) % selectedImages.length
+        }));
+    }, [selectedImages.length]);
+
+    useEffect(() => {
+        if (!isPreviewOpen) return;
+
+        const onKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                closePreview();
+            } else if (event.key === 'ArrowRight') {
+                showNextImage();
+            } else if (event.key === 'ArrowLeft') {
+                showPrevImage();
+            }
+        };
+
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [closePreview, isPreviewOpen, showNextImage, showPrevImage]);
 
     if (loading) {
         return (
@@ -64,10 +116,65 @@ export default function AllProjects({ isDarkMode }) {
                                 <p className={`${styles.projectDescription} ${isDarkMode ? styles.darkSecondaryText : ''}`}>{project.description}</p>
                                 <p className={`${styles.projectDomain} ${isDarkMode ? styles.darkDomain : ''}`}>{project.domain}</p>
                             </a>
+                            {!!project.sampleImages?.length && (
+                                <div className={styles.projectImageGrid}>
+                                    {project.sampleImages.map((image, index) => (
+                                        <button
+                                            key={image.id || image.url}
+                                            type="button"
+                                            className={styles.projectImageButton}
+                                            onClick={() => openPreview(project.id, index)}
+                                        >
+                                            <img src={image.url} alt={`${project.title} sample ${index + 1}`} className={styles.projectImage} />
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
             </div>
+            {isPreviewOpen && (
+                <div className={styles.previewOverlay} onClick={closePreview} role="presentation">
+                    <button
+                        type="button"
+                        className={`${styles.previewCloseButton} ${isDarkMode ? styles.previewCloseButtonDark : ''}`}
+                        onClick={closePreview}
+                        aria-label="Close preview"
+                    >
+                        <FiX />
+                    </button>
+                    {selectedImages.length > 1 && (
+                        <button
+                            type="button"
+                            className={`${styles.previewNavButton} ${styles.previewPrevButton} ${isDarkMode ? styles.previewNavButtonDark : ''}`}
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                showPrevImage();
+                            }}
+                            aria-label="Previous image"
+                        >
+                            <FiChevronLeft />
+                        </button>
+                    )}
+                    <div className={styles.previewImageContainer} onClick={(event) => event.stopPropagation()} role="presentation">
+                        <img src={activeImage.url} alt={`${selectedProject?.title || 'Project'} preview`} className={styles.previewImage} />
+                    </div>
+                    {selectedImages.length > 1 && (
+                        <button
+                            type="button"
+                            className={`${styles.previewNavButton} ${styles.previewNextButton} ${isDarkMode ? styles.previewNavButtonDark : ''}`}
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                showNextImage();
+                            }}
+                            aria-label="Next image"
+                        >
+                            <FiChevronRight />
+                        </button>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

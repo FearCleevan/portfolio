@@ -1,6 +1,6 @@
 //src/admin/ContentEditor/ProjectsEditor.jsx
 import React, { useState } from 'react';
-import { FiEdit2, FiSave, FiX, FiPlus, FiTrash2 } from 'react-icons/fi';
+import { FiEdit2, FiSave, FiX, FiPlus, FiTrash2, FiUpload } from 'react-icons/fi';
 import { useProjects } from '../../firebase/hooks/useProjects';
 import styles from './ProjectsEditor.module.css';
 import Modal from 'react-modal';
@@ -9,23 +9,31 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // Set modal root for accessibility
 Modal.setAppElement('#root');
+const MAX_SAMPLE_IMAGES = 6;
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 
 const ProjectsEditor = () => {
-    const { projects, loading, error, addItem, updateItem, removeItem } = useProjects();
+    const { projects, loading, error, addItem, updateItem, removeItem, uploadSampleImages } = useProjects();
     const [isEditing, setIsEditing] = useState(false);
     const [currentEditItem, setCurrentEditItem] = useState(null);
     const [newItem, setNewItem] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteCandidate, setDeleteCandidate] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [isUploadingImages, setIsUploadingImages] = useState(false);
 
     const handleEdit = (item = null) => {
         setIsEditing(true);
-        setCurrentEditItem(item ? { ...item } : {
+        setCurrentEditItem(item ? {
+            ...item,
+            sampleImages: Array.isArray(item.sampleImages) ? item.sampleImages : []
+        } : {
+            id: Date.now().toString(),
             title: '',
             description: '',
             url: '',
-            domain: ''
+            domain: '',
+            sampleImages: []
         });
         setNewItem(item === null);
     };
@@ -38,15 +46,18 @@ const ProjectsEditor = () => {
 
     const handleSave = async () => {
         setIsSaving(true);
+        let saveSucceeded = false;
         try {
             if (newItem) {
                 await addItem(currentEditItem);
                 toast.success('Project added successfully!');
+                saveSucceeded = true;
             } else {
                 const originalItem = projects.find(item => item.id === currentEditItem.id);
                 if (originalItem) {
                     await updateItem(originalItem, currentEditItem);
                     toast.success('Project updated successfully!');
+                    saveSucceeded = true;
                 }
             }
         } catch (error) {
@@ -54,7 +65,9 @@ const ProjectsEditor = () => {
             toast.error(`Failed to save project: ${error.message}`);
         } finally {
             setIsSaving(false);
-            handleCancelEdit();
+            if (saveSucceeded) {
+                handleCancelEdit();
+            }
         }
     };
 
@@ -90,6 +103,71 @@ const ProjectsEditor = () => {
         setCurrentEditItem(prev => ({
             ...prev,
             [name]: value
+        }));
+    };
+
+    const handleImageUpload = async (event) => {
+        const files = Array.from(event.target.files || []);
+        event.target.value = '';
+
+        if (!files.length || !currentEditItem?.id) {
+            return;
+        }
+
+        const existingCount = currentEditItem.sampleImages?.length || 0;
+        const remainingSlots = MAX_SAMPLE_IMAGES - existingCount;
+
+        if (remainingSlots <= 0) {
+            toast.warning(`Only ${MAX_SAMPLE_IMAGES} sample images are allowed.`);
+            return;
+        }
+
+        const filesWithinLimit = files.slice(0, remainingSlots);
+        if (files.length > remainingSlots) {
+            toast.info(`Only ${remainingSlots} image slot(s) left. Extra files were ignored.`);
+        }
+
+        const validFiles = filesWithinLimit.filter((file) => {
+            if (!file.type.startsWith('image/')) {
+                toast.error(`${file.name} is not an image file.`);
+                return false;
+            }
+
+            if (file.size > MAX_IMAGE_SIZE_BYTES) {
+                toast.error(`${file.name} is larger than 5MB.`);
+                return false;
+            }
+
+            return true;
+        });
+
+        if (!validFiles.length) {
+            return;
+        }
+
+        setIsUploadingImages(true);
+        try {
+            const uploadedImages = await uploadSampleImages(currentEditItem.id, validFiles);
+            setCurrentEditItem((prev) => ({
+                ...prev,
+                sampleImages: [...(prev.sampleImages || []), ...uploadedImages].slice(0, MAX_SAMPLE_IMAGES)
+            }));
+            toast.success('Sample image(s) uploaded successfully.');
+        } catch (error) {
+            console.error('Error uploading sample images:', error);
+            toast.error(`Failed to upload image(s): ${error.message}`);
+        } finally {
+            setIsUploadingImages(false);
+        }
+    };
+
+    const handleRemoveImage = (imageId, imageUrl) => {
+        setCurrentEditItem((prev) => ({
+            ...prev,
+            sampleImages: (prev.sampleImages || []).filter((image) => {
+                if (imageId) return image.id !== imageId;
+                return image.url !== imageUrl;
+            })
         }));
     };
 
@@ -142,7 +220,7 @@ const ProjectsEditor = () => {
                             <button
                                 onClick={handleSave}
                                 className={styles.saveButton}
-                                disabled={!currentEditItem?.title || !currentEditItem?.description || !currentEditItem?.url || isSaving}
+                                disabled={!currentEditItem?.title || !currentEditItem?.description || !currentEditItem?.url || isSaving || isUploadingImages}
                             >
                                 {isSaving ? (
                                     <span className={styles.spinner}></span>
@@ -155,7 +233,7 @@ const ProjectsEditor = () => {
                             <button
                                 onClick={handleCancelEdit}
                                 className={styles.cancelButton}
-                                disabled={isSaving}
+                                disabled={isSaving || isUploadingImages}
                             >
                                 <FiX /> Cancel
                             </button>
@@ -210,6 +288,40 @@ const ProjectsEditor = () => {
                                 disabled={isSaving}
                             />
                         </div>
+                        <div className={styles.formGroup}>
+                            <label>Sample Images ({currentEditItem?.sampleImages?.length || 0}/{MAX_SAMPLE_IMAGES})</label>
+                            <label className={styles.uploadButton} htmlFor="projectSampleImages">
+                                <FiUpload /> {isUploadingImages ? 'Uploading...' : 'Upload Images'}
+                            </label>
+                            <input
+                                id="projectSampleImages"
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleImageUpload}
+                                className={styles.fileInput}
+                                disabled={isSaving || isUploadingImages || (currentEditItem?.sampleImages?.length || 0) >= MAX_SAMPLE_IMAGES}
+                            />
+                            <p className={styles.uploadHint}>Max 6 images, up to 5MB each.</p>
+
+                            {!!currentEditItem?.sampleImages?.length && (
+                                <div className={styles.imageGrid}>
+                                    {currentEditItem.sampleImages.map((image) => (
+                                        <div key={image.id || image.url} className={styles.imageTile}>
+                                            <img src={image.url} alt="Project sample" />
+                                            <button
+                                                type="button"
+                                                className={styles.removeImageButton}
+                                                onClick={() => handleRemoveImage(image.id, image.url)}
+                                                disabled={isSaving || isUploadingImages}
+                                            >
+                                                <FiX />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             ) : (
@@ -231,6 +343,9 @@ const ProjectsEditor = () => {
                                 <a href={project.url} target="_blank" rel="noopener noreferrer">
                                     {project.domain}
                                 </a>
+                                <p className={styles.imageCount}>
+                                    {Array.isArray(project.sampleImages) ? project.sampleImages.length : 0} sample image(s)
+                                </p>
                             </div>
                             <div className={styles.itemActions}>
                                 <button

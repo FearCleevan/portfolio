@@ -102,6 +102,53 @@ const generateUniqueId = () => {
   return uuidv4();
 };
 
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+const getCloudinaryUploadUrl = () => {
+  if (!CLOUDINARY_CLOUD_NAME) {
+    throw new Error('Missing VITE_CLOUDINARY_CLOUD_NAME in .env');
+  }
+
+  if (!CLOUDINARY_UPLOAD_PRESET) {
+    throw new Error('Missing VITE_CLOUDINARY_UPLOAD_PRESET in .env (unsigned preset required)');
+  }
+
+  return `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+};
+
+export const uploadProjectSampleImage = async (file, projectId) => {
+  try {
+    const uploadUrl = getCloudinaryUploadUrl();
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    formData.append('folder', `portfolio/projects/${projectId}`);
+
+    const response = await fetch(uploadUrl, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData?.error?.message || 'Cloudinary upload failed');
+    }
+
+    const result = await response.json();
+    return {
+      id: result.public_id,
+      url: result.secure_url,
+      publicId: result.public_id,
+      width: result.width,
+      height: result.height
+    };
+  } catch (error) {
+    console.error('Error uploading project sample image:', error);
+    throw error;
+  }
+};
+
 
 // Experience functions
 export const getExperience = async () => {
@@ -223,7 +270,8 @@ export const getProjects = async () => {
           title: "ScapeDBM",
           description: "Landscaping Services Landing Page",
           url: "https://scapedbm.com",
-          domain: "scapedbm.com"
+          domain: "scapedbm.com",
+          sampleImages: []
         }
       ];
       await setDoc(docRef, { items: defaultProjects });

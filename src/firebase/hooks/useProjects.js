@@ -4,8 +4,18 @@ import {
   getProjects, 
   addProject, 
   updateProject, 
-  deleteProject 
+  deleteProject,
+  uploadProjectSampleImage
 } from '../services/contentService';
+
+const normalizeProject = (project) => ({
+  ...project,
+  sampleImages: Array.isArray(project.sampleImages)
+    ? project.sampleImages
+        .map((image) => (typeof image === 'string' ? { id: image, url: image } : image))
+        .filter((image) => Boolean(image?.url))
+    : []
+});
 
 export const useProjects = () => {
   const [projects, setProjects] = useState([]);
@@ -17,7 +27,7 @@ export const useProjects = () => {
       try {
         setLoading(true);
         const data = await getProjects();
-        setProjects(data);
+        setProjects(data.map(normalizeProject));
       } catch (err) {
         setError(err);
       } finally {
@@ -31,7 +41,10 @@ export const useProjects = () => {
   const addItem = async (project) => {
     try {
       setLoading(true);
-      const newProject = { ...project, id: Date.now().toString() };
+      const newProject = normalizeProject({
+        ...project,
+        id: project.id || Date.now().toString()
+      });
       await addProject(newProject);
       setProjects(prev => [...prev, newProject]);
     } catch (err) {
@@ -45,10 +58,11 @@ export const useProjects = () => {
   const updateItem = async (oldProject, newProject) => {
     try {
       setLoading(true);
-      await updateProject(oldProject, newProject);
+      const normalizedProject = normalizeProject(newProject);
+      await updateProject(oldProject, normalizedProject);
       setProjects(prev => 
         prev.map(project => 
-          project.id === oldProject.id ? newProject : project
+          project.id === oldProject.id ? normalizedProject : project
         )
       );
     } catch (err) {
@@ -74,5 +88,15 @@ export const useProjects = () => {
     }
   };
 
-  return { projects, loading, error, addItem, updateItem, removeItem };
+  const uploadSampleImages = async (projectId, files = []) => {
+    try {
+      const uploadPromises = files.map((file) => uploadProjectSampleImage(file, projectId));
+      return await Promise.all(uploadPromises);
+    } catch (err) {
+      setError(err);
+      throw err;
+    }
+  };
+
+  return { projects, loading, error, addItem, updateItem, removeItem, uploadSampleImages };
 };
