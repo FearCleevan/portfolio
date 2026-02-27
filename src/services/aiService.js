@@ -1,8 +1,13 @@
 // src/services/aiService.js
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-1.5-flash'];
+const GEMINI_MODELS = (
+  import.meta.env.VITE_GEMINI_MODELS
+    ? import.meta.env.VITE_GEMINI_MODELS.split(',').map((model) => model.trim()).filter(Boolean)
+    : ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash']
+);
 
 const REQUEST_TIMEOUT_MS = 30000;
+const RATE_LIMIT_COOLDOWN_MS = 45000;
 
 const POPULAR_LANGUAGES = [
   'javascript', 'typescript', 'python', 'java', 'c', 'cpp', 'csharp', 'go', 'rust', 'php', 'ruby', 'kotlin', 'swift', 'sql', 'bash'
@@ -12,6 +17,8 @@ export class AIService {
   constructor() {
     this.isInitialized = true;
     this.conversationHistory = [];
+    this.unavailableModels = new Set();
+    this.rateLimitedUntil = 0;
   }
 
   mapFirebaseDataToAIContext(firebaseData) {
@@ -188,7 +195,10 @@ export class AIService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Gemini ${model} error: ${response.status} ${errorText}`);
+        const error = new Error(`Gemini ${model} error: ${response.status} ${errorText}`);
+        error.status = response.status;
+        error.model = model;
+        throw error;
       }
 
       const data = await response.json();
@@ -274,7 +284,17 @@ export class AIService {
       return local;
     }
 
+    if (Date.now() < this.rateLimitedUntil) {
+      const fallback = this.buildLocalFallback(message, userData);
+      this.conversationHistory.push({ role: 'assistant', text: fallback });
+      return `${fallback}\n\n(Temporary note: Gemini rate limit cooldown is active. Please retry in under a minute.)`;
+    }
+
     for (const model of GEMINI_MODELS) {
+      if (this.unavailableModels.has(model)) {
+        continue;
+      }
+
       try {
         const result = await this.callGemini(model, fullPrompt);
         if (result) {
@@ -282,8 +302,15 @@ export class AIService {
           this.conversationHistory = this.conversationHistory.slice(-8);
           return result;
         }
-      } catch {
-        // Try next model.
+      } catch (error) {
+        if (error?.status === 404) {
+          this.unavailableModels.add(model);
+        }
+
+        if (error?.status === 429) {
+          this.rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
+          break;
+        }
       }
     }
 
@@ -301,7 +328,7 @@ export class AIService {
   }
 
   isReady() {
-    return this.isInitialized;
+    return this.isInitialized && Boolean(GEMINI_API_KEY);
   }
 
   getFallbackContext() {

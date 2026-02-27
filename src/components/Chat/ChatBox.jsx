@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FiAward, FiBriefcase, FiCalendar, FiCode, FiMail, FiMessageCircle, FiSend, FiUser } from 'react-icons/fi';
+ï»¿import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FiAward, FiBriefcase, FiCalendar, FiCheck, FiCode, FiCopy, FiMail, FiMessageCircle, FiSend, FiUser } from 'react-icons/fi';
 import styles from './ChatBox.module.css';
 import profileImage from '../../assets/profile.png';
 import { aiService } from '../../services/aiService';
@@ -33,6 +33,7 @@ const ChatBox = ({ onClose, isDarkMode }) => {
     const [newMessage, setNewMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isSchedulingMeeting, setIsSchedulingMeeting] = useState(false);
+    const [copiedCodeKey, setCopiedCodeKey] = useState('');
     const [meetingForm, setMeetingForm] = useState({
         name: '',
         email: '',
@@ -71,10 +72,34 @@ const ChatBox = ({ onClose, isDarkMode }) => {
             const language = parts[i + 1];
             const code = parts[i + 2];
             if (typeof code === 'string') {
+                const codeText = code.trim();
+                const codeKey = `${language || 'text'}-${i}-${codeText.length}`;
+
                 rendered.push(
                     <div key={`code-${i}`} className={styles.codeBlockWrap}>
-                        <div className={styles.codeLang}>{language || 'text'}</div>
-                        <pre className={styles.codeBlock}><code>{code.trim()}</code></pre>
+                        <div className={styles.codeHeader}>
+                            <div className={styles.codeLang}>{language || 'text'}</div>
+                            <button
+                                type="button"
+                                className={styles.codeCopyButton}
+                                onClick={async () => {
+                                    try {
+                                        await navigator.clipboard.writeText(codeText);
+                                        setCopiedCodeKey(codeKey);
+                                        setTimeout(() => {
+                                            setCopiedCodeKey((prev) => (prev === codeKey ? '' : prev));
+                                        }, 1800);
+                                    } catch {
+                                        setCopiedCodeKey('');
+                                    }
+                                }}
+                                aria-label={copiedCodeKey === codeKey ? 'Copied' : 'Copy code'}
+                                title={copiedCodeKey === codeKey ? 'Copied' : 'Copy code'}
+                            >
+                                {copiedCodeKey === codeKey ? <FiCheck /> : <FiCopy />}
+                            </button>
+                        </div>
+                        <pre className={styles.codeBlock}><code>{codeText}</code></pre>
                     </div>
                 );
             }
@@ -83,23 +108,9 @@ const ChatBox = ({ onClose, isDarkMode }) => {
         return rendered;
     };
 
-    const testAPIConnection = useCallback(async () => {
-        try {
-            setApiStatus('checking');
-            const response = await aiService.sendMessage('hello', userData);
-            if (response) {
-                setApiStatus('available');
-            } else {
-                setApiStatus('unavailable');
-            }
-        } catch {
-            setApiStatus('unavailable');
-        }
-    }, [userData]);
-
     useEffect(() => {
-        testAPIConnection();
-    }, [testAPIConnection]);
+        setApiStatus(aiService.isReady() ? 'available' : 'unavailable');
+    }, []);
 
     const sendUserMessage = useCallback(async (text) => {
         if (!text.trim() || isLoading) return;
@@ -235,7 +246,7 @@ const ChatBox = ({ onClose, isDarkMode }) => {
                         <div className={styles.profileImage}><img src={profileImage} alt="AI Assistant" /></div>
                         <div className={styles.headerText}><h3>Peter's AI Assistant</h3><div className={styles.status}><span className={styles.statusIndicator}></span><span>Preparing context...</span></div></div>
                     </div>
-                    <button onClick={onClose} className={`${styles.closeButton} ${isDarkMode ? styles.darkCloseButton : ''}`}>×</button>
+                    <button onClick={onClose} className={`${styles.closeButton} ${isDarkMode ? styles.darkCloseButton : ''}`}>Ã—</button>
                 </div>
                 <div className={`${styles.messagesContainer} ${isDarkMode ? styles.darkMessages : ''}`}>
                     <div className={styles.loadingState}>
@@ -260,7 +271,7 @@ const ChatBox = ({ onClose, isDarkMode }) => {
                         </div>
                     </div>
                 </div>
-                <button onClick={onClose} className={`${styles.closeButton} ${isDarkMode ? styles.darkCloseButton : ''}`} aria-label="Close chat">×</button>
+                <button onClick={onClose} className={`${styles.closeButton} ${isDarkMode ? styles.darkCloseButton : ''}`} aria-label="Close chat">Ã—</button>
             </div>
 
             <div className={`${styles.messagesContainer} ${isDarkMode ? styles.darkMessages : ''}`}>
