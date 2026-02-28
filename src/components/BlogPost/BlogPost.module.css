@@ -183,6 +183,97 @@
     transition: border-color 0.3s ease;
 }
 
+.postContent .ql-size-small {
+    font-size: 0.875rem;
+}
+
+.postContent .ql-size-large {
+    font-size: 1.25rem;
+}
+
+.postContent .ql-size-huge {
+    font-size: 1.5rem;
+}
+
+.postContent pre {
+    margin: 0;
+    padding: 1rem 1.15rem;
+    overflow-x: auto;
+    background: #0b0f14;
+    color: #e6edf3;
+    border-radius: 0 0 0.85rem 0.85rem;
+    font-family: 'Fira Code', 'Fira Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+    line-height: 1.6;
+    border: 1px solid #2c313c;
+    border-top: none;
+}
+
+.codeBlockWrapper {
+    position: relative;
+    margin: 1.5rem 0;
+    border-radius: 1.1rem;
+    overflow: hidden;
+    border: 1px solid #2c313c;
+    background: #0b0f14;
+    box-shadow: 0 10px 28px rgba(2, 6, 23, 0.45);
+}
+
+.codeHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #171b22;
+    border: 1px solid #2c313c;
+    border-bottom: none;
+    padding: 0.55rem 0.75rem 0.55rem 1rem;
+}
+
+.codeLanguage {
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    color: #d7dce3;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.codeLanguage::before {
+    content: '</>';
+    color: #8b95a7;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.codeCopyButton {
+    border: 1px solid #394252;
+    background: #121820;
+    color: #d0d7de;
+    border-radius: 999px;
+    padding: 0.34rem 0.62rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.codeCopyButton:hover {
+    background: #1f2732;
+    border-color: #4d5b73;
+    color: #f8fafc;
+}
+
+.codeCopyIcon {
+    font-size: 0.82rem;
+    line-height: 1;
+}
+
+.codeCopyText {
+    line-height: 1;
+}
+
 /* Code Block Styles */
 .codeBlock {
     margin: 1.5rem 0;
@@ -252,7 +343,7 @@
 }
 
 .token.punctuation {
-  color: #abb2bf;
+  color: #b6bec9;
 }
 
 .token.property,
@@ -262,7 +353,7 @@
 .token.constant,
 .token.symbol,
 .token.deleted {
-  color: #d19a66;
+  color: #f4b97f;
 }
 
 .token.selector,
@@ -271,7 +362,7 @@
 .token.char,
 .token.builtin,
 .token.inserted {
-  color: #98c379;
+  color: #8fe089;
 }
 
 .token.operator,
@@ -279,24 +370,24 @@
 .token.url,
 .language-css .token.string,
 .style .token.string {
-  color: #56b6c2;
+  color: #7dd3fc;
 }
 
 .token.atrule,
 .token.attr-value,
 .token.keyword {
-  color: #c678dd;
+  color: #d7a5ff;
 }
 
 .token.function,
 .token.class-name {
-  color: #61afef;
+  color: #87c2ff;
 }
 
 .token.regex,
 .token.important,
 .token.variable {
-  color: #c678dd;
+  color: #f9a8d4;
 }
 
 .token.important,

@@ -1,8 +1,7 @@
 // src/components/BlogPost/BlogPost.jsx
-import React, { useState, useEffect } from 'react';
-import styles from './BlogPost.module.css';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { getBlogPostBySlug } from '../../firebase/services/contentService';
+import DOMPurify from 'dompurify';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-tomorrow.css';
 import 'prismjs/components/prism-javascript';
@@ -12,9 +11,40 @@ import 'prismjs/components/prism-python';
 import 'prismjs/components/prism-java';
 import 'prismjs/components/prism-css';
 import 'prismjs/components/prism-markup';
+import styles from './BlogPost.module.css';
+import { getBlogPostBySlug } from '../../firebase/services/contentService';
+
+const detectLanguage = (code = '') => {
+  const value = code.trim();
+  if (!value) return 'javascript';
+
+  if (/^\s*[{[]/.test(value) && /:\s*["[{0-9tfn-]/.test(value)) return 'javascript';
+  if (/^\s*<(!doctype|html|[a-z][\w-]*)(\s|>)/i.test(value)) return 'markup';
+  if (/(^|\n)\s*(def |import |from .+ import |if __name__ == ['"]__main__['"])/.test(value)) return 'python';
+  if (/(^|\n)\s*(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP)\s/i.test(value)) return 'javascript';
+  if (/^\s*(npm|yarn|pnpm|git|cd|ls|mkdir|rm)\b/m.test(value)) return 'javascript';
+  if (/(^|\n)\s*(const|let|var|function|=>|console\.log|import .+ from )/.test(value)) return 'javascript';
+  if (/(^|\n)\s*([.#][\w-]+\s*\{|@media|\w+\s*:\s*[^;]+;)/.test(value)) return 'css';
+
+  return 'javascript';
+};
+
+const getLanguageLabel = (language = 'javascript') => {
+  const map = {
+    javascript: 'JavaScript',
+    jsx: 'JSX',
+    typescript: 'TypeScript',
+    python: 'Python',
+    java: 'Java',
+    css: 'CSS',
+    markup: 'HTML'
+  };
+  return map[language] || 'Code';
+};
 
 export default function BlogPost({ isDarkMode }) {
   const { slug } = useParams();
+  const articleRef = useRef(null);
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,42 +66,118 @@ export default function BlogPost({ isDarkMode }) {
     fetchBlogPost();
   }, [slug]);
 
-  // Apply syntax highlighting after content is loaded
+  const sanitizedContent = useMemo(
+    () =>
+      DOMPurify.sanitize(post?.content || '', {
+        ADD_TAGS: ['font'],
+        ADD_ATTR: ['target', 'rel', 'class', 'spellcheck', 'size'],
+        FORBID_TAGS: ['script', 'button']
+      }),
+    [post?.content]
+  );
+
   useEffect(() => {
-    if (post) {
-      // Use setTimeout to ensure DOM is fully rendered
-      setTimeout(() => {
-        Prism.highlightAll();
-      }, 0);
-    }
-  }, [post]);
+    const articleNode = articleRef.current;
+    if (!articleNode) return;
 
-  // Function to safely render HTML content
-  const createMarkup = (htmlContent) => {
-    return { __html: htmlContent };
-  };
+    const preBlocks = articleNode.querySelectorAll('pre');
 
-  // Function to copy code to clipboard
-  const copyCode = (button) => {
-    const codeBlock = button.parentElement.nextElementSibling;
-    const textToCopy = codeBlock.textContent;
-    
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      const originalText = button.textContent;
-      button.textContent = 'Copied!';
-      
-      setTimeout(() => {
-        button.textContent = originalText;
-      }, 2000);
-    }).catch(err => {
-      console.error('Failed to copy: ', err);
+    preBlocks.forEach((preBlock) => {
+      if (!preBlock.querySelector('code')) {
+        const codeNode = document.createElement('code');
+        codeNode.textContent = preBlock.textContent || '';
+        preBlock.textContent = '';
+        preBlock.appendChild(codeNode);
+      }
+
+      const codeNode = preBlock.querySelector('code');
+      const existingLangMatch = codeNode?.className?.match(/language-([a-z0-9-]+)/i);
+      const language = existingLangMatch?.[1] || detectLanguage(codeNode?.textContent || '');
+      if (codeNode) {
+        codeNode.className = `language-${language}`;
+      }
+      preBlock.setAttribute('data-language', language);
+
+      let wrapper = preBlock.parentElement;
+      if (!wrapper?.hasAttribute('data-code-wrapper')) {
+        const wrapper = document.createElement('div');
+        wrapper.className = styles.codeBlockWrapper;
+        wrapper.setAttribute('data-code-wrapper', 'true');
+        preBlock.parentNode?.insertBefore(wrapper, preBlock);
+        wrapper.appendChild(preBlock);
+      }
+      wrapper = preBlock.parentElement;
+
+      let header = wrapper.querySelector('[data-code-header="true"]');
+      if (!header) {
+        header = document.createElement('div');
+        header.setAttribute('data-code-header', 'true');
+        header.className = styles.codeHeader;
+      }
+
+      let languageBadge = header.querySelector('[data-code-lang="true"]');
+      if (!languageBadge) {
+        languageBadge = document.createElement('span');
+        languageBadge.setAttribute('data-code-lang', 'true');
+        languageBadge.className = styles.codeLanguage;
+        header.appendChild(languageBadge);
+      }
+      languageBadge.textContent = getLanguageLabel(language);
+
+      let copyButton = header.querySelector('button[data-copy-code="true"]');
+      if (!copyButton) {
+        copyButton = document.createElement('button');
+        copyButton.type = 'button';
+        copyButton.setAttribute('data-copy-code', 'true');
+        copyButton.className = styles.codeCopyButton;
+        copyButton.setAttribute('aria-label', 'Copy code');
+
+        const copyIcon = document.createElement('span');
+        copyIcon.setAttribute('data-copy-icon', 'true');
+        copyIcon.className = styles.codeCopyIcon;
+        copyIcon.textContent = '⧉';
+
+        const copyText = document.createElement('span');
+        copyText.setAttribute('data-copy-text', 'true');
+        copyText.className = styles.codeCopyText;
+        copyText.textContent = 'Copy';
+
+        copyButton.appendChild(copyIcon);
+        copyButton.appendChild(copyText);
+        header.appendChild(copyButton);
+      }
+      const copyTextNode = copyButton.querySelector('[data-copy-text="true"]');
+      if (copyTextNode) {
+        copyTextNode.textContent = 'Copy';
+      }
+      copyButton.onclick = async () => {
+        try {
+          const codeText = preBlock.querySelector('code')?.innerText || preBlock.innerText || '';
+          await navigator.clipboard.writeText(codeText);
+          if (copyTextNode) {
+            copyTextNode.textContent = 'Copied';
+          }
+          setTimeout(() => {
+            if (copyTextNode) {
+              copyTextNode.textContent = 'Copy';
+            }
+          }, 1200);
+        } catch (copyError) {
+          console.error('Failed to copy code:', copyError);
+        }
+      };
+
+      if (header.parentElement !== wrapper) {
+        wrapper.insertBefore(header, preBlock);
+      } else if (wrapper.firstChild !== header) {
+        wrapper.insertBefore(header, wrapper.firstChild);
+      }
+
+      if (codeNode) {
+        Prism.highlightElement(codeNode);
+      }
     });
-  };
-
-  // Add copy functionality to window for code blocks
-  useEffect(() => {
-    window.copyCode = copyCode;
-  }, []);
+  }, [sanitizedContent]);
 
   if (loading) {
     return (
@@ -92,8 +198,12 @@ export default function BlogPost({ isDarkMode }) {
         <div className={`${styles.blogPostContainer} ${isDarkMode ? styles.darkMode : ''}`}>
           <div className={`${styles.notFound} ${isDarkMode ? styles.darkNotFound : ''}`}>
             <h1 className={isDarkMode ? styles.darkText : ''}>Post Not Found</h1>
-            <p className={isDarkMode ? styles.darkSecondaryText : ''}>The blog post you're looking for doesn't exist.</p>
-            <Link to="/blog" className={`${styles.backButton} ${isDarkMode ? styles.darkLink : ''}`}>Back to Blog</Link>
+            <p className={isDarkMode ? styles.darkSecondaryText : ''}>
+              The blog post you&apos;re looking for doesn&apos;t exist.
+            </p>
+            <Link to="/blog" className={`${styles.backButton} ${isDarkMode ? styles.darkLink : ''}`}>
+              Back to Blog
+            </Link>
           </div>
         </div>
       </div>
@@ -113,42 +223,52 @@ export default function BlogPost({ isDarkMode }) {
         <header className={styles.postHeader}>
           <div className={styles.postMeta}>
             <time className={`${styles.postDate} ${isDarkMode ? styles.darkSecondaryText : ''}`}>{post.date}</time>
-            <span className={`${styles.postSeparator} ${isDarkMode ? styles.darkSecondaryText : ''}`}>•</span>
-            <span className={`${styles.postReadTime} ${isDarkMode ? styles.darkSecondaryText : ''}`}>{post.readTime}</span>
+            <span className={`${styles.postSeparator} ${isDarkMode ? styles.darkSecondaryText : ''}`}>&bull;</span>
+            <span className={`${styles.postReadTime} ${isDarkMode ? styles.darkSecondaryText : ''}`}>
+              {post.readTime}
+            </span>
           </div>
           <h1 className={`${styles.postTitle} ${isDarkMode ? styles.darkText : ''}`}>{post.title}</h1>
           <div className={styles.postTags}>
-            {post.tags.map((tag, index) => (
-              <span key={index} className={`${styles.tag} ${isDarkMode ? styles.darkTag : ''}`}>{tag}</span>
+            {(post.tags || []).map((tag, index) => (
+              <span key={`${tag}-${index}`} className={`${styles.tag} ${isDarkMode ? styles.darkTag : ''}`}>
+                {tag}
+              </span>
             ))}
           </div>
         </header>
 
-        <article 
+        <article
+          ref={articleRef}
           className={`${styles.postContent} ${isDarkMode ? styles.darkPostContent : ''}`}
-          dangerouslySetInnerHTML={createMarkup(post.content)}
+          dangerouslySetInnerHTML={{ __html: sanitizedContent }}
         />
 
         <div className={styles.shareSection}>
           <h2 className={`${styles.shareTitle} ${isDarkMode ? styles.darkText : ''}`}>Share this post</h2>
           <div className={styles.shareButtons}>
-            <button 
-              className={`${styles.shareButton} ${isDarkMode ? styles.darkShareButton : ''}`} 
+            <button
+              className={`${styles.shareButton} ${isDarkMode ? styles.darkShareButton : ''}`}
               title="Copy link"
               onClick={() => {
                 navigator.clipboard.writeText(window.location.href);
               }}
             >
               <svg className={styles.shareIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"></path>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
+                ></path>
               </svg>
               <span className={styles.tooltip}>Copy link</span>
             </button>
-            
-            <a 
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(window.location.href)}`} 
-              target="_blank" 
-              rel="noopener noreferrer" 
+
+            <a
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(window.location.href)}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className={`${styles.shareButton} ${isDarkMode ? styles.darkShareButton : ''}`}
               title="Share on Twitter"
             >
@@ -157,11 +277,11 @@ export default function BlogPost({ isDarkMode }) {
               </svg>
               <span className={styles.tooltip}>Share on Twitter</span>
             </a>
-            
-            <a 
-              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`} 
-              target="_blank" 
-              rel="noopener noreferrer" 
+
+            <a
+              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className={`${styles.shareButton} ${isDarkMode ? styles.darkShareButton : ''}`}
               title="Share on LinkedIn"
             >

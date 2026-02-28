@@ -79,7 +79,9 @@
 }
 
 .blogLink {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     text-decoration: none;
 }
 
@@ -90,6 +92,10 @@
     color: #111827;
     line-height: 1.4;
     transition: color 0.3s ease;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .blogMeta {
@@ -117,12 +123,18 @@
     margin-bottom: 1rem;
     line-height: 1.5;
     transition: color 0.3s ease;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 3.9em;
 }
 
 .blogTags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    margin-top: auto;
 }
 
 .tag {

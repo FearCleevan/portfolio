@@ -1,8 +1,17 @@
 // src/components/RecentBlogs/RecentBlogs.jsx
-import React, { useState, useEffect } from 'react';
-import styles from './RecentBlogs.module.css';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getBlogPosts } from '../../firebase/services/contentService';
+import styles from './RecentBlogs.module.css';
+
+const stripHtml = (value = '') =>
+  value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+
+const getExcerpt = (post) => {
+  const rawExcerpt = stripHtml(post?.excerpt || '');
+  if (rawExcerpt) return rawExcerpt;
+  return stripHtml(post?.content || '').slice(0, 170);
+};
 
 export default function RecentBlogs({ isDarkMode }) {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -14,8 +23,9 @@ export default function RecentBlogs({ isDarkMode }) {
       try {
         setLoading(true);
         const posts = await getBlogPosts();
-        // Sort by date (newest first)
-        const sortedPosts = posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const sortedPosts = [...posts].sort(
+          (a, b) => new Date(b?.date || b?.createdAt || 0) - new Date(a?.date || a?.createdAt || 0)
+        );
         setBlogPosts(sortedPosts);
       } catch (err) {
         console.error('Error fetching blog posts:', err);
@@ -47,10 +57,7 @@ export default function RecentBlogs({ isDarkMode }) {
         <div className={`${styles.allBlogsContainer} ${isDarkMode ? styles.darkMode : ''}`}>
           <div className={styles.errorOverlay}>
             <p className={isDarkMode ? styles.darkText : ''}>Error loading blog posts: {error}</p>
-            <button
-              className={isDarkMode ? styles.darkButton : ''}
-              onClick={() => window.location.reload()}
-            >
+            <button className={isDarkMode ? styles.darkButton : ''} onClick={() => window.location.reload()}>
               Retry
             </button>
           </div>
@@ -83,14 +90,20 @@ export default function RecentBlogs({ isDarkMode }) {
                 <Link to={`/blog/${post.slug}`} className={styles.blogLink}>
                   <h3 className={`${styles.blogTitle} ${isDarkMode ? styles.darkText : ''}`}>{post.title}</h3>
                   <div className={styles.blogMeta}>
-                    <time className={`${styles.blogDate} ${isDarkMode ? styles.darkSecondaryText : ''}`}>{post.date}</time>
-                    <span className={`${styles.blogSeparator} ${isDarkMode ? styles.darkSecondaryText : ''}`}>•</span>
-                    <span className={`${styles.blogReadTime} ${isDarkMode ? styles.darkSecondaryText : ''}`}>{post.readTime}</span>
+                    <time className={`${styles.blogDate} ${isDarkMode ? styles.darkSecondaryText : ''}`}>{post.date || '-'}</time>
+                    <span className={`${styles.blogSeparator} ${isDarkMode ? styles.darkSecondaryText : ''}`}>&bull;</span>
+                    <span className={`${styles.blogReadTime} ${isDarkMode ? styles.darkSecondaryText : ''}`}>
+                      {post.readTime || '-'}
+                    </span>
                   </div>
-                  <p className={`${styles.blogExcerpt} ${isDarkMode ? styles.darkSecondaryText : ''}`}>{post.excerpt}</p>
+                  <p className={`${styles.blogExcerpt} ${isDarkMode ? styles.darkSecondaryText : ''}`}>
+                    {getExcerpt(post)}
+                  </p>
                   <div className={styles.blogTags}>
-                    {post.tags.map((tag, index) => (
-                      <span key={index} className={`${styles.tag} ${isDarkMode ? styles.darkTag : ''}`}>{tag}</span>
+                    {(post.tags || []).map((tag, index) => (
+                      <span key={`${tag}-${index}`} className={`${styles.tag} ${isDarkMode ? styles.darkTag : ''}`}>
+                        {tag}
+                      </span>
                     ))}
                   </div>
                 </Link>
