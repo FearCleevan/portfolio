@@ -98,7 +98,6 @@ export const useProjects = () => {
       const uploadPromises = files.map((file) => uploadProjectSampleImage(file, projectId));
       return await Promise.all(uploadPromises);
     } catch (err) {
-      setError(err);
       throw err;
     }
   };

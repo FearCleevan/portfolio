@@ -215,7 +215,13 @@ const ProjectsEditor = () => {
             toast.success('Sample image(s) uploaded successfully.');
         } catch (error) {
             console.error('Error uploading sample images:', error);
-            toast.error(`Failed to upload image(s): ${error.message}`);
+            const message = error?.message || 'Unknown upload error';
+            const isPresetError = /upload preset/i.test(message);
+            toast.error(
+                isPresetError
+                    ? `Failed to upload image(s): ${message} Create or fix an unsigned Cloudinary upload preset in .env.`
+                    : `Failed to upload image(s): ${message}`
+            );
         } finally {
             setIsUploadingImages(false);
         }
@@ -240,7 +246,7 @@ const ProjectsEditor = () => {
         );
     }
 
-    if (error) return <div className={styles.errorOverlay}>Error loading projects: {error.message}</div>;
+    if (error && !projects.length) return <div className={styles.errorOverlay}>Error loading projects: {error.message}</div>;
 
     return (
         <div className={styles.editorWrapper}>

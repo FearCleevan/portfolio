@@ -102,16 +102,30 @@ const generateUniqueId = () => {
   return uuidv4();
 };
 
-const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+const readEnvValue = (key) => {
+  const value = import.meta.env[key];
+  return typeof value === 'string' ? value.trim() : '';
+};
+
+const CLOUDINARY_CLOUD_NAME =
+  readEnvValue('VITE_CLOUDINARY_CLOUD_NAME') ||
+  readEnvValue('VITE_CLOUDINARY_CLOUDNAME');
+
+const CLOUDINARY_UPLOAD_PRESETS = [
+  readEnvValue('VITE_CLOUDINARY_PROJECTS_UPLOAD_PRESET'),
+  readEnvValue('VITE_CLOUDINARY_UPLOAD_PRESET'),
+  readEnvValue('VITE_CLOUDINARY_UNSIGNED_UPLOAD_PRESET')
+].filter(Boolean);
 
 const getCloudinaryUploadUrl = () => {
   if (!CLOUDINARY_CLOUD_NAME) {
     throw new Error('Missing VITE_CLOUDINARY_CLOUD_NAME in .env');
   }
 
-  if (!CLOUDINARY_UPLOAD_PRESET) {
-    throw new Error('Missing VITE_CLOUDINARY_UPLOAD_PRESET in .env (unsigned preset required)');
+  if (!CLOUDINARY_UPLOAD_PRESETS.length) {
+    throw new Error(
+      'Missing Cloudinary upload preset in .env. Set one of: VITE_CLOUDINARY_PROJECTS_UPLOAD_PRESET, VITE_CLOUDINARY_UPLOAD_PRESET, VITE_CLOUDINARY_UNSIGNED_UPLOAD_PRESET'
+    );
   }
 
   return `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -120,29 +134,49 @@ const getCloudinaryUploadUrl = () => {
 export const uploadProjectSampleImage = async (file, projectId) => {
   try {
     const uploadUrl = getCloudinaryUploadUrl();
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('folder', `portfolio/projects/${projectId}`);
+    let lastErrorMessage = 'Cloudinary upload failed';
 
-    const response = await fetch(uploadUrl, {
-      method: 'POST',
-      body: formData
-    });
+    for (const preset of CLOUDINARY_UPLOAD_PRESETS) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', preset);
+      formData.append('folder', `portfolio/projects/${projectId}`);
 
-    if (!response.ok) {
+      const response = await fetch(uploadUrl, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        return {
+          id: result.public_id,
+          url: result.secure_url,
+          publicId: result.public_id,
+          width: result.width,
+          height: result.height
+        };
+      }
+
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData?.error?.message || 'Cloudinary upload failed');
+      const cloudinaryMessage = errorData?.error?.message || '';
+      lastErrorMessage = cloudinaryMessage || `Cloudinary upload failed (${response.status})`;
+
+      // If preset is invalid, try next configured preset (if any).
+      if (/upload preset not found/i.test(cloudinaryMessage)) {
+        continue;
+      }
+
+      break;
     }
 
-    const result = await response.json();
-    return {
-      id: result.public_id,
-      url: result.secure_url,
-      publicId: result.public_id,
-      width: result.width,
-      height: result.height
-    };
+    if (/upload preset not found/i.test(lastErrorMessage)) {
+      throw new Error(
+        `Cloudinary upload preset was not found for cloud "${CLOUDINARY_CLOUD_NAME}". Check your .env preset value(s).`
+      );
+    }
+
+    throw new Error(lastErrorMessage);
   } catch (error) {
     console.error('Error uploading project sample image:', error);
     throw error;
