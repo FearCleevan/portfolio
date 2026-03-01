@@ -129,7 +129,8 @@
     text-decoration: underline;
 }
 
-.postContent ul, .postContent ol {
+.postContent ul,
+.postContent ol {
     margin-left: 1.5rem;
     margin-bottom: 1.5rem;
 }
@@ -339,12 +340,12 @@
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  color: #5c6370;
-  font-style: italic;
+    color: #5c6370;
+    font-style: italic;
 }
 
 .token.punctuation {
-  color: #b6bec9;
+    color: #b6bec9;
 }
 
 .token.property,
@@ -354,7 +355,7 @@
 .token.constant,
 .token.symbol,
 .token.deleted {
-  color: #f4b97f;
+    color: #f4b97f;
 }
 
 .token.selector,
@@ -363,7 +364,7 @@
 .token.char,
 .token.builtin,
 .token.inserted {
-  color: #8fe089;
+    color: #8fe089;
 }
 
 .token.operator,
@@ -371,37 +372,37 @@
 .token.url,
 .language-css .token.string,
 .style .token.string {
-  color: #7dd3fc;
+    color: #7dd3fc;
 }
 
 .token.atrule,
 .token.attr-value,
 .token.keyword {
-  color: #d7a5ff;
+    color: #d7a5ff;
 }
 
 .token.function,
 .token.class-name {
-  color: #87c2ff;
+    color: #87c2ff;
 }
 
 .token.regex,
 .token.important,
 .token.variable {
-  color: #f9a8d4;
+    color: #f9a8d4;
 }
 
 .token.important,
 .token.bold {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .token.italic {
-  font-style: italic;
+    font-style: italic;
 }
 
 .token.entity {
-  cursor: help;
+    cursor: help;
 }
 
 /* Example and Best Practice Blocks */
@@ -652,6 +653,11 @@
 .darkMode .shareButton,
 .darkMode .darkShareButton {
     background: rgba(255, 255, 255, 0.05);
+}
+
+.darkShareButton {
+    background-color: #333 !important;
+    color: #e2e8f0 !important;
 }
 
 .darkMode .shareButton:hover,
