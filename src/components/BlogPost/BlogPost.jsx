@@ -13,6 +13,7 @@ import 'prismjs/components/prism-css';
 import 'prismjs/components/prism-markup';
 import styles from './BlogPost.module.css';
 import { getBlogPostBySlug } from '../../firebase/services/contentService';
+import { useTheme } from '../../context/ThemeContext';
 
 const BLOCK_BREAK_TAGS = new Set(['DIV', 'P', 'LI', 'TR']);
 
@@ -67,7 +68,8 @@ const getLanguageLabel = (language = 'javascript') => {
   return map[language] || 'Code';
 };
 
-export default function BlogPost({ isDarkMode }) {
+export default function BlogPost() {
+    const { isDarkMode } = useTheme();
   const { slug } = useParams();
   const articleRef = useRef(null);
   const [post, setPost] = useState(null);

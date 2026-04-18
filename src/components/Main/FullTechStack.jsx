@@ -3,8 +3,10 @@ import React from 'react';
 import styles from './FullTechStack.module.css';
 import { Link } from 'react-router-dom';
 import { useTechStack } from '../../firebase/hooks/useTechStack';
+import { useTheme } from '../../context/ThemeContext';
 
-export default function FullTechStack({ isDarkMode }) {
+export default function FullTechStack() {
+    const { isDarkMode } = useTheme();
     const { techStack, loading, error } = useTechStack();
 
     if (loading) {

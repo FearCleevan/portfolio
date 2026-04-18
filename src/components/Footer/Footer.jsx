@@ -1,7 +1,9 @@
 // src/components/Footer/Footer.jsx
 import styles from './Footer.module.css';
+import { useTheme } from '../../context/ThemeContext';
 
-const Footer = ({ isDarkMode }) => {
+const Footer = () => {
+  const { isDarkMode } = useTheme();
   return (
     <footer className={`${styles.footer} ${isDarkMode ? styles.darkMode : ''}`}>
       <div className={styles.content}>

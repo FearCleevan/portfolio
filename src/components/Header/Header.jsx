@@ -1,13 +1,14 @@
 // src/components/header/Header.jsx
-import React from 'react';
 import styles from './Header.module.css';
 import profile from '../../assets/profile.png';
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaDownload } from 'react-icons/fa';
 import resume from '../../assets/LazanPeterPaul_CV.pdf';
 import { usePersonalDetails } from '../../firebase/hooks/usePersonalDetails';
+import { useTheme } from '../../context/ThemeContext';
 
 
-function ThemeToggle({ isDarkMode, toggleDarkMode }) {
+function ThemeToggle() {
+    const { isDarkMode, toggleDarkMode } = useTheme();
     return (
         <button
             className={`${styles.themeToggle} ${isDarkMode ? styles.dark : styles.light}`}
@@ -32,7 +33,8 @@ function ThemeToggle({ isDarkMode, toggleDarkMode }) {
     );
 }
 
-const Header = ({ isDarkMode, toggleDarkMode }) => {
+const Header = () => {
+    const { isDarkMode } = useTheme();
     const { personalDetails, error } = usePersonalDetails();
     const handleScheduleCall = () => {
         const calendlyUrl = personalDetails?.calendlyUrl || "https://calendly.com/fearcleevan/30min";
@@ -67,7 +69,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                 </div>
                 <div className={styles.details}>
                     <div className={styles.modeToggle}>
-                        <ThemeToggle isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+                        <ThemeToggle />
                     </div>
                     <div className={styles.nameContainer}>
                         <h1 className={`${styles.name} ${isDarkMode ? styles.darkText : ''}`}>
@@ -99,12 +101,14 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                             <FaEnvelope className={styles.buttonIcon} />
                             <span className={styles.buttonText}>Send Email</span>
                         </button>
-                        <button
+                        <a
                             className={`${styles.button} ${styles.downloadButton} ${isDarkMode ? styles.darkButton : ''}`}
+                            href={resume}
+                            download='Peter-Paul-Lazan-Resume.pdf'
                         >
                             <FaDownload className={styles.buttonIcon} />
-                            <a className={styles.buttonText} href={resume} download='Peter-Paul-Lazan-Resume.pdf'>Download CV</a>
-                        </button>
+                            <span className={styles.buttonText}>Download CV</span>
+                        </a>
                     </div>
                 </div>
             </div>

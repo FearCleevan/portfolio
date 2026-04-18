@@ -2,8 +2,10 @@
 import React from 'react';
 import styles from './Container.module.css';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 
-const Container = ({ isDarkMode, projects, certifications = [] }) => {
+const Container = ({ projects, certifications = [] }) => {
+    const { isDarkMode } = useTheme();
     // Show only first 4 projects
     const displayedProjects = projects.slice(0, 4);
     const displayedCertifications = certifications.slice(0, 4);

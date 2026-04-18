@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Disallow: /LoginPanel
+Disallow: /AdminPanel
+
+Sitemap: https://lazandev.vercel.app/sitemap.xml

@@ -2,8 +2,10 @@ import React from 'react';
 import styles from './AllCertifications.module.css';
 import { Link } from 'react-router-dom';
 import { useCertifications } from '../../firebase/hooks/useCertifications';
+import { useTheme } from '../../context/ThemeContext';
 
-export default function AllCertifications({ isDarkMode }) {
+export default function AllCertifications() {
+    const { isDarkMode } = useTheme();
     const { certifications, loading, error } = useCertifications();
 
     if (loading) {

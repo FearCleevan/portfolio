@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getBlogPosts } from '../../firebase/services/contentService';
 import styles from './RecentBlogs.module.css';
+import { useTheme } from '../../context/ThemeContext';
 
 const stripHtml = (value = '') =>
   value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -13,7 +14,8 @@ const getExcerpt = (post) => {
   return stripHtml(post?.content || '').slice(0, 170);
 };
 
-export default function RecentBlogs({ isDarkMode }) {
+export default function RecentBlogs() {
+  const { isDarkMode } = useTheme();
   const [blogPosts, setBlogPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

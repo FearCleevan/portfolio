@@ -13,8 +13,10 @@ import { useExperience } from '../../firebase/hooks/useExperience';
 import { useProjects } from '../../firebase/hooks/useProjects';
 import { useCertifications } from '../../firebase/hooks/useCertifications';
 import GitHubCalendar from '../Container/GitHubCalendar';
+import { useTheme } from '../../context/ThemeContext';
 
-export default function Main({ isDarkMode, toggleDarkMode }) {
+export default function Main() {
+    const { isDarkMode } = useTheme();
     const [isMounted, setIsMounted] = useState(false);
     const { aboutContent, loading: aboutLoading, error: aboutError } = useAboutContent();
     const { techStack: allTechStack, loading: techStackLoading, error: techStackError } = useTechStack();
@@ -67,7 +69,7 @@ export default function Main({ isDarkMode, toggleDarkMode }) {
 
     return (
         <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''} ${isMounted ? styles.mounted : ''} ${isExiting ? styles.exit : ''}`}>
-            <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+            <Header />
             <main className={`${styles.mainContent} ${isDarkMode ? styles.darkMode : ''}`}>
                 <div className={styles.gridContainer}>
                     {/* Left Column */}
@@ -193,15 +195,14 @@ export default function Main({ isDarkMode, toggleDarkMode }) {
                     </div>
                 </div>
             </main>
-            <Container isDarkMode={isDarkMode} projects={projects} certifications={certifications} />
-            <ContainerSecond isDarkMode={isDarkMode} />
+            <Container projects={projects} certifications={certifications} />
+            <ContainerSecond />
             <GitHubCalendar
                 username={import.meta.env.VITE_GITHUB_USERNAME}
                 token={import.meta.env.VITE_GITHUB_TOKEN}
-                isDarkMode={isDarkMode}
             />
-            <Footer isDarkMode={isDarkMode} />
-            <ChatButton isDarkMode={isDarkMode} />
+            <Footer />
+            <ChatButton />
         </div>
     );
 }

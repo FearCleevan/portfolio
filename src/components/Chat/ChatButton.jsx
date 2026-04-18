@@ -3,8 +3,10 @@ import { createPortal } from 'react-dom';
 import styles from './ChatButton.module.css';
 import { FaCommentDots } from 'react-icons/fa';
 import ChatBox from './ChatBox';
+import { useTheme } from '../../context/ThemeContext';
 
-const ChatButton = ({ isDarkMode }) => {
+const ChatButton = () => {
+    const { isDarkMode } = useTheme();
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [portalElement, setPortalElement] = useState(null);
 
@@ -36,7 +38,7 @@ const ChatButton = ({ isDarkMode }) => {
             
             {isChatOpen && portalElement && createPortal(
                 <div className={styles.chatBoxContainer}>
-                    <ChatBox onClose={() => setIsChatOpen(false)} isDarkMode={isDarkMode} />
+                    <ChatBox onClose={() => setIsChatOpen(false)} />
                 </div>,
                 portalElement
             )}

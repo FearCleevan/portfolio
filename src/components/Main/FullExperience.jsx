@@ -3,8 +3,10 @@ import React from 'react';
 import styles from './FullExperience.module.css';
 import { Link } from 'react-router-dom';
 import { useExperience } from '../../firebase/hooks/useExperience';
+import { useTheme } from '../../context/ThemeContext';
 
-export default function FullExperience({ isDarkMode }) {
+export default function FullExperience() {
+    const { isDarkMode } = useTheme();
     const { experience, loading, error } = useExperience();
 
     if (loading) {

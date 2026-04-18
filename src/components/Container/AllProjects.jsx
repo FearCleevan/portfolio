@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './AllProjects.module.css';
 import { Link } from 'react-router-dom';
 import { useProjects } from '../../firebase/hooks/useProjects';
+import { useTheme } from '../../context/ThemeContext';
 import { FiChevronLeft, FiChevronRight, FiCode, FiX } from 'react-icons/fi';
 import { SiAngular, SiExpress, SiFirebase, SiJavascript, SiMongodb, SiMysql, SiNextdotjs, SiNodedotjs, SiPostgresql, SiReact, SiTailwindcss, SiTypescript, SiVuedotjs } from 'react-icons/si';
 
@@ -24,7 +25,8 @@ const getTechIcon = (technology = '') => {
     return FiCode;
 };
 
-export default function AllProjects({ isDarkMode }) {
+export default function AllProjects() {
+    const { isDarkMode } = useTheme();
     const { projects, loading, error } = useProjects();
     const [previewState, setPreviewState] = useState({ projectId: null, imageIndex: 0 });
 

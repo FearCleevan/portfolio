@@ -3,10 +3,12 @@ import React, { useState, useEffect } from 'react';
 import styles from './ContainerSecond.module.css';
 import { Link } from 'react-router-dom';
 import { getBlogPosts } from '../../firebase/services/contentService';
+import { useTheme } from '../../context/ThemeContext';
 import { usePersonalDetails } from '../../firebase/hooks/usePersonalDetails';
 
 
-export default function ContainerSecond({ isDarkMode }) {
+export default function ContainerSecond() {
+  const { isDarkMode } = useTheme();
   const [blogPosts, setBlogPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

@@ -3,6 +3,7 @@ import { FiAward, FiBriefcase, FiCalendar, FiCheck, FiCode, FiCopy, FiMail, FiMe
 import styles from './ChatBox.module.css';
 import profileImage from '../../assets/profile.png';
 import { aiService } from '../../services/aiService';
+import { useTheme } from '../../context/ThemeContext';
 
 import { usePersonalDetails } from '../../firebase/hooks/usePersonalDetails';
 import { useProjects } from '../../firebase/hooks/useProjects';
@@ -20,7 +21,8 @@ const INITIAL_MESSAGE = {
     type: 'text'
 };
 
-const ChatBox = ({ onClose, isDarkMode }) => {
+const ChatBox = ({ onClose }) => {
+    const { isDarkMode } = useTheme();
     const { personalDetails, loading: personalLoading } = usePersonalDetails();
     const { projects, loading: projectsLoading } = useProjects();
     const { experience, loading: experienceLoading } = useExperience();

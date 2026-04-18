@@ -1,8 +1,10 @@
 // src/components/Container/GitHubCalendar.jsx
 import React, { useState, useEffect } from 'react';
 import styles from './GitHubCalendar.module.css';
+import { useTheme } from '../../context/ThemeContext';
 
-const GitHubCalendar = ({ username, token, isDarkMode }) => {
+const GitHubCalendar = ({ username, token }) => {
+    const { isDarkMode } = useTheme();
     const [contributions, setContributions] = useState([]);
     const [availableYears, setAvailableYears] = useState([]);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
