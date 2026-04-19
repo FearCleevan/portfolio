@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
 
 * {
   font-family: "Bai Jamjuree", sans-serif !important;
@@ -287,60 +287,60 @@
 
 /* Dark Mode Styles */
 .pageWrapper.darkMode {
-  background-color: #1a1a1a;
-  color: #f0f0f0;
+  background-color: var(--clr-bg);
+  color: var(--clr-text);
 }
 
 .darkMode .mainContent {
-  background-color: #1a1a1a;
+  background-color: var(--clr-bg);
 }
 
 .darkGridBox {
-  background-color: #2d2d2d !important;
-  border-color: #444 !important;
+  background-color: var(--clr-surface) !important;
+  border-color: var(--clr-border) !important;
 }
 
 .darkText {
-  color: #f0f0f0 !important;
+  color: var(--clr-text) !important;
 }
 
 .darkLink {
-  color: #a0a0a0 !important;
+  color: var(--clr-text-secondary) !important;
 }
 
 .darkLink:hover {
-  color: #f0f0f0 !important;
+  color: var(--clr-text) !important;
 }
 
 .darkTechTag {
-  background-color: #444 !important;
-  border-color: #555 !important;
-  color: #f0f0f0 !important;
+  background-color: var(--clr-surface-hover) !important;
+  border-color: var(--clr-border-strong) !important;
+  color: var(--clr-text) !important;
 }
 
 .darkTimelineLine {
-  background-color: #444 !important;
+  background-color: var(--clr-border) !important;
 }
 
 .darkTimelineDot {
-  background-color: #2d2d2d !important;
-  border-color: #555 !important;
+  background-color: var(--clr-surface) !important;
+  border-color: var(--clr-border-strong) !important;
 }
 
 .darkTimelineDot:hover {
-    background-color: #fff !important;
-  border-color: #fff !important;
+  background-color: var(--clr-text) !important;
+  border-color: var(--clr-text) !important;
 }
 
 .darkTimelineYear {
-  background-color: #444 !important;
-  border-color: #555 !important;
-  color: #f0f0f0 !important;
+  background-color: var(--clr-surface-hover) !important;
+  border-color: var(--clr-border-strong) !important;
+  color: var(--clr-text) !important;
 }
 
 .darkTimelineDotActive {
-  background-color: #fff !important;
-  border-color: #fff !important;
+  background-color: var(--clr-text) !important;
+  border-color: var(--clr-text) !important;
 }
 
 /* Tablet Styles (768px and up) */
@@ -503,15 +503,15 @@
 
 /* Dark mode for new styles */
 .darkMode .experienceLink {
-    color: #a0a0a0;
+    color: var(--clr-text-secondary);
 }
 
 .darkMode .experienceLink:hover {
-    color: #3b82f6;
+    color: var(--clr-primary);
 }
 
 .darkMode .timelineDescription {
-    color: #a0a0a0;
+    color: var(--clr-text-secondary);
 }
 
 /* Main.module.css additions */
@@ -560,19 +560,19 @@
 
 /* Dark mode styles */
 .darkMode .timelineDescription {
-    color: #a0a0a0;
+    color: var(--clr-text-secondary);
 }
 
 .darkMode .techLabel {
-    color: #a0a0a0;
+    color: var(--clr-text-secondary);
 }
 
 .darkMode .techTagMini {
-    background-color: #444;
-    border-color: #555;
-    color: #e5e7eb;
+    background-color: var(--clr-surface-hover);
+    border-color: var(--clr-border-strong);
+    color: var(--clr-text);
 }
 
 .darkMode .moreTech {
-    color: #888;
+    color: var(--clr-text-muted);
 }

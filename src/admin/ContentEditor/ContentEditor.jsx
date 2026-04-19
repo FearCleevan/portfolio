@@ -67,7 +67,7 @@ const ContentEditor = () => {
           ) : hasError ? (
             <div className={styles.errorOverlay}>
               <p>Failed to load the content editor.</p>
-              <button onClick={() => {
+              <button type="button" onClick={() => {
                 setHasError(false);
                 setIsLoading(true);
                 setTimeout(() => setIsLoading(false), 1000);
@@ -83,43 +83,43 @@ const ContentEditor = () => {
               </div>
 
               <div className={styles.tabs}>
-                <button
+                <button type="button"
                   className={`${styles.tab} ${activeTab === 'about' ? styles.active : ''}`}
                   onClick={() => setActiveTab('about')}
                 >
                   About
                 </button>
-                <button
+                <button type="button"
                   className={`${styles.tab} ${activeTab === 'techStack' ? styles.active : ''}`}
                   onClick={() => setActiveTab('techStack')}
                 >
                   Tech Stack
                 </button>
-                <button
+                <button type="button"
                   className={`${styles.tab} ${activeTab === 'experience' ? styles.active : ''}`}
                   onClick={() => setActiveTab('experience')}
                 >
                   Experience
                 </button>
-                <button
+                <button type="button"
                   className={`${styles.tab} ${activeTab === 'projects' ? styles.active : ''}`}
                   onClick={() => setActiveTab('projects')}
                 >
                   Projects
                 </button>
-                <button
+                <button type="button"
                   className={`${styles.tab} ${activeTab === 'certifications' ? styles.active : ''}`}
                   onClick={() => setActiveTab('certifications')}
                 >
                   Certifications
                 </button>
-                <button
+                <button type="button"
                   className={`${styles.tab} ${activeTab === 'blogPosts' ? styles.active : ''}`}
                   onClick={() => setActiveTab('blogPosts')}
                 >
                   Blog Posts
                 </button>
-                <button // Add this button for Personal Details
+                <button type="button" // Add this button for Personal Details
                   className={`${styles.tab} ${activeTab === 'personalDetails' ? styles.active : ''}`}
                   onClick={() => setActiveTab('personalDetails')}
                 >

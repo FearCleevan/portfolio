@@ -261,14 +261,14 @@ const ProjectsEditor = () => {
                 <h3>Confirm Deletion</h3>
                 <p>Are you sure you want to delete the "{deleteCandidate?.title}" project?</p>
                 <div className={styles.modalActions}>
-                    <button
+                    <button type="button"
                         onClick={cancelDelete}
                         className={styles.cancelButton}
                         disabled={isSaving}
                     >
                         Cancel
                     </button>
-                    <button
+                    <button type="button"
                         onClick={confirmDelete}
                         className={styles.deleteButton}
                         disabled={isSaving}
@@ -283,7 +283,7 @@ const ProjectsEditor = () => {
                     <div className={styles.editHeader}>
                         <h3>{newItem ? 'Add New' : 'Edit'} Project</h3>
                         <div className={styles.editActions}>
-                            <button
+                            <button type="button"
                                 onClick={handleSave}
                                 className={styles.saveButton}
                                 disabled={!currentEditItem?.title || !currentEditItem?.description || !currentEditItem?.url || isSaving || isUploadingImages}
@@ -296,7 +296,7 @@ const ProjectsEditor = () => {
                                     </>
                                 )}
                             </button>
-                            <button
+                            <button type="button"
                                 onClick={handleCancelEdit}
                                 className={styles.cancelButton}
                                 disabled={isSaving || isUploadingImages}
@@ -429,7 +429,7 @@ const ProjectsEditor = () => {
                 <div className={styles.contentList}>
                     <div className={styles.listHeader}>
                         <h3>Projects</h3>
-                        <button
+                        <button type="button"
                             onClick={() => handleEdit()}
                             className={styles.editButton}
                         >
@@ -452,13 +452,13 @@ const ProjectsEditor = () => {
                                 </p>
                             </div>
                             <div className={styles.itemActions}>
-                                <button
+                                <button type="button"
                                     onClick={() => handleEdit(project)}
                                     className={styles.editButton}
                                 >
                                     <FiEdit2 />
                                 </button>
-                                <button
+                                <button type="button"
                                     onClick={() => handleDeleteClick(project)}
                                     className={styles.deleteButton}
                                 >

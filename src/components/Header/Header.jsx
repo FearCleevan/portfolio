@@ -65,7 +65,7 @@ const Header = () => {
         <div className={`${styles.headerWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
             <div className={styles.container}>
                 <div className={styles.profileImage}>
-                    <img src={profile} alt="Peter Paul Abillar Lazan" width={160} height={160} />
+                    <img src={profile} alt="Peter Paul Abillar Lazan" width={160} height={160} loading="eager" fetchpriority="high" />
                 </div>
                 <div className={styles.details}>
                     <div className={styles.modeToggle}>

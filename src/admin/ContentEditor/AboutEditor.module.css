@@ -287,3 +287,35 @@
   gap: 1rem;
   margin-top: 1.5rem;
 }
+
+@media (max-width: 600px) {
+  .editPanel {
+    padding: 1rem;
+  }
+
+  .editHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .editActions,
+  .headerActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .paragraphItem {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .itemActions {
+    margin-left: 0;
+  }
+
+  .modal {
+    padding: 1.25rem;
+    width: calc(100vw - 2rem);
+  }
+}

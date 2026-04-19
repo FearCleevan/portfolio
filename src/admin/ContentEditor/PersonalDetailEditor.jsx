@@ -190,7 +190,7 @@ const PersonalDetailEditor = () => {
             <div className={styles.header}>
                 <h2>Personal Details</h2>
                 {!isEditing && !isChangingPassword && (
-                    <button onClick={toggleEdit} className={styles.editButton}>
+                    <button type="button" onClick={toggleEdit} className={styles.editButton}>
                         <FiEdit2 /> Edit Details
                     </button>
                 )}
@@ -263,7 +263,7 @@ const PersonalDetailEditor = () => {
                     </div>
                     
                     <div className={styles.buttonGroup}>
-                        <button
+                        <button type="button"
                             onClick={handlePasswordSave}
                             className={styles.saveButton}
                             disabled={isSaving || !passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
@@ -276,7 +276,7 @@ const PersonalDetailEditor = () => {
                                 </>
                             )}
                         </button>
-                        <button
+                        <button type="button"
                             onClick={() => setIsChangingPassword(false)}
                             className={styles.cancelButton}
                             disabled={isSaving}
@@ -444,7 +444,7 @@ const PersonalDetailEditor = () => {
                     </div>
 
                     <div className={styles.buttonGroup}>
-                        <button
+                        <button type="button"
                             onClick={handleSave}
                             className={styles.saveButton}
                             disabled={isSaving}
@@ -457,7 +457,7 @@ const PersonalDetailEditor = () => {
                                 </>
                             )}
                         </button>
-                        <button
+                        <button type="button"
                             onClick={toggleEdit}
                             className={styles.cancelButton}
                             disabled={isSaving}
@@ -542,7 +542,7 @@ const PersonalDetailEditor = () => {
                     </div>
                     
                     <div className={styles.actionButtons}>
-                        <button 
+                        <button type="button" 
                             onClick={() => setIsChangingPassword(true)} 
                             className={styles.passwordButton}
                         >

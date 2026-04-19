@@ -32,17 +32,22 @@
 .backButton {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    color: #111827;
+    gap: 0.4rem;
+    color: #6b7280;
     text-decoration: none;
-    margin-bottom: 1rem;
-    transition: color 0.2s ease;
-    font-size: 14px;
+    margin-bottom: 1.25rem;
+    font-size: 13px;
     font-weight: 500;
+    padding: 5px 12px 5px 8px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .backButton:hover {
-    color: #3b82f6;
+    color: #111827;
+    background: #f9fafb;
+    border-color: #d1d5db;
 }
 
 .backIcon {
@@ -119,13 +124,6 @@
 }
 
 /* Dark mode styles */
-.darkMode .backButton {
-    color: #a0a0a0;
-}
-
-.darkMode .backButton:hover {
-    color: #3b82f6;
-}
 
 .darkMode .title {
     color: #f0f0f0;
@@ -147,11 +145,14 @@
 }
 
 .darkLink {
-    color: #a0a0a0 !important;
+    color: #9ca3af !important;
+    border-color: #374151 !important;
 }
 
 .darkLink:hover {
-    color: #3b82f6 !important;
+    color: #f0f0f0 !important;
+    background: #2d2d2d !important;
+    border-color: #4b5563 !important;
 }
 
 .darkTechTag {

@@ -1,4 +1,4 @@
-  @import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+  
 
   /* Base Mobile Styles */
   .footer {
@@ -48,20 +48,20 @@
 
   /* Dark Mode Styles */
   .footer.darkMode {
-    background-color: #1a1a1a;
-    border-top: 1px solid #444;
+    background-color: var(--clr-bg);
+    border-top: 1px solid var(--clr-border);
   }
 
   .darkText {
-    color: #a0a0a0 !important;
+    color: var(--clr-text-secondary) !important;
   }
 
   .darkLink {
-    color: #a0a0a0 !important;
+    color: var(--clr-text-secondary) !important;
   }
 
   .darkLink:hover {
-    color: #f0f0f0 !important;
+    color: var(--clr-text) !important;
     text-decoration: underline;
     background-color: rgba(255, 255, 255, 0.05);
   }

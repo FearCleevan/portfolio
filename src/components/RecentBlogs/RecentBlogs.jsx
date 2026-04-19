@@ -1,5 +1,5 @@
 // src/components/RecentBlogs/RecentBlogs.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getBlogPosts } from '../../firebase/services/contentService';
 import styles from './RecentBlogs.module.css';
@@ -19,6 +19,17 @@ export default function RecentBlogs() {
   const [blogPosts, setBlogPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredPosts = useMemo(() => {
+    if (!searchQuery.trim()) return blogPosts;
+    const q = searchQuery.toLowerCase();
+    return blogPosts.filter(post =>
+      post.title?.toLowerCase().includes(q) ||
+      (post.tags || []).some(tag => tag.toLowerCase().includes(q)) ||
+      getExcerpt(post).toLowerCase().includes(q)
+    );
+  }, [blogPosts, searchQuery]);
 
   useEffect(() => {
     const fetchBlogPosts = async () => {
@@ -41,12 +52,31 @@ export default function RecentBlogs() {
   }, []);
 
   if (loading) {
+    const skCls = `${styles.skeletonLine} ${isDarkMode ? styles.darkSkeleton : ''}`;
     return (
       <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
         <div className={`${styles.allBlogsContainer} ${isDarkMode ? styles.darkMode : ''}`}>
-          <div className={styles.loadingOverlay}>
-            <div className={`${styles.spinner} ${isDarkMode ? styles.darkSpinner : ''}`}></div>
-            <p className={isDarkMode ? styles.darkText : ''}>Loading blog posts...</p>
+          <div className={styles.header}>
+            <div className={skCls} style={{ width: '110px', height: '14px', marginBottom: '20px', borderRadius: '6px' }} />
+            <div className={skCls} style={{ width: '180px', height: '28px', borderRadius: '6px' }} />
+            <div className={skCls} style={{ width: '60px', height: '12px', marginTop: '8px', borderRadius: '4px' }} />
+          </div>
+          <div className={skCls} style={{ width: '100%', height: '40px', borderRadius: '8px', marginBottom: '1.5rem' }} />
+          <div className={styles.blogGrid}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className={`${styles.blogCard} ${isDarkMode ? styles.darkBlogCard : ''}`}>
+                <div className={skCls} style={{ width: '85%', height: '18px', marginBottom: '8px' }} />
+                <div className={skCls} style={{ width: '60%', height: '18px', marginBottom: '12px' }} />
+                <div className={skCls} style={{ width: '50%', height: '12px', marginBottom: '12px' }} />
+                <div className={skCls} style={{ width: '100%', height: '13px', marginBottom: '6px' }} />
+                <div className={skCls} style={{ width: '90%', height: '13px', marginBottom: '6px' }} />
+                <div className={skCls} style={{ width: '70%', height: '13px', marginBottom: '14px' }} />
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <div className={skCls} style={{ width: '52px', height: '22px', borderRadius: '4px' }} />
+                  <div className={skCls} style={{ width: '60px', height: '22px', borderRadius: '4px' }} />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -59,7 +89,7 @@ export default function RecentBlogs() {
         <div className={`${styles.allBlogsContainer} ${isDarkMode ? styles.darkMode : ''}`}>
           <div className={styles.errorOverlay}>
             <p className={isDarkMode ? styles.darkText : ''}>Error loading blog posts: {error}</p>
-            <button className={isDarkMode ? styles.darkButton : ''} onClick={() => window.location.reload()}>
+            <button type="button" className={isDarkMode ? styles.darkButton : ''} onClick={() => window.location.reload()}>
               Retry
             </button>
           </div>
@@ -79,15 +109,43 @@ export default function RecentBlogs() {
             Back to Home
           </Link>
           <h1 className={`${styles.title} ${isDarkMode ? styles.darkText : ''}`}>All Blog Posts</h1>
+          <p className={`${styles.pageSubtitle} ${isDarkMode ? styles.darkPageSubtitle : ''}`}>
+            {blogPosts.length} {blogPosts.length === 1 ? 'post' : 'posts'}
+          </p>
         </div>
 
-        {blogPosts.length === 0 ? (
+        <div className={styles.searchBar}>
+          <svg className={styles.searchIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="search"
+            className={`${styles.searchInput} ${isDarkMode ? styles.darkSearchInput : ''}`}
+            placeholder="Search by title, tag, or content..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="Search blog posts"
+          />
+          {searchQuery && (
+            <button type="button" className={styles.searchClear} onClick={() => setSearchQuery('')} aria-label="Clear search">×</button>
+          )}
+        </div>
+
+        {searchQuery && (
+          <p className={`${styles.resultsCount} ${isDarkMode ? styles.darkResultsCount : ''}`}>
+            {filteredPosts.length} {filteredPosts.length === 1 ? 'post' : 'posts'} found
+          </p>
+        )}
+
+        {filteredPosts.length === 0 && searchQuery ? (
+          <p className={`${styles.noResults} ${isDarkMode ? styles.darkNoResults : ''}`}>No posts match &ldquo;{searchQuery}&rdquo;.</p>
+        ) : blogPosts.length === 0 ? (
           <div className={`${styles.emptyState} ${isDarkMode ? styles.darkEmptyState : ''}`}>
             <p className={isDarkMode ? styles.darkText : ''}>No blog posts yet. Check back soon!</p>
           </div>
         ) : (
           <div className={styles.blogGrid}>
-            {blogPosts.map((post) => (
+            {filteredPosts.map((post) => (
               <div key={post.id} className={`${styles.blogCard} ${isDarkMode ? styles.darkBlogCard : ''}`}>
                 <Link to={`/blog/${post.slug}`} className={styles.blogLink}>
                   <h3 className={`${styles.blogTitle} ${isDarkMode ? styles.darkText : ''}`}>{post.title}</h3>

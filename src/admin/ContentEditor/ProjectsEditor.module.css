@@ -385,3 +385,40 @@
     color: #374151;
     font-size: 0.75rem;
 }
+
+@media (max-width: 600px) {
+    .editPanel {
+        padding: 1rem;
+    }
+
+    .editHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .editActions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .listItem {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .itemActions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .imageGrid {
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    }
+
+    .modalContent {
+        padding: 1.25rem;
+        width: calc(100vw - 2rem);
+    }
+}

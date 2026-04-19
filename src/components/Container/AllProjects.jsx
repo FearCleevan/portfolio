@@ -29,6 +29,17 @@ export default function AllProjects() {
     const { isDarkMode } = useTheme();
     const { projects, loading, error } = useProjects();
     const [previewState, setPreviewState] = useState({ projectId: null, imageIndex: 0 });
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredProjects = useMemo(() => {
+        if (!searchQuery.trim()) return projects;
+        const q = searchQuery.toLowerCase();
+        return projects.filter(p =>
+            p.title?.toLowerCase().includes(q) ||
+            p.description?.toLowerCase().includes(q) ||
+            (p.technologies || []).some(t => t.toLowerCase().includes(q))
+        );
+    }, [projects, searchQuery]);
 
     const selectedProject = useMemo(
         () => projects.find((project) => project.id === previewState.projectId),
@@ -81,12 +92,30 @@ export default function AllProjects() {
     }, [closePreview, isPreviewOpen, showNextImage, showPrevImage]);
 
     if (loading) {
+        const skCls = `${styles.skeletonLine} ${isDarkMode ? styles.darkSkeleton : ''}`;
         return (
             <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
                 <div className={`${styles.allProjectsContainer} ${isDarkMode ? styles.darkMode : ''}`}>
-                    <div className={styles.loadingOverlay}>
-                        <div className={`${styles.spinner} ${isDarkMode ? styles.darkSpinner : ''}`}></div>
-                        <p className={isDarkMode ? styles.darkText : ''}>Loading projects...</p>
+                    <div className={styles.header}>
+                        <div className={skCls} style={{ width: '110px', height: '14px', marginBottom: '20px', borderRadius: '6px' }} />
+                        <div className={skCls} style={{ width: '180px', height: '28px', borderRadius: '6px' }} />
+                        <div className={skCls} style={{ width: '80px', height: '12px', marginTop: '8px', borderRadius: '4px' }} />
+                    </div>
+                    <div className={skCls} style={{ width: '100%', height: '40px', borderRadius: '8px', marginBottom: '1.5rem' }} />
+                    <div className={styles.projectsGrid}>
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i} className={`${styles.projectCard} ${isDarkMode ? styles.darkBentoCard : ''}`}>
+                                <div className={skCls} style={{ width: '65%', height: '18px', marginBottom: '10px' }} />
+                                <div className={skCls} style={{ width: '100%', height: '13px', marginBottom: '6px' }} />
+                                <div className={skCls} style={{ width: '80%', height: '13px', marginBottom: '12px' }} />
+                                <div className={skCls} style={{ width: '38%', height: '20px', borderRadius: '999px', marginBottom: '12px' }} />
+                                <div style={{ display: 'flex', gap: '6px' }}>
+                                    <div className={skCls} style={{ width: '56px', height: '22px', borderRadius: '999px' }} />
+                                    <div className={skCls} style={{ width: '64px', height: '22px', borderRadius: '999px' }} />
+                                    <div className={skCls} style={{ width: '48px', height: '22px', borderRadius: '999px' }} />
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
@@ -99,7 +128,8 @@ export default function AllProjects() {
                 <div className={`${styles.allProjectsContainer} ${isDarkMode ? styles.darkMode : ''}`}>
                     <div className={styles.errorOverlay}>
                         <p className={isDarkMode ? styles.darkText : ''}>Error loading projects</p>
-                        <button 
+                        <button
+                            type="button"
                             className={isDarkMode ? styles.darkButton : ''}
                             onClick={() => window.location.reload()}
                         >
@@ -122,10 +152,39 @@ export default function AllProjects() {
                         Back to Home
                     </Link>
                     <h1 className={`${styles.title} ${isDarkMode ? styles.darkText : ''}`}>All Projects</h1>
+                    <p className={`${styles.pageSubtitle} ${isDarkMode ? styles.darkPageSubtitle : ''}`}>
+                        {projects.length} {projects.length === 1 ? 'project' : 'projects'}
+                    </p>
                 </div>
 
+                <div className={styles.searchBar}>
+                    <svg className={styles.searchIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input
+                        type="search"
+                        className={`${styles.searchInput} ${isDarkMode ? styles.darkSearchInput : ''}`}
+                        placeholder="Search by title, description, or technology..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        aria-label="Search projects"
+                    />
+                    {searchQuery && (
+                        <button type="button" className={styles.searchClear} onClick={() => setSearchQuery('')} aria-label="Clear search">×</button>
+                    )}
+                </div>
+
+                {searchQuery && (
+                    <p className={`${styles.resultsCount} ${isDarkMode ? styles.darkResultsCount : ''}`}>
+                        {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'} found
+                    </p>
+                )}
+
+                {filteredProjects.length === 0 ? (
+                    <p className={`${styles.noResults} ${isDarkMode ? styles.darkNoResults : ''}`}>No projects match &ldquo;{searchQuery}&rdquo;.</p>
+                ) : (
                 <div className={styles.projectsGrid}>
-                    {projects.map((project, projectIndex) => (
+                    {filteredProjects.map((project, projectIndex) => (
                         <div key={`${project.id}-${projectIndex}`} className={`${styles.projectCard} ${isDarkMode ? styles.darkBentoCard : ''}`}>
                             <a target="_blank" rel="noopener noreferrer" className={styles.projectLink} href={project.url}>
                                 <h3 className={`${styles.projectTitle} ${isDarkMode ? styles.darkText : ''}`}>
@@ -159,7 +218,7 @@ export default function AllProjects() {
                                             className={styles.projectImageButton}
                                             onClick={() => openPreview(project.id, index)}
                                         >
-                                            <img src={image.url} alt={`${project.title} sample ${index + 1}`} className={styles.projectImage} />
+                                            <img src={image.url} alt={`${project.title} sample ${index + 1}`} className={styles.projectImage} loading="lazy" />
                                         </button>
                                     ))}
                                 </div>
@@ -167,9 +226,10 @@ export default function AllProjects() {
                         </div>
                     ))}
                 </div>
+                )}
             </div>
             {isPreviewOpen && (
-                <div className={styles.previewOverlay} onClick={closePreview} role="presentation">
+                <div className={styles.previewOverlay} onClick={closePreview} role="dialog" aria-modal="true" aria-label="Project image preview">
                     <button
                         type="button"
                         className={`${styles.previewCloseButton} ${isDarkMode ? styles.previewCloseButtonDark : ''}`}

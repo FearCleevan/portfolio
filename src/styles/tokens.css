@@ -1,0 +1,52 @@
+/* Design Tokens
+   Light defaults in :root; dark overrides on [data-theme="dark"].
+   ThemeContext sets document.documentElement.dataset.theme on toggle.
+*/
+
+:root {
+  /* Backgrounds */
+  --clr-bg:             #ffffff;
+  --clr-bg-secondary:   #f9fafb;
+  --clr-surface:        #ffffff;
+  --clr-surface-raised: #f3f4f6;
+  --clr-surface-hover:  #e5e7eb;
+
+  /* Borders */
+  --clr-border:         #ececec;
+  --clr-border-strong:  #e5e7eb;
+
+  /* Text */
+  --clr-text:           #111827;
+  --clr-text-secondary: #6b7280;
+  --clr-text-muted:     #9ca3af;
+  --clr-text-subtle:    #666666;
+
+  /* Interactive */
+  --clr-primary:        #3b82f6;
+  --clr-primary-dark:   #2563eb;
+  --clr-primary-light:  #60a5fa;
+}
+
+[data-theme="dark"] {
+  /* Backgrounds */
+  --clr-bg:             #1a1a1a;
+  --clr-bg-secondary:   #1a1a1a;
+  --clr-surface:        #2d2d2d;
+  --clr-surface-raised: #333333;
+  --clr-surface-hover:  #444444;
+
+  /* Borders */
+  --clr-border:         #444444;
+  --clr-border-strong:  #555555;
+
+  /* Text */
+  --clr-text:           #f0f0f0;
+  --clr-text-secondary: #a0a0a0;
+  --clr-text-muted:     #888888;
+  --clr-text-subtle:    #a0a0a0;
+
+  /* Interactive (unchanged across themes) */
+  --clr-primary:        #3b82f6;
+  --clr-primary-dark:   #2563eb;
+  --clr-primary-light:  #60a5fa;
+}

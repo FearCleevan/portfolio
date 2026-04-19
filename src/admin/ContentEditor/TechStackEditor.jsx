@@ -117,7 +117,7 @@ const TechStackEditor = () => {
                     <div className={styles.editHeader}>
                         <h3>{newItem ? 'Add New' : 'Edit'} Tech Stack Group</h3>
                         <div className={styles.editActions}>
-                            <button
+                            <button type="button"
                                 onClick={handleSave}
                                 className={styles.saveButton}
                                 disabled={!currentEditItem?.title || !currentEditItem?.items?.length || isSaving}
@@ -130,7 +130,7 @@ const TechStackEditor = () => {
                                     </>
                                 )}
                             </button>
-                            <button
+                            <button type="button"
                                 onClick={handleCancelEdit}
                                 className={styles.cancelButton}
                                 disabled={isSaving}
@@ -171,7 +171,7 @@ const TechStackEditor = () => {
                 <div className={styles.contentList}>
                     <div className={styles.listHeader}>
                         <h3>Tech Stack Groups</h3>
-                        <button
+                        <button type="button"
                             onClick={() => handleEdit()}
                             className={styles.editButton}
                         >
@@ -189,13 +189,13 @@ const TechStackEditor = () => {
                                 </div>
                             </div>
                             <div className={styles.itemActions}>
-                                <button
+                                <button type="button"
                                     onClick={() => handleEdit(group)}
                                     className={styles.editButton}
                                 >
                                     <FiEdit2 />
                                 </button>
-                                <button
+                                <button type="button"
                                     onClick={() => openDeleteModal(group)}
                                     className={styles.deleteButton}
                                 >
@@ -216,10 +216,10 @@ const TechStackEditor = () => {
                 <h3>Confirm Delete</h3>
                 <p>Are you sure you want to delete the "{groupToDelete?.title}" group? This cannot be undone.</p>
                 <div className={styles.modalActions}>
-                    <button onClick={closeDeleteModal} className={styles.cancelButton}>
+                    <button type="button" onClick={closeDeleteModal} className={styles.cancelButton}>
                         Cancel
                     </button>
-                    <button onClick={confirmDelete} className={styles.deleteButton}>
+                    <button type="button" onClick={confirmDelete} className={styles.deleteButton}>
                         Confirm Delete
                     </button>
                 </div>

@@ -43,19 +43,19 @@ const AdminPanel = () => {
                     </div>
 
                     <div className={styles.previewControls}>
-                        <button
+                        <button type="button"
                             className={`${styles.previewButton} ${activePreview === 'mobile' ? styles.active : ''}`}
                             onClick={() => setActivePreview('mobile')}
                         >
                             Mobile
                         </button>
-                        <button
+                        <button type="button"
                             className={`${styles.previewButton} ${activePreview === 'tablet' ? styles.active : ''}`}
                             onClick={() => setActivePreview('tablet')}
                         >
                             Tablet
                         </button>
-                        <button
+                        <button type="button"
                             className={`${styles.previewButton} ${activePreview === 'desktop' ? styles.active : ''}`}
                             onClick={() => setActivePreview('desktop')}
                         >
@@ -88,7 +88,7 @@ const AdminPanel = () => {
                                     {hasError ? (
                                         <div className={styles.errorOverlay}>
                                             <p>Failed to load the application.</p>
-                                            <button onClick={() => {
+                                            <button type="button" onClick={() => {
                                                 setHasError(false);
                                                 setIsLoading(true);
                                             }}>

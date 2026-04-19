@@ -262,7 +262,7 @@ const ExperienceEditor = () => {
         return (
             <div className={styles.errorOverlay}>
                 <p>Error loading experience: {error.message}</p>
-                <button onClick={() => window.location.reload()}>
+                <button type="button" onClick={() => window.location.reload()}>
                     Retry
                 </button>
             </div>
@@ -276,7 +276,7 @@ const ExperienceEditor = () => {
                     <div className={styles.editHeader}>
                         <h3>{newItem ? 'Add New' : 'Edit'} Experience Item</h3>
                         <div className={styles.editActions}>
-                            <button
+                            <button type="button"
                                 onClick={handleSave}
                                 className={styles.saveButton}
                                 disabled={!currentEditItem?.role?.trim() || !currentEditItem?.company?.trim() || !currentEditItem?.year?.trim() || isSaving}
@@ -289,7 +289,7 @@ const ExperienceEditor = () => {
                                     </>
                                 )}
                             </button>
-                            <button
+                            <button type="button"
                                 onClick={handleCancelEdit}
                                 className={styles.cancelButton}
                                 disabled={isSaving}
@@ -377,7 +377,7 @@ const ExperienceEditor = () => {
                                     placeholder="Enter a description point (e.g., Led development of responsive web applications using React.js)"
                                     rows="2"
                                 />
-                                <button
+                                <button type="button"
                                     onClick={addDescriptionPoint}
                                     className={styles.addButton}
                                 >
@@ -394,7 +394,7 @@ const ExperienceEditor = () => {
                                                 <span className={styles.listItemText}>{point}</span>
                                             </div>
                                             <div className={styles.listItemActions}>
-                                                <button
+                                                <button type="button"
                                                     onClick={() => moveDescriptionPointUp(index)}
                                                     disabled={index === 0}
                                                     className={styles.smallButton}
@@ -402,7 +402,7 @@ const ExperienceEditor = () => {
                                                 >
                                                     <FiChevronUp />
                                                 </button>
-                                                <button
+                                                <button type="button"
                                                     onClick={() => moveDescriptionPointDown(index)}
                                                     disabled={index === currentEditItem.description.length - 1}
                                                     className={styles.smallButton}
@@ -410,7 +410,7 @@ const ExperienceEditor = () => {
                                                 >
                                                     <FiChevronDown />
                                                 </button>
-                                                <button
+                                                <button type="button"
                                                     onClick={() => removeDescriptionPoint(index)}
                                                     className={styles.smallDeleteButton}
                                                     title="Remove"
@@ -437,7 +437,7 @@ const ExperienceEditor = () => {
                                     className={styles.input}
                                     placeholder="e.g., React.js, Node.js, TypeScript"
                                 />
-                                <button
+                                <button type="button"
                                     onClick={addTechnology}
                                     className={styles.addButton}
                                 >
@@ -450,7 +450,7 @@ const ExperienceEditor = () => {
                                     {currentEditItem.technologies.map((tech, index) => (
                                         <div key={index} className={styles.techTagItem}>
                                             <span className={styles.techTag}>{tech}</span>
-                                            <button
+                                            <button type="button"
                                                 onClick={() => removeTechnology(index)}
                                                 className={styles.removeTechButton}
                                                 title="Remove"
@@ -468,7 +468,7 @@ const ExperienceEditor = () => {
                 <div className={styles.contentList}>
                     <div className={styles.listHeader}>
                         <h3>Experience Items (Higher order number = top position)</h3>
-                        <button
+                        <button type="button"
                             onClick={() => handleEdit()}
                             className={styles.editButton}
                         >
@@ -504,7 +504,7 @@ const ExperienceEditor = () => {
                                 </div>
                                 <div className={styles.itemActions}>
                                     <div className={styles.orderControls}>
-                                        <button
+                                        <button type="button"
                                             onClick={() => moveItemUp(exp)}
                                             disabled={index === 0 || isReordering}
                                             className={styles.orderButton}
@@ -512,7 +512,7 @@ const ExperienceEditor = () => {
                                         >
                                             <FiArrowUp />
                                         </button>
-                                        <button
+                                        <button type="button"
                                             onClick={() => moveItemDown(exp)}
                                             disabled={index === experience.length - 1 || isReordering}
                                             className={styles.orderButton}
@@ -521,7 +521,7 @@ const ExperienceEditor = () => {
                                             <FiArrowDown />
                                         </button>
                                     </div>
-                                    <button
+                                    <button type="button"
                                         onClick={() => handleEdit(exp)}
                                         className={styles.editButton}
                                         title="Edit"
@@ -529,7 +529,7 @@ const ExperienceEditor = () => {
                                     >
                                         <FiEdit2 />
                                     </button>
-                                    <button
+                                    <button type="button"
                                         onClick={() => openDeleteModal(exp)}
                                         className={styles.deleteButton}
                                         title="Delete"
@@ -553,10 +553,10 @@ const ExperienceEditor = () => {
                 <h3>Confirm Delete</h3>
                 <p>Are you sure you want to delete the "{itemToDelete?.role}" at "{itemToDelete?.company}"? This cannot be undone.</p>
                 <div className={styles.modalActions}>
-                    <button onClick={closeDeleteModal} className={styles.cancelButton}>
+                    <button type="button" onClick={closeDeleteModal} className={styles.cancelButton}>
                         Cancel
                     </button>
-                    <button onClick={confirmDelete} className={styles.deleteButton}>
+                    <button type="button" onClick={confirmDelete} className={styles.deleteButton}>
                         Confirm Delete
                     </button>
                 </div>

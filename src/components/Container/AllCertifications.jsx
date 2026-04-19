@@ -27,7 +27,8 @@ export default function AllCertifications() {
                 <div className={`${styles.allCertificationsContainer} ${isDarkMode ? styles.darkMode : ''}`}>
                     <div className={styles.errorOverlay}>
                         <p className={isDarkMode ? styles.darkText : ''}>Error loading certifications</p>
-                        <button 
+                        <button
+                            type="button"
                             className={isDarkMode ? styles.darkButton : ''}
                             onClick={() => window.location.reload()}
                         >

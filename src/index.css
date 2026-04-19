@@ -1,3 +1,5 @@
+@import './styles/tokens.css';
+
 /* index.css */
 body, #root {
   margin: 0;
@@ -73,6 +75,24 @@ html {
 /* Smooth scrolling for the entire page */
 html {
   scroll-behavior: smooth;
+}
+
+/* App-level page loader (used by App.jsx Suspense fallback) */
+@keyframes appSpin {
+  to { transform: rotate(360deg); }
+}
+
+.app-loader-spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  animation: appSpin 0.75s linear infinite;
+}
+
+/* Shared shimmer animation for skeleton loaders */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
 }
 
 /* Optional: Custom scrollbar for specific elements */

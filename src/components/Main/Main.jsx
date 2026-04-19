@@ -60,7 +60,7 @@ export default function Main() {
         return (
             <div className={`${styles.errorOverlay} ${isDarkMode ? styles.darkMode : ''}`}>
                 <p>Failed to load portfolio content.</p>
-                <button onClick={() => window.location.reload()}>
+                <button type="button" onClick={() => window.location.reload()}>
                     Retry
                 </button>
             </div>

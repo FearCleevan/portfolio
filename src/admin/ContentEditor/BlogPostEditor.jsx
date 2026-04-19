@@ -208,7 +208,7 @@ const BlogPostEditor = () => {
     return (
       <div className={styles.errorOverlay}>
         <p>Error loading blog posts: {error.message}</p>
-        <button onClick={() => window.location.reload()}>Retry</button>
+        <button type="button" onClick={() => window.location.reload()}>Retry</button>
       </div>
     );
   }
@@ -220,14 +220,14 @@ const BlogPostEditor = () => {
           <div className={styles.editHeader}>
             <h3>{newItem ? 'Add New' : 'Edit'} Blog Post</h3>
             <div className={styles.editActions}>
-              <button
+              <button type="button"
                 onClick={handleSave}
                 className={styles.saveButton}
                 disabled={!currentEditItem?.title || !stripHtml(currentEditItem?.content) || isSaving}
               >
                 {isSaving ? <span className={styles.spinner}></span> : <><FiSave /> Save</>}
               </button>
-              <button onClick={handleCancelEdit} className={styles.cancelButton} disabled={isSaving}>
+              <button type="button" onClick={handleCancelEdit} className={styles.cancelButton} disabled={isSaving}>
                 <FiX /> Cancel
               </button>
             </div>
@@ -359,7 +359,7 @@ const BlogPostEditor = () => {
         <div className={styles.contentList}>
           <div className={styles.listHeader}>
             <h3>Blog Posts</h3>
-            <button onClick={() => handleEdit()} className={styles.editButton}>
+            <button type="button" onClick={() => handleEdit()} className={styles.editButton}>
               <FiPlus /> Add Blog Post
             </button>
           </div>
@@ -383,10 +383,10 @@ const BlogPostEditor = () => {
                 </div>
               </div>
               <div className={styles.itemActions}>
-                <button onClick={() => handleEdit(post)} className={styles.editButton}>
+                <button type="button" onClick={() => handleEdit(post)} className={styles.editButton}>
                   <FiEdit2 />
                 </button>
-                <button onClick={() => openDeleteModal(post)} className={styles.deleteButton}>
+                <button type="button" onClick={() => openDeleteModal(post)} className={styles.deleteButton}>
                   <FiTrash2 />
                 </button>
               </div>
@@ -404,10 +404,10 @@ const BlogPostEditor = () => {
         <h3>Confirm Delete</h3>
         <p>Are you sure you want to delete the blog post "{itemToDelete?.title}"? This cannot be undone.</p>
         <div className={styles.modalActions}>
-          <button onClick={closeDeleteModal} className={styles.cancelButton}>
+          <button type="button" onClick={closeDeleteModal} className={styles.cancelButton}>
             Cancel
           </button>
-          <button onClick={confirmDelete} className={styles.deleteButton}>
+          <button type="button" onClick={confirmDelete} className={styles.deleteButton}>
             Confirm Delete
           </button>
         </div>

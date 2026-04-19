@@ -28,7 +28,8 @@ export default function FullExperience() {
                 <div className={`${styles.fullExperienceContainer} ${isDarkMode ? styles.darkMode : ''}`}>
                     <div className={styles.errorOverlay}>
                         <p className={isDarkMode ? styles.darkText : ''}>Error loading experience</p>
-                        <button 
+                        <button
+                            type="button"
                             className={isDarkMode ? styles.darkButton : ''}
                             onClick={() => window.location.reload()}
                         >

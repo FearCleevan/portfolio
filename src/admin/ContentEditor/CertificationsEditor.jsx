@@ -105,7 +105,7 @@ const CertificationsEditor = () => {
                     <div className={styles.editHeader}>
                         <h3>{newItem ? 'Add New' : 'Edit'} Certification</h3>
                         <div className={styles.editActions}>
-                            <button
+                            <button type="button"
                                 onClick={handleSave}
                                 className={styles.saveButton}
                                 disabled={!currentEditItem?.title || !currentEditItem?.issuer || !currentEditItem?.url}
@@ -118,7 +118,7 @@ const CertificationsEditor = () => {
                                     </>
                                 )}
                             </button>
-                            <button
+                            <button type="button"
                                 onClick={handleCancelEdit}
                                 className={styles.cancelButton}
                             >
@@ -166,7 +166,7 @@ const CertificationsEditor = () => {
                 <div className={styles.contentList}>
                     <div className={styles.listHeader}>
                         <h3>Certifications</h3>
-                        <button
+                        <button type="button"
                             onClick={() => handleEdit()}
                             className={styles.editButton}
                         >
@@ -183,13 +183,13 @@ const CertificationsEditor = () => {
                                 </a>
                             </div>
                             <div className={styles.itemActions}>
-                                <button
+                                <button type="button"
                                     onClick={() => handleEdit(cert)}
                                     className={styles.editButton}
                                 >
                                     <FiEdit2 />
                                 </button>
-                                <button
+                                <button type="button"
                                     onClick={() => handleDeleteClick(cert)}
                                     className={styles.deleteButton}
                                 >
@@ -211,14 +211,14 @@ const CertificationsEditor = () => {
                 <h3>Confirm Deletion</h3>
                 <p>Are you sure you want to delete the "{deleteCandidate?.title}" certification?</p>
                 <div className={styles.modalActions}>
-                    <button
+                    <button type="button"
                         onClick={cancelDelete}
                         className={styles.cancelButton}
                         disabled={isSaving}
                     >
                         Cancel
                     </button>
-                    <button
+                    <button type="button"
                         onClick={confirmDelete}
                         className={styles.deleteButton}
                         disabled={isSaving}

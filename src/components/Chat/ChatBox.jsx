@@ -1,8 +1,9 @@
-﻿import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FiAward, FiBriefcase, FiCalendar, FiCheck, FiCode, FiCopy, FiMail, FiMessageCircle, FiSend, FiUser } from 'react-icons/fi';
 import styles from './ChatBox.module.css';
 import profileImage from '../../assets/profile.png';
 import { aiService } from '../../services/aiService';
+import { trackChatOpen, trackMeetingSubmit, trackQuickAction } from '../../services/analyticsService';
 import { useTheme } from '../../context/ThemeContext';
 
 import { usePersonalDetails } from '../../firebase/hooks/usePersonalDetails';
@@ -12,6 +13,7 @@ import { useTechStack } from '../../firebase/hooks/useTechStack';
 import { useCertifications } from '../../firebase/hooks/useCertifications';
 import { useBlogPosts } from '../../firebase/hooks/useBlogPosts';
 import { useAboutContent } from '../../firebase/hooks/useFirestore';
+import { saveMeeting } from '../../firebase/services/chatService';
 
 const INITIAL_MESSAGE = {
     id: 'intro',
@@ -112,6 +114,7 @@ const ChatBox = ({ onClose }) => {
 
     useEffect(() => {
         setApiStatus(aiService.isReady() ? 'available' : 'unavailable');
+        trackChatOpen();
     }, []);
 
     const sendUserMessage = useCallback(async (text) => {
@@ -180,28 +183,37 @@ const ChatBox = ({ onClose }) => {
             return;
         }
 
-        const summary = `Meeting Request Submitted:\n\nName: ${meetingForm.name}\nEmail: ${meetingForm.email}\nPurpose: ${meetingForm.purpose}\nPreferred Time: ${meetingForm.preferredTime}\nNotes: ${meetingForm.notes || 'None'}`;
+        setIsLoading(true);
 
-        setMessages((prev) => [...prev, {
-            id: `meeting-${Date.now()}`,
-            text: summary,
-            sender: 'user',
-            timestamp: new Date(),
-            type: 'meeting'
-        }]);
+        let meetingId = null;
+        try {
+            meetingId = await saveMeeting(meetingForm);
+        } catch {
+            setMessages((prev) => [...prev, {
+                id: `bot-err-${Date.now()}`,
+                text: `There was an issue saving your request. Please email directly at ${personalDetails?.email || 'fearcleevan123@gmail.com'}.`,
+                sender: 'bot',
+                timestamp: new Date(),
+                type: 'text'
+            }]);
+            setIsLoading(false);
+            return;
+        }
 
-        const contactEmail = personalDetails?.email || 'fearcleevan123@gmail.com';
+        trackMeetingSubmit(meetingForm.purpose);
 
         setMessages((prev) => [...prev, {
             id: `meeting-confirm-${Date.now()}`,
-            text: `Thanks ${meetingForm.name}. Your request is noted. Peter can follow up at ${meetingForm.email}. Direct contact: ${contactEmail}`,
             sender: 'bot',
-            timestamp: new Date(),
-            type: 'text'
+            type: 'meetingConfirm',
+            data: { ...meetingForm, meetingId },
+            text: '',
+            timestamp: new Date()
         }]);
 
         setMeetingForm({ name: '', email: '', purpose: '', preferredTime: '', notes: '' });
         setIsSchedulingMeeting(false);
+        setIsLoading(false);
     };
 
     const quickActions = useMemo(() => {
@@ -225,7 +237,8 @@ const ChatBox = ({ onClose }) => {
         return actions.slice(0, 4);
     }, [techStack, projects, experience, certifications]);
 
-    const handleQuickAction = (message) => {
+    const handleQuickAction = (message, label) => {
+        trackQuickAction(label);
         sendUserMessage(message);
     };
 
@@ -245,10 +258,10 @@ const ChatBox = ({ onClose }) => {
             <div className={`${styles.chatBox} ${isDarkMode ? styles.darkMode : ''}`}>
                 <div className={`${styles.chatHeader} ${isDarkMode ? styles.darkHeader : ''}`}>
                     <div className={styles.headerContent}>
-                        <div className={styles.profileImage}><img src={profileImage} alt="AI Assistant" /></div>
+                        <div className={styles.profileImage}><img src={profileImage} alt="AI Assistant" loading="lazy" /></div>
                         <div className={styles.headerText}><h3>Peter's AI Assistant</h3><div className={styles.status}><span className={styles.statusIndicator}></span><span>Preparing context...</span></div></div>
                     </div>
-                    <button onClick={onClose} className={`${styles.closeButton} ${isDarkMode ? styles.darkCloseButton : ''}`}>×</button>
+                    <button type="button" onClick={onClose} className={`${styles.closeButton} ${isDarkMode ? styles.darkCloseButton : ''}`} aria-label="Close chat">×</button>
                 </div>
                 <div className={`${styles.messagesContainer} ${isDarkMode ? styles.darkMessages : ''}`}>
                     <div className={styles.loadingState}>
@@ -261,10 +274,10 @@ const ChatBox = ({ onClose }) => {
     }
 
     return (
-        <div className={`${styles.chatBox} ${isDarkMode ? styles.darkMode : ''}`}>
+        <div className={`${styles.chatBox} ${isDarkMode ? styles.darkMode : ''}`} role="dialog" aria-modal="true" aria-label="Chat with Peter's AI Assistant">
             <div className={`${styles.chatHeader} ${isDarkMode ? styles.darkHeader : ''}`}>
                 <div className={styles.headerContent}>
-                    <div className={styles.profileImage}><img src={profileImage} alt="AI Assistant" /></div>
+                    <div className={styles.profileImage}><img src={profileImage} alt="AI Assistant" loading="lazy" /></div>
                     <div className={styles.headerText}>
                         <h3>Peter's AI Assistant</h3>
                         <div className={styles.status}>
@@ -273,7 +286,7 @@ const ChatBox = ({ onClose }) => {
                         </div>
                     </div>
                 </div>
-                <button onClick={onClose} className={`${styles.closeButton} ${isDarkMode ? styles.darkCloseButton : ''}`} aria-label="Close chat">×</button>
+                <button type="button" onClick={onClose} className={`${styles.closeButton} ${isDarkMode ? styles.darkCloseButton : ''}`} aria-label="Close chat">×</button>
             </div>
 
             <div className={`${styles.messagesContainer} ${isDarkMode ? styles.darkMessages : ''}`}>
@@ -286,8 +299,8 @@ const ChatBox = ({ onClose }) => {
                         <p>Quick prompts</p>
                         <div className={styles.quickActionsGrid}>
                             {quickActions.map((action, index) => (
-                                <button key={`${action.label}-${index}`} className={`${styles.quickActionBtn} ${isDarkMode ? styles.darkQuickAction : ''}`} onClick={() => handleQuickAction(action.message)} disabled={isLoading}>
-                                    <span className={styles.actionIcon}>{action.icon}</span>
+                                <button key={`${action.label}-${index}`} type="button" className={`${styles.quickActionBtn} ${isDarkMode ? styles.darkQuickAction : ''}`} onClick={() => handleQuickAction(action.message, action.label)} disabled={isLoading} aria-label={action.label}>
+                                    <span className={styles.actionIcon} aria-hidden="true">{action.icon}</span>
                                     {action.label}
                                 </button>
                             ))}
@@ -302,19 +315,21 @@ const ChatBox = ({ onClose }) => {
                     >
                         {message.sender === 'bot' && (
                             <div className={styles.messageHeader}>
-                                <img src={profileImage} alt="AI Assistant" className={styles.messageAvatar} />
+                                <img src={profileImage} alt="AI Assistant" className={styles.messageAvatar} loading="lazy" />
                                 <span className={`${styles.messageSender} ${isDarkMode ? styles.darkSender : ''}`}>AI Assistant</span>
                             </div>
                         )}
                         <div className={`${styles.messageContent} ${isDarkMode ? styles.darkContent : ''}`}>
-                            {message.type === 'meeting' ? (
+                            {message.type === 'meetingConfirm' ? (
                                 <div className={styles.meetingSummary}>
-                                    <h4>Meeting Request Submitted</h4>
+                                    <h4>Meeting Request Confirmed ✓</h4>
                                     <div className={styles.meetingDetails}>
-                                        <p><strong>Name:</strong> {message.text.split('\n')[2]?.split(': ')[1]}</p>
-                                        <p><strong>Email:</strong> {message.text.split('\n')[3]?.split(': ')[1]}</p>
-                                        <p><strong>Purpose:</strong> {message.text.split('\n')[4]?.split(': ')[1]}</p>
-                                        <p><strong>Preferred Time:</strong> {message.text.split('\n')[5]?.split(': ')[1]}</p>
+                                        <p><strong>Name:</strong> {message.data.name}</p>
+                                        <p><strong>Email:</strong> {message.data.email}</p>
+                                        <p><strong>Purpose:</strong> {message.data.purpose}</p>
+                                        <p><strong>Preferred Time:</strong> {message.data.preferredTime}</p>
+                                        {message.data.notes && <p><strong>Notes:</strong> {message.data.notes}</p>}
+                                        <p style={{ marginTop: '8px', fontSize: '11px', color: '#6b7280' }}>Peter will follow up at {message.data.email} within 24–48h.</p>
                                     </div>
                                 </div>
                             ) : (
@@ -333,11 +348,11 @@ const ChatBox = ({ onClose }) => {
                 <div className={`${styles.meetingForm} ${isDarkMode ? styles.darkMeetingForm : ''}`}>
                     <h4>Schedule a Meeting with Peter</h4>
                     <form onSubmit={handleMeetingSubmit}>
-                        <div className={styles.formGroup}><FiUser className={styles.formIcon} /><input type="text" placeholder="Your Full Name *" value={meetingForm.name} onChange={(e) => setMeetingForm((prev) => ({ ...prev, name: e.target.value }))} required className={isDarkMode ? styles.darkInput : ''} disabled={isLoading} /></div>
-                        <div className={styles.formGroup}><FiMail className={styles.formIcon} /><input type="email" placeholder="Your Email *" value={meetingForm.email} onChange={(e) => setMeetingForm((prev) => ({ ...prev, email: e.target.value }))} required className={isDarkMode ? styles.darkInput : ''} disabled={isLoading} /></div>
-                        <div className={styles.formGroup}><FiCalendar className={styles.formIcon} /><select value={meetingForm.purpose} onChange={(e) => setMeetingForm((prev) => ({ ...prev, purpose: e.target.value }))} required className={isDarkMode ? styles.darkInput : ''} disabled={isLoading}><option value="">Meeting Purpose *</option><option value="Project Discussion">Project Discussion</option><option value="Job Opportunity">Job Opportunity</option><option value="Technical Consultation">Technical Consultation</option><option value="Partnership">Partnership</option><option value="Other">Other</option></select></div>
-                        <div className={styles.formGroup}><input type="text" placeholder="Preferred Date/Time *" value={meetingForm.preferredTime} onChange={(e) => setMeetingForm((prev) => ({ ...prev, preferredTime: e.target.value }))} required className={isDarkMode ? styles.darkInput : ''} disabled={isLoading} /></div>
-                        <div className={styles.formGroup}><textarea placeholder="Additional notes..." value={meetingForm.notes} onChange={(e) => setMeetingForm((prev) => ({ ...prev, notes: e.target.value }))} rows="3" className={isDarkMode ? styles.darkInput : ''} disabled={isLoading} /></div>
+                        <div className={styles.formGroup}><FiUser className={styles.formIcon} aria-hidden="true" /><input type="text" placeholder="Your Full Name *" aria-label="Your full name" value={meetingForm.name} onChange={(e) => setMeetingForm((prev) => ({ ...prev, name: e.target.value }))} required className={isDarkMode ? styles.darkInput : ''} disabled={isLoading} /></div>
+                        <div className={styles.formGroup}><FiMail className={styles.formIcon} aria-hidden="true" /><input type="email" placeholder="Your Email *" aria-label="Your email address" value={meetingForm.email} onChange={(e) => setMeetingForm((prev) => ({ ...prev, email: e.target.value }))} required className={isDarkMode ? styles.darkInput : ''} disabled={isLoading} /></div>
+                        <div className={styles.formGroup}><FiCalendar className={styles.formIcon} aria-hidden="true" /><select value={meetingForm.purpose} onChange={(e) => setMeetingForm((prev) => ({ ...prev, purpose: e.target.value }))} required aria-label="Meeting purpose" className={isDarkMode ? styles.darkInput : ''} disabled={isLoading}><option value="">Meeting Purpose *</option><option value="Project Discussion">Project Discussion</option><option value="Job Opportunity">Job Opportunity</option><option value="Technical Consultation">Technical Consultation</option><option value="Partnership">Partnership</option><option value="Other">Other</option></select></div>
+                        <div className={styles.formGroup}><input type="text" placeholder="Preferred Date/Time *" aria-label="Preferred date and time" value={meetingForm.preferredTime} onChange={(e) => setMeetingForm((prev) => ({ ...prev, preferredTime: e.target.value }))} required className={isDarkMode ? styles.darkInput : ''} disabled={isLoading} /></div>
+                        <div className={styles.formGroup}><textarea placeholder="Additional notes..." aria-label="Additional notes" value={meetingForm.notes} onChange={(e) => setMeetingForm((prev) => ({ ...prev, notes: e.target.value }))} rows="3" className={isDarkMode ? styles.darkInput : ''} disabled={isLoading} /></div>
                         <div className={styles.formActions}><button type="button" onClick={() => setIsSchedulingMeeting(false)} className={styles.cancelButton} disabled={isLoading}>Cancel</button><button type="submit" className={styles.submitButton} disabled={isLoading}>{isLoading ? 'Submitting...' : 'Schedule Meeting'}</button></div>
                     </form>
                 </div>
@@ -346,7 +361,7 @@ const ChatBox = ({ onClose }) => {
             {!isSchedulingMeeting && (
                 <form className={`${styles.messageForm} ${isDarkMode ? styles.darkForm : ''}`} onSubmit={handleSendMessage}>
                     <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} onKeyDown={handleKeyPress} placeholder="Ask about credentials, projects, code examples, or book a meeting..." className={`${styles.messageInput} ${isDarkMode ? styles.darkInput : ''}`} disabled={isLoading || isDataLoading} />
-                    <button type="submit" className={`${styles.sendButton} ${isDarkMode ? styles.darkSendButton : ''}`} disabled={!newMessage.trim() || isLoading || isDataLoading} title="Send message">
+                    <button type="submit" className={`${styles.sendButton} ${isDarkMode ? styles.darkSendButton : ''}`} disabled={!newMessage.trim() || isLoading || isDataLoading} aria-label="Send message">
                         {isLoading ? <div className={styles.spinner}></div> : <FiSend className={styles.sendIcon} />}
                     </button>
                 </form>

@@ -99,7 +99,7 @@ const AboutEditor = () => {
     return (
       <div className={styles.errorOverlay}>
         <p>Failed to load about content.</p>
-        <button onClick={() => window.location.reload()}>
+        <button type="button" onClick={() => window.location.reload()}>
           Retry
         </button>
       </div>
@@ -113,7 +113,7 @@ const AboutEditor = () => {
           <div className={styles.editHeader}>
             <h3>{newItem ? 'Add New' : 'Edit'} About Section</h3>
             <div className={styles.editActions}>
-              <button 
+              <button type="button" 
                 onClick={handleSave}
                 className={styles.saveButton}
                 disabled={isSaving}
@@ -126,7 +126,7 @@ const AboutEditor = () => {
                   </>
                 )}
               </button>
-              <button 
+              <button type="button" 
                 onClick={handleCancelEdit}
                 className={styles.cancelButton}
                 disabled={isSaving}
@@ -145,7 +145,7 @@ const AboutEditor = () => {
                   onChange={(e) => handleArrayItemChange(e, index)}
                   className={styles.textArea}
                 />
-                {/* <button 
+                {/* <button type="button" 
                   onClick={() => removeArrayItem(index)}
                   className={styles.removeButton}
                   disabled={isSaving}
@@ -154,7 +154,7 @@ const AboutEditor = () => {
                 </button> */}
               </div>
             ))}
-            <button 
+            <button type="button" 
               onClick={addArrayItem} 
               className={styles.addButton}
               disabled={isSaving}
@@ -168,13 +168,13 @@ const AboutEditor = () => {
           <div className={styles.listHeader}>
             <h3>About Content</h3>
             <div className={styles.headerActions}>
-              <button 
+              <button type="button" 
                 onClick={() => handleEdit()}
                 className={styles.editButton}
               >
                 <FiPlus /> Edit Content
               </button>
-              {/* <button 
+              {/* <button type="button" 
                 onClick={handleReset}
                 className={styles.deleteButton}
               >
@@ -187,13 +187,13 @@ const AboutEditor = () => {
               <div key={index} className={styles.paragraphItem}>
                 <p>{para}</p>
                 <div className={styles.itemActions}>
-                  <button 
+                  <button type="button" 
                     onClick={() => handleEdit({ description: [...aboutContent] })}
                     className={styles.editButton}
                   >
                     <FiEdit2 />
                   </button>
-                  <button 
+                  <button type="button" 
                     onClick={() => openDeleteModal(index)}
                     className={styles.deleteButton}
                   >
@@ -215,10 +215,10 @@ const AboutEditor = () => {
         <h3>Confirm Delete</h3>
         <p>Are you sure you want to delete this paragraph? This cannot be undone.</p>
         <div className={styles.modalActions}>
-          <button onClick={closeDeleteModal} className={styles.cancelButton}>
+          <button type="button" onClick={closeDeleteModal} className={styles.cancelButton}>
             Cancel
           </button>
-          <button onClick={confirmDelete} className={styles.deleteButton}>
+          <button type="button" onClick={confirmDelete} className={styles.deleteButton}>
             Confirm Delete
           </button>
         </div>
