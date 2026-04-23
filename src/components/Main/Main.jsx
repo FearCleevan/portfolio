@@ -6,7 +6,6 @@ import Container from '../Container/Container';
 import ContainerSecond from '../Container/ContainerSecond';
 import Footer from '../Footer/Footer';
 import { useAboutContent } from '../../firebase/hooks/useFirestore';
-import ChatButton from '../Chat/ChatButton';
 import { Link, useLocation } from 'react-router-dom';
 import { useTechStack } from '../../firebase/hooks/useTechStack';
 import { useExperience } from '../../firebase/hooks/useExperience';
@@ -49,10 +48,15 @@ export default function Main() {
 
     if (aboutLoading || techStackLoading || experienceLoading || projectsLoading || certLoading) {
         return (
-            <div className={`${styles.loadingOverlay} ${isDarkMode ? styles.darkMode : ''}`}>
-                <div className={styles.spinner}></div>
-                <p>Loading portfolio...</p>
+            <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
+                <div className={`${styles.mainContainerWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
+                    <div className={styles.loadingOverlay}>
+                        <div className={`${styles.spinner} ${isDarkMode ? styles.darkSpinner : ''}`}></div>
+                        <p className={isDarkMode ? styles.darkText : ''}>Loading Portfolio...</p>
+                    </div>
+                </div>
             </div>
+
         );
     }
 
@@ -69,98 +73,99 @@ export default function Main() {
 
     return (
         <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''} ${isMounted ? styles.mounted : ''} ${isExiting ? styles.exit : ''}`}>
-            <Header />
-            <main className={`${styles.mainContent} ${isDarkMode ? styles.darkMode : ''}`}>
-                <div className={styles.gridContainer}>
-                    {/* Left Column */}
-                    <div className={styles.leftColumn}>
-                        {/* About */}
-                        <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
-                            <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}>
-                                <span className={styles.gridIcon}>📄</span> About
-                            </h2>
-                            {aboutContent.map((paragraph, index) => (
-                                <React.Fragment key={index}>
-                                    <p className={`${styles.aboutText} ${isDarkMode ? styles.darkText : ''}`}>{paragraph}</p>
-                                    {index < aboutContent.length - 1 && <br />}
-                                </React.Fragment>
-                            ))}
-                        </section>
-
-                        {/* Tech Stack */}
-                        <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
-                            <div className={styles.techStackHeader}>
-                                <div className={styles.techStackTitleRow}>
-                                    <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}> <span className={styles.gridIcon}>💻</span> Tech Stack</h2>
-                                </div>
-                                <Link to="/tech-stack" className={`${styles.techStackLink} ${isDarkMode ? styles.darkLink : ''}`}>
-                                    View All
-                                    <svg className={styles.techStackArrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path>
-                                    </svg>
-                                </Link>
-                            </div>
-                            <div className={styles.techStackGroups}>
-                                {limitedTechStackData.groups.map((group, index) => (
-                                    <div key={index} className={styles.techStackGroup}>
-                                        <h3 className={`${styles.techStackGroupTitle} ${isDarkMode ? styles.darkText : ''}`}>{group.title}</h3>
-                                        <div className={styles.techStackTags}>
-                                            {group.items.map((item, itemIndex) => (
-                                                <span key={itemIndex} className={`${styles.techTag} ${isDarkMode ? styles.darkTechTag : ''}`}>{item}</span>
-                                            ))}
-                                        </div>
-                                    </div>
+            <div className={`${styles.mainContainerWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
+                <Header />
+                <main className={`${styles.mainContent} ${isDarkMode ? styles.darkMode : ''}`}>
+                    <div className={styles.gridContainer}>
+                        {/* Left Column */}
+                        <div className={styles.leftColumn}>
+                            {/* About */}
+                            <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
+                                <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}>
+                                    <span className={styles.gridIcon}>📄</span> About
+                                </h2>
+                                {aboutContent.map((paragraph, index) => (
+                                    <React.Fragment key={index}>
+                                        <p className={`${styles.aboutText} ${isDarkMode ? styles.darkText : ''}`}>{paragraph}</p>
+                                        {index < aboutContent.length - 1 && <br />}
+                                    </React.Fragment>
                                 ))}
-                            </div>
-                        </section>
-                    </div>
+                            </section>
 
-                    {/* Right Column */}
-                    <div className={styles.rightColumn}>
-                        {/* Experience Section */}
-                        <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
-                            <div className={styles.experienceHeader}>
-                                <div className={styles.experienceTitleRow}>
-                                    <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}> <span className={styles.gridIcon}>💼</span> Experience</h2>
+                            {/* Tech Stack */}
+                            <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
+                                <div className={styles.techStackHeader}>
+                                    <div className={styles.techStackTitleRow}>
+                                        <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}> <span className={styles.gridIcon}>💻</span> Tech Stack</h2>
+                                    </div>
+                                    <Link to="/tech-stack" className={`${styles.techStackLink} ${isDarkMode ? styles.darkLink : ''}`}>
+                                        View All
+                                        <svg className={styles.techStackArrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </Link>
                                 </div>
-                                {/* Optional: Add View All link if you still want detailed view */}
-                                <Link to="/experience" className={`${styles.experienceLink} ${isDarkMode ? styles.darkLink : ''}`}>
-                                    View All
-                                    <svg className={styles.experienceArrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path>
-                                    </svg>
-                                </Link>
-                            </div>
-                            <div className={styles.timelineBox}>
-                                <div className={`${styles.timelineLine} ${isDarkMode ? styles.darkTimelineLine : ''}`}></div>
-                                {fullExperience.map((item) => {
-                                    const itemClass = item.status === 'active'
-                                        ? styles.timelineItemActive
-                                        : item.status === 'current'
-                                            ? styles.timelineItemCurrent
-                                            : styles.timelineItem;
+                                <div className={styles.techStackGroups}>
+                                    {limitedTechStackData.groups.map((group, index) => (
+                                        <div key={index} className={styles.techStackGroup}>
+                                            <h3 className={`${styles.techStackGroupTitle} ${isDarkMode ? styles.darkText : ''}`}>{group.title}</h3>
+                                            <div className={styles.techStackTags}>
+                                                {group.items.map((item, itemIndex) => (
+                                                    <span key={itemIndex} className={`${styles.techTag} ${isDarkMode ? styles.darkTechTag : ''}`}>{item}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+                        </div>
 
-                                    const dotClass = item.status === 'active'
-                                        ? styles.timelineDotActive
-                                        : item.status === 'current'
-                                            ? styles.timelineDotCurrent
-                                            : styles.timelineDot;
+                        {/* Right Column */}
+                        <div className={styles.rightColumn}>
+                            {/* Experience Section */}
+                            <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
+                                <div className={styles.experienceHeader}>
+                                    <div className={styles.experienceTitleRow}>
+                                        <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}> <span className={styles.gridIcon}>💼</span> Experience</h2>
+                                    </div>
+                                    {/* Optional: Add View All link if you still want detailed view */}
+                                    <Link to="/experience" className={`${styles.experienceLink} ${isDarkMode ? styles.darkLink : ''}`}>
+                                        View All
+                                        <svg className={styles.experienceArrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </Link>
+                                </div>
+                                <div className={styles.timelineBox}>
+                                    <div className={`${styles.timelineLine} ${isDarkMode ? styles.darkTimelineLine : ''}`}></div>
+                                    {fullExperience.map((item) => {
+                                        const itemClass = item.status === 'active'
+                                            ? styles.timelineItemActive
+                                            : item.status === 'current'
+                                                ? styles.timelineItemCurrent
+                                                : styles.timelineItem;
 
-                                    const roleClass = item.status === 'active'
-                                        ? styles.timelineRoleActive
-                                        : styles.timelineRole;
+                                        const dotClass = item.status === 'active'
+                                            ? styles.timelineDotActive
+                                            : item.status === 'current'
+                                                ? styles.timelineDotCurrent
+                                                : styles.timelineDot;
 
-                                    return (
-                                        <div key={item.id} className={itemClass}>
-                                            <div className={`${dotClass} ${isDarkMode ? item.status === 'active' ? styles.darkTimelineDotActive : styles.darkTimelineDot : ''}`}></div>
-                                            <div className={styles.timelineContent}>
-                                                <h3 className={`${roleClass} ${isDarkMode ? styles.darkText : ''}`}>{item.role}</h3>
-                                                <div className={styles.timelineDetails}>
-                                                    <span className={`${styles.timelineCompany} ${isDarkMode ? styles.darkText : ''}`}>{item.company}</span>
-                                                    <span className={`${styles.timelineYear} ${isDarkMode ? styles.darkTimelineYear : ''}`}>{item.year}</span>
-                                                </div>
-                                                {/* Show first description point if available */}
-                                                {/* {item.description && item.description.length > 0 && (
+                                        const roleClass = item.status === 'active'
+                                            ? styles.timelineRoleActive
+                                            : styles.timelineRole;
+
+                                        return (
+                                            <div key={item.id} className={itemClass}>
+                                                <div className={`${dotClass} ${isDarkMode ? item.status === 'active' ? styles.darkTimelineDotActive : styles.darkTimelineDot : ''}`}></div>
+                                                <div className={styles.timelineContent}>
+                                                    <h3 className={`${roleClass} ${isDarkMode ? styles.darkText : ''}`}>{item.role}</h3>
+                                                    <div className={styles.timelineDetails}>
+                                                        <span className={`${styles.timelineCompany} ${isDarkMode ? styles.darkText : ''}`}>{item.company}</span>
+                                                        <span className={`${styles.timelineYear} ${isDarkMode ? styles.darkTimelineYear : ''}`}>{item.year}</span>
+                                                    </div>
+                                                    {/* Show first description point if available */}
+                                                    {/* {item.description && item.description.length > 0 && (
                                                     <p className={`${styles.timelineDescription} ${isDarkMode ? styles.darkText : ''}`}>
                                                         {item.description[0].length > 100
                                                             ? `${item.description[0].substring(0, 100)}...`
@@ -168,8 +173,8 @@ export default function Main() {
                                                         }
                                                     </p>
                                                 )} */}
-                                                {/* Show technology preview */}
-                                                {/* {item.technologies && item.technologies.length > 0 && (
+                                                    {/* Show technology preview */}
+                                                    {/* {item.technologies && item.technologies.length > 0 && (
                                                     <div className={styles.techPreview}>
                                                         <span className={`${styles.techLabel} ${isDarkMode ? styles.darkText : ''}`}>Tech:</span>
                                                         <div className={styles.techTagsMini}>
@@ -186,23 +191,24 @@ export default function Main() {
                                                         </div>
                                                     </div>
                                                 )} */}
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </section>
+                                        );
+                                    })}
+                                </div>
+                            </section>
+                        </div>
                     </div>
-                </div>
-            </main>
-            <Container projects={projects} certifications={certifications} />
-            <ContainerSecond />
-            <GitHubCalendar
-                username={import.meta.env.VITE_GITHUB_USERNAME}
-                token={import.meta.env.VITE_GITHUB_TOKEN}
-            />
+                </main>
+                <Container projects={projects} certifications={certifications} />
+                <ContainerSecond />
+                <GitHubCalendar
+                    username={import.meta.env.VITE_GITHUB_USERNAME}
+                    token={import.meta.env.VITE_GITHUB_TOKEN}
+                />
+            </div>
+
             <Footer />
-            <ChatButton />
         </div>
     );
 }
