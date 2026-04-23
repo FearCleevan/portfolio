@@ -1,7 +1,8 @@
+/* In ChatButton.module.css - update the button positioning */
 .chatButton {
-    position: sticky;
-    bottom: 2%;
-    left: 90%;
+    position: fixed;  /* Change from 'sticky' to 'fixed' */
+    bottom: 24px;     /* Adjust as needed */
+    right: 24px;      /* Adjust as needed */
     background-color: #000;
     color: white;
     border: none;
@@ -16,31 +17,23 @@
     transition: all 0.3s ease;
 }
 
-.chatButton.dark {
-    background-color: #000;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .chatButton {
+        bottom: 16px;
+        right: 16px;
+        padding: 10px 16px;
+    }
+    
+    .chatText {
+        font-size: 12px;
+    }
 }
 
-.chatButton:hover {
-    background-color: #000000d5;
-    transform: scale(1.05);
-}
-
-.chatButton.dark:hover {
-    background-color: #000000d5;
-}
-
-.chatIcon {
-    font-size: 20px;
-}
-
-.chatText {
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.chatBoxContainer {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
+@media (max-width: 480px) {
+    .chatButton {
+        bottom: 12px;
+        right: 12px;
+        padding: 8px 14px;
+    }
 }

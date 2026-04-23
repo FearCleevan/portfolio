@@ -8,7 +8,8 @@ import { initAuth } from './firebase/services/authService';
 // Eagerly loaded — renders immediately on first visit
 import Main from './components/Main/Main';
 import ProtectedRoute from './components/ProtectedRoute';
-import BackToTop from './components/BackToTop/BackToTop';
+// import BackToTop from './components/BackToTop/BackToTop';
+import ChatButton from './components/Chat/ChatButton'; // Add this import
 
 // Lazily loaded — only fetched when the user navigates to these routes
 const FullTechStack     = lazy(() => import('./components/Main/FullTechStack'));
@@ -24,28 +25,29 @@ const AdminPanel    = lazy(() => import('./admin/dashboard/AdminPanel'));
 const ContentEditor = lazy(() => import('./admin/ContentEditor/ContentEditor'));
 const NotFound      = lazy(() => import('./components/NotFound/NotFound'));
 
-function PageLoader() {
-  const isDark = (() => {
-    try { return localStorage.getItem('darkMode') === 'true'; } catch { return false; }
-  })();
-  return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      background: isDark ? '#1a1a1a' : '#ffffff',
-    }}>
-      <div
-        className="app-loader-spinner"
-        style={{
-          border: `3px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
-          borderTopColor: isDark ? '#f0f0f0' : '#111827',
-        }}
-      />
-    </div>
-  );
-}
+// Optional: PageLoader component (uncomment if needed)
+// function PageLoader() {
+//   const isDark = (() => {
+//     try { return localStorage.getItem('darkMode') === 'true'; } catch { return false; }
+//   })();
+//   return (
+//     <div style={{
+//       display: 'flex',
+//       justifyContent: 'center',
+//       alignItems: 'center',
+//       height: '100vh',
+//       background: isDark ? '#1a1a1a' : '#ffffff',
+//     }}>
+//       <div
+//         className="app-loader-spinner"
+//         style={{
+//           border: `3px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+//           borderTopColor: isDark ? '#f0f0f0' : '#111827',
+//         }}
+//       />
+//     </div>
+//   );
+// }
 
 function App() {
   const [isAuthChecked, setIsAuthChecked] = useState(false);
@@ -64,13 +66,13 @@ function App() {
     initializeApp();
   }, []);
 
-  if (!isAuthChecked) {
-    return <PageLoader />;
-  }
+  // if (!isAuthChecked) {
+  //   return <PageLoader />;
+  // }
 
   return (
     <>
-      <Suspense fallback={<PageLoader />}>
+      {/* <Suspense fallback={<PageLoader />}> */}
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/tech-stack" element={<FullTechStack />} />
@@ -84,8 +86,11 @@ function App() {
           <Route path="/AdminPanel/content" element={<ProtectedRoute element={ContentEditor} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </Suspense>
-      <BackToTop />
+      {/* </Suspense> */}
+      
+      {/* ChatButton - Now globally available on all routes */}
+      <ChatButton />
+      
       <ToastContainer
         position="bottom-right"
         autoClose={4000}

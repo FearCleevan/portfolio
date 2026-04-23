@@ -5,6 +5,7 @@ import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaDownload } from 'react-icons/fa'
 import resume from '../../assets/LazanPeterPaul_CV.pdf';
 import { usePersonalDetails } from '../../firebase/hooks/usePersonalDetails';
 import { useTheme } from '../../context/ThemeContext';
+import ChatButton from '../Chat/ChatButton';
 
 
 function ThemeToggle() {
@@ -112,6 +113,9 @@ const Header = () => {
                     </div>
                 </div>
             </div>
+            {/* <div className={styles.chatButton}>
+                <ChatButton />
+            </div> */}
         </div>
     );
 };
