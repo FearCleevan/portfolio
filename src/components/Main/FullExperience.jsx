@@ -1,133 +1,102 @@
-// src/components/Main/FullExperience.jsx
-import React from 'react';
-import styles from './FullExperience.module.css';
-import { Link } from 'react-router-dom';
-import { useExperience } from '../../firebase/hooks/useExperience';
-import { useTheme } from '../../context/ThemeContext';
+import { FaMapMarkerAlt } from 'react-icons/fa';
+import PageLayout from '../shared/PageLayout';
+import { useExperience } from '../../hooks/useExperience';
 
 export default function FullExperience() {
-    const { isDarkMode } = useTheme();
-    const { experience, loading, error } = useExperience();
+  const { experience } = useExperience();
 
-    if (loading) {
-        return (
-            <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
-                <div className={`${styles.fullExperienceContainer} ${isDarkMode ? styles.darkMode : ''}`}>
-                    <div className={styles.loadingOverlay}>
-                        <div className={`${styles.spinner} ${isDarkMode ? styles.darkSpinner : ''}`}></div>
-                        <p className={isDarkMode ? styles.darkText : ''}>Loading experience...</p>
-                    </div>
+  return (
+    <PageLayout
+      title="Experience"
+      subtitle={`${experience.length} position${experience.length !== 1 ? 's' : ''}`}
+    >
+      <div className="relative pl-6 space-y-6">
+        {/* Vertical timeline line */}
+        <div className="absolute left-2 top-2 bottom-2 w-px bg-gray-200 dark:bg-gray-800" />
+
+        {experience.map((item) => (
+          <div key={item.id} className="relative">
+            {/* Timeline dot */}
+            <div className={`
+              absolute -left-6 top-2 w-4 h-4 rounded-full border-2 border-white dark:border-gray-950 shadow
+              ${item.current
+                ? 'bg-gray-900 dark:bg-white ring-4 ring-gray-900/15 dark:ring-white/15'
+                : 'bg-gray-300 dark:bg-gray-600'
+              }
+            `} />
+
+            {/* Card */}
+            <div className="bg-white dark:bg-gray-900 border border-gray-900 dark:border-white shadow-sm p-6">
+
+              {/* Header */}
+              <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+                <div className="space-y-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h2 className={`text-base font-bold leading-snug ${item.current ? 'text-gray-900 dark:text-white' : 'text-gray-900 dark:text-white'}`}>
+                      {item.title}
+                    </h2>
+                    {item.current && (
+                      <span className="shrink-0 px-2 py-0.5 text-[10px] font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent">
+                        Current
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">{item.company}</p>
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
+                    <span>{item.period}</span>
+                    {item.type && (
+                      <>
+                        <span className="w-1 h-1 bg-gray-300 dark:bg-gray-700 shrink-0" />
+                        <span>{item.type}</span>
+                      </>
+                    )}
+                    {item.location && (
+                      <>
+                        <span className="w-1 h-1 bg-gray-300 dark:bg-gray-700 shrink-0" />
+                        <span className="flex items-center gap-1">
+                          <FaMapMarkerAlt className="w-3 h-3 text-gray-600 dark:text-gray-400" />
+                          {item.location}
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
+              </div>
+
+              {/* Responsibilities */}
+              {item.responsibilities?.length > 0 && (
+                <ul className="space-y-2 mb-5">
+                  {item.responsibilities.map((point, i) => (
+                    <li key={i} className="flex gap-2.5 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                      <span className="shrink-0 mt-1.5 w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {/* Tags */}
+              {item.tags?.length > 0 && (
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+                    Technologies
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {item.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2.5 py-1 text-xs font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-        );
-    }
-    
-    if (error) {
-        return (
-            <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
-                <div className={`${styles.fullExperienceContainer} ${isDarkMode ? styles.darkMode : ''}`}>
-                    <div className={styles.errorOverlay}>
-                        <p className={isDarkMode ? styles.darkText : ''}>Error loading experience</p>
-                        <button
-                            type="button"
-                            className={isDarkMode ? styles.darkButton : ''}
-                            onClick={() => window.location.reload()}
-                        >
-                            Retry
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
-            <div className={`${styles.fullExperienceContainer} ${isDarkMode ? styles.darkMode : ''}`}>
-                <div className={styles.header}>
-                    <Link to="/" className={`${styles.backButton} ${isDarkMode ? styles.darkLink : ''}`}>
-                        <svg className={styles.backIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                        Back to Home
-                    </Link>
-                    <h1 className={`${styles.title} ${isDarkMode ? styles.darkText : ''}`}>Experience</h1>
-                </div>
-                
-                <div className={styles.experienceList}>
-                    {experience.map((item) => {
-                        const statusClass = item.status === 'active' 
-                            ? styles.experienceItemActive 
-                            : item.status === 'current' 
-                                ? styles.experienceItemCurrent 
-                                : styles.experienceItem;
-
-                        const dotClass = item.status === 'active'
-                            ? styles.experienceDotActive
-                            : item.status === 'current'
-                                ? styles.experienceDotCurrent
-                                : styles.experienceDot;
-
-                        const roleClass = item.status === 'active'
-                            ? styles.experienceRoleActive
-                            : styles.experienceRole;
-
-                        return (
-                            <div 
-                                key={item.id} 
-                                className={`${statusClass} ${isDarkMode ? styles.darkGridBox : ''}`}
-                            >
-                                <div className={styles.experienceHeader}>
-                                    <div className={styles.experienceDotContainer}>
-                                        <div className={`${dotClass} ${isDarkMode ? item.status === 'active' ? styles.darkDotActive : styles.darkDot : ''}`}></div>
-                                    </div>
-                                    <div className={styles.experienceTitle}>
-                                        <h2 className={`${roleClass} ${isDarkMode ? styles.darkText : ''}`}>{item.role}</h2>
-                                        <div className={styles.experienceMeta}>
-                                            <span className={`${styles.company} ${isDarkMode ? styles.darkText : ''}`}>{item.company}</span>
-                                            <span className={`${styles.year} ${isDarkMode ? styles.darkYear : ''}`}>{item.year}</span>
-                                            {item.location && (
-                                                <span className={`${styles.location} ${isDarkMode ? styles.darkText : ''}`}>
-                                                    <svg className={styles.locationIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                    </svg>
-                                                    {item.location}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                {item.description && item.description.length > 0 && (
-                                    <div className={styles.experienceDescription}>
-                                        <ul className={styles.descriptionList}>
-                                            {item.description.map((point, index) => (
-                                                <li key={index} className={styles.descriptionItem}>
-                                                    <span className={styles.descriptionText}>{point}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-                                
-                                {item.technologies && item.technologies.length > 0 && (
-                                    <div className={styles.technologies}>
-                                        <h3 className={`${styles.technologiesTitle} ${isDarkMode ? styles.darkText : ''}`}>Technologies Used</h3>
-                                        <div className={styles.techTags}>
-                                            {item.technologies.map((tech, index) => (
-                                                <span key={index} className={`${styles.techTag} ${isDarkMode ? styles.darkTechTag : ''}`}>
-                                                    {tech}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-        </div>
-    );
+          </div>
+        ))}
+      </div>
+    </PageLayout>
+  );
 }

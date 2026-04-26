@@ -1,0 +1,72 @@
+[
+  {
+    "id": "exp-1",
+    "title": "IT Systems & Credential Administrator",
+    "company": "Poseidon Distribution OPC",
+    "companyUrl": "",
+    "period": "Dec 2025 – Present",
+    "location": "Davao City",
+    "type": "Full-time",
+    "current": true,
+    "responsibilities": [
+      "Mobile App DevOps (iOS & Android): Managed full iOS and Android app deployment lifecycle on Apple App Store Connect and Google Play Console, including provisioning profiles, certificates, TestFlight distribution, and production releases for React Native / Expo applications.",
+      "Web Development & Deployment: Built and maintained mobile app landing pages using React.js and TypeScript; managed deployments via Vercel including custom domain setup, environment variables, and production/preview branch management.",
+      "Version Control & CI/CD: Administered GitHub repositories, handled pull request reviews and merging, enforced branching strategies, and managed CI/CD deployment pipelines through Vercel's Git integration.",
+      "Backend & Cloud Infrastructure: Configured and maintained Supabase projects including database schema management, authentication setup, row-level security (RLS) policies, and API key/service credential management.",
+      "Credential & Security Management: Maintained centralized secure storage and rotation of credentials across Google APIs, Supabase, PayMongo, Apple Developer, and Google Play Developer accounts; enforced 2FA/MFA policies across all team accounts.",
+      "Project Management & Ticketing: Led sprint planning and task management on Plane.so — created and structured frontend and backend tickets based on Figma UI/UX designs, monitored developer progress, tracked blockers, and ensured timely delivery.",
+      "SaaS & Subscription Management: Managed licenses, renewals, and billing for Apple Developer Program, Google Play Console, cloud platforms, and third-party SaaS tools used across the organization.",
+      "Cross-Team Coordination: Served as bridge between design (Figma), development, and operations teams — translating UI/UX requirements into actionable technical tickets and maintaining documentation for system access and deployment procedures."
+    ],
+    "tags": ["React.js", "TypeScript", "Supabase", "Vercel", "GitHub", "CI/CD", "Plane.so", "iOS", "Android"]
+  },
+  {
+    "id": "exp-2",
+    "title": "Web Developer / IT Support Specialist",
+    "company": "The Launchpad Inc",
+    "companyUrl": "https://www.thelaunchpadteam.com",
+    "period": "Feb 2025 – Dec 2025",
+    "location": "Davao City",
+    "type": "Full-time",
+    "current": false,
+    "responsibilities": [
+      "Full-Stack Web Development: Built and deployed full-stack web applications using React.js, Node.js/Express, and MySQL/Firebase, including an Internal CRM, Real-Time Chat System with RBAC, and client landing pages for automated lead capture.",
+      "Automated Data Pipelines: Created ETL workflows with Google Apps Script to automate data extraction, validation, and loading into Google Sheets; integrated lead capture and notification systems to reduce manual work.",
+      "Hosting, DNS & Deployment: Managed hosting on Hostinger and GoDaddy including deployments, domain setup, DNS records (MX, SPF, DKIM, DMARC), email routing, and SSL certificate installation.",
+      "Server Admin & Security: Performed server management via SSH including file navigation, environment setup, cache clearing, and background jobs; enforced monthly credential rotations for passwords, API keys, and SSH keys.",
+      "Technical Support & Network Setup: Provided IT support for hardware, software, network issues, MFA, and email; assisted with workstation provisioning and configuring routers, switches, and Wi-Fi devices.",
+      "System Maintenance & Monitoring: Conducted regular system updates, backups, and security audits to maintain stability, protect against vulnerabilities, and ensure smooth daily operations."
+    ],
+    "tags": ["React.js", "Node.js", "Express.js", "MySQL", "Firebase", "Google Apps Script", "SSH", "DNS"]
+  },
+  {
+    "id": "exp-3",
+    "title": "Customer Service Representative",
+    "company": "Fast Cargo Logistics",
+    "companyUrl": "",
+    "period": "March 2024 – July 2024",
+    "location": "Davao City",
+    "type": "Full-time",
+    "current": false,
+    "responsibilities": [
+      "Managed high-volume inbound calls for delivery inquiries and shipment tracking; monitored container arrivals and sea freight schedules while maintaining communication with ports and consignees.",
+      "Coordinated between customers and internal teams to resolve delivery issues, escalating complex cases to ensure high customer satisfaction and operational efficiency."
+    ],
+    "tags": ["Customer Service", "Logistics", "Communication", "Problem Solving"]
+  },
+  {
+    "id": "exp-4",
+    "title": "Transport Coordinator",
+    "company": "A-Movement",
+    "companyUrl": "",
+    "period": "Jan 2023 – Feb 2024",
+    "location": "Davao City",
+    "type": "Full-time",
+    "current": false,
+    "responsibilities": [
+      "Monitored air and sea freight cargo arrivals, overseeing delivery processes and inventory management to ensure accurate handling and timely distribution.",
+      "Prepared detailed Inspection Reports (IR) for item arrival discrepancies, maintaining precise records and facilitating resolution with vendors and logistics partners."
+    ],
+    "tags": ["Logistics", "Inventory Management", "Documentation", "Coordination"]
+  }
+]

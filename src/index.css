@@ -1,4 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
 @import './styles/tokens.css';
+
+@custom-variant dark (&:is(.dark *));
 
 /* index.css */
 body, #root {
@@ -6,6 +10,16 @@ body, #root {
   padding: 0;
   min-height: 100vh;
   width: 100%;
+  font-family: 'Bai Jamjuree', sans-serif;
+}
+
+/* Apply Bai Jamjuree globally */
+html {
+  font-family: 'Bai Jamjuree', sans-serif;
+}
+
+* {
+  font-family: 'Bai Jamjuree', sans-serif;
 }
 
 /* Custom Scrollbar Design */
@@ -77,22 +91,23 @@ html {
   scroll-behavior: smooth;
 }
 
-/* App-level page loader (used by App.jsx Suspense fallback) */
-@keyframes appSpin {
-  to { transform: rotate(360deg); }
+/* PageLoader custom animations */
+@keyframes bracketLeft {
+  0%, 100% { transform: translateX(0); opacity: 1; }
+  50%       { transform: translateX(-6px); opacity: 0.4; }
+}
+@keyframes bracketRight {
+  0%, 100% { transform: translateX(0); opacity: 1; }
+  50%       { transform: translateX(6px); opacity: 0.4; }
+}
+@keyframes shimmerBar {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
-.app-loader-spinner {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  animation: appSpin 0.75s linear infinite;
-}
-
-/* Shared shimmer animation for skeleton loaders */
-@keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
+/* Keep mono font for code blocks */
+code, pre, .md-code-wrapper, [class*="language-"], .prose-blog code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important;
 }
 
 /* Optional: Custom scrollbar for specific elements */
@@ -137,3 +152,53 @@ html {
 .code-container::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
 }
+
+/* ── Blog article prose ──────────────────────────────────────────────────── */
+.prose-blog { color: #374151; font-size: 0.9375rem; line-height: 1.75; }
+.dark .prose-blog { color: #d1d5db; }
+
+.prose-blog h1 { font-size: 1.5rem; font-weight: 700; color: #111827; margin: 2rem 0 1rem; }
+.prose-blog h2 { font-size: 1.25rem; font-weight: 700; color: #111827; margin: 1.75rem 0 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb; }
+.prose-blog h3 { font-size: 1.0625rem; font-weight: 600; color: #111827; margin: 1.5rem 0 0.5rem; }
+.dark .prose-blog h1, .dark .prose-blog h2, .dark .prose-blog h3 { color: #f9fafb; }
+.dark .prose-blog h2 { border-bottom-color: #374151; }
+
+.prose-blog p { margin: 0.875rem 0; }
+.prose-blog strong { font-weight: 600; color: #111827; }
+.dark .prose-blog strong { color: #f3f4f6; }
+.prose-blog em { font-style: italic; }
+.prose-blog a { color: #3b82f6; text-decoration: underline; text-underline-offset: 2px; }
+.prose-blog a:hover { color: #2563eb; }
+
+.prose-blog ul { list-style: disc; padding-left: 1.5rem; margin: 0.875rem 0; }
+.prose-blog ol { list-style: decimal; padding-left: 1.5rem; margin: 0.875rem 0; }
+.prose-blog li { margin: 0.3rem 0; }
+
+.prose-blog blockquote { border-left: 3px solid #3b82f6; padding-left: 1rem; color: #6b7280; font-style: italic; margin: 1rem 0; }
+.dark .prose-blog blockquote { color: #9ca3af; }
+
+.prose-blog hr { border: none; border-top: 1px solid #e5e7eb; margin: 2rem 0; }
+.dark .prose-blog hr { border-top-color: #374151; }
+
+/* Inline code */
+.prose-blog code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.84em; background: #f3f4f6; color: #1d4ed8; padding: 0.15em 0.4em; border-radius: 4px; }
+.dark .prose-blog code { background: #1f2937; color: #93c5fd; }
+
+/* Code block wrapper (injected by renderMarkdown) */
+.md-code-wrapper { border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; margin: 1.25rem 0; }
+.dark .md-code-wrapper { border-color: #374151; }
+
+.md-code-header { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 1rem; background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
+.dark .md-code-header { background: #1f2937; border-bottom-color: #374151; }
+
+.md-code-lang { font-size: 0.7rem; font-weight: 600; color: #6b7280; letter-spacing: 0.05em; text-transform: uppercase; }
+.dark .md-code-lang { color: #9ca3af; }
+
+.md-code-copy { display: inline-flex; align-items: center; gap: 4px; font-size: 0.72rem; font-weight: 500; color: #6b7280; background: none; border: none; cursor: pointer; padding: 2px 8px; border-radius: 6px; transition: background 0.15s, color 0.15s; }
+.md-code-copy:hover { background: #e5e7eb; color: #111827; }
+.dark .md-code-copy { color: #9ca3af; }
+.dark .md-code-copy:hover { background: #374151; color: #f3f4f6; }
+
+/* Override prism-tomorrow pre to fit our wrapper */
+.md-code-wrapper pre[class*="language-"] { margin: 0; border-radius: 0; border: none; overflow-x: auto; font-size: 0.82rem; }
+.md-code-wrapper pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }

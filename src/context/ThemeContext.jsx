@@ -5,11 +5,16 @@ const ThemeContext = createContext(null);
 export function ThemeProvider({ children }) {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : false;
+    const isDark = saved ? JSON.parse(saved) : false;
+    // Apply class immediately to prevent flash before first effect
+    document.documentElement.classList.toggle('dark', isDark);
+    return isDark;
   });
 
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
+    // Tailwind dark: variant requires .dark class on <html>
+    document.documentElement.classList.toggle('dark', isDarkMode);
     document.documentElement.dataset.theme = isDarkMode ? 'dark' : 'light';
   }, [isDarkMode]);
 

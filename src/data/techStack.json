@@ -1,0 +1,81 @@
+[
+  {
+    "id": "group-1",
+    "category": "Languages",
+    "icon": "code",
+    "items": [
+      { "name": "JavaScript", "icon": "SiJavascript", "color": "#F7DF1E" },
+      { "name": "TypeScript", "icon": "SiTypescript", "color": "#3178C6" },
+      { "name": "HTML5", "icon": "SiHtml5", "color": "#E34F26" },
+      { "name": "CSS3", "icon": "SiCss3", "color": "#1572B6" },
+      { "name": "SQL", "icon": "SiMysql", "color": "#4479A1" },
+      { "name": "Python", "icon": "SiPython", "color": "#3776AB" }
+    ]
+  },
+  {
+    "id": "group-2",
+    "category": "Frontend",
+    "icon": "layout",
+    "items": [
+      { "name": "React.js", "icon": "SiReact", "color": "#61DAFB" },
+      { "name": "Next.js", "icon": "SiNextdotjs", "color": "#000000" },
+      { "name": "React Native", "icon": "SiReact", "color": "#61DAFB" },
+      { "name": "Expo", "icon": "SiExpo", "color": "#000020" },
+      { "name": "Tailwind CSS", "icon": "SiTailwindcss", "color": "#06B6D4" },
+      { "name": "Vite", "icon": "SiVite", "color": "#646CFF" }
+    ]
+  },
+  {
+    "id": "group-3",
+    "category": "Backend",
+    "icon": "server",
+    "items": [
+      { "name": "Node.js", "icon": "SiNodedotjs", "color": "#339933" },
+      { "name": "Express.js", "icon": "SiExpress", "color": "#000000" },
+      { "name": "FastAPI", "icon": "SiFastapi", "color": "#009688" },
+      { "name": "REST APIs", "icon": "api", "color": "#FF6C37" },
+      { "name": "Google Apps Script", "icon": "SiGoogleappsscript", "color": "#4285F4" }
+    ]
+  },
+  {
+    "id": "group-4",
+    "category": "Databases",
+    "icon": "database",
+    "items": [
+      { "name": "MySQL", "icon": "SiMysql", "color": "#4479A1" },
+      { "name": "Supabase", "icon": "SiSupabase", "color": "#3ECF8E" },
+      { "name": "Firebase", "icon": "SiFirebase", "color": "#FFCA28" },
+      { "name": "PostgreSQL", "icon": "SiPostgresql", "color": "#4169E1" },
+      { "name": "ChromaDB", "icon": "database", "color": "#FF6B6B" }
+    ]
+  },
+  {
+    "id": "group-5",
+    "category": "Cloud & Deployment",
+    "icon": "cloud",
+    "items": [
+      { "name": "Vercel", "icon": "SiVercel", "color": "#000000" },
+      { "name": "Firebase", "icon": "SiFirebase", "color": "#FFCA28" },
+      { "name": "Supabase", "icon": "SiSupabase", "color": "#3ECF8E" },
+      { "name": "Hostinger", "icon": "SiHostinger", "color": "#673DE6" },
+      { "name": "Expo EAS", "icon": "SiExpo", "color": "#000020" },
+      { "name": "Apple App Store", "icon": "SiApple", "color": "#000000" },
+      { "name": "Google Play", "icon": "SiGoogleplay", "color": "#01875F" }
+    ]
+  },
+  {
+    "id": "group-6",
+    "category": "Tools & Platforms",
+    "icon": "tool",
+    "items": [
+      { "name": "Git", "icon": "SiGit", "color": "#F05032" },
+      { "name": "GitHub", "icon": "SiGithub", "color": "#181717" },
+      { "name": "Figma", "icon": "SiFigma", "color": "#F24E1E" },
+      { "name": "Postman", "icon": "SiPostman", "color": "#FF6C37" },
+      { "name": "Cloudinary", "icon": "SiCloudinary", "color": "#3448C5" },
+      { "name": "Plane.so", "icon": "plane", "color": "#3A86FF" },
+      { "name": "Stripe", "icon": "SiStripe", "color": "#635BFF" },
+      { "name": "PayMongo", "icon": "payment", "color": "#00A0DF" }
+    ]
+  }
+]

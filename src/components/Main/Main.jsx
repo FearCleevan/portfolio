@@ -1,214 +1,199 @@
-// src/components/Main/Main.jsx
-import React, { useState, useEffect } from 'react';
-import styles from './Main.module.css';
+import { Link } from 'react-router-dom';
 import Header from '../Header/Header';
 import Container from '../Container/Container';
 import ContainerSecond from '../Container/ContainerSecond';
 import Footer from '../Footer/Footer';
-import { useAboutContent } from '../../firebase/hooks/useFirestore';
-import { Link, useLocation } from 'react-router-dom';
-import { useTechStack } from '../../firebase/hooks/useTechStack';
-import { useExperience } from '../../firebase/hooks/useExperience';
-import { useProjects } from '../../firebase/hooks/useProjects';
-import { useCertifications } from '../../firebase/hooks/useCertifications';
 import GitHubCalendar from '../Container/GitHubCalendar';
 import { useTheme } from '../../context/ThemeContext';
+import { usePersonalDetails } from '../../hooks/usePersonalDetails';
+import { useTechStack } from '../../hooks/useTechStack';
+import { useExperience } from '../../hooks/useExperience';
+import { useProjects } from '../../hooks/useProjects';
+import { useCertifications } from '../../hooks/useCertifications';
+
+// Real SVG icons
+function AboutIcon() {
+  return (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+  );
+}
+
+function TechStackIcon() {
+  return (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+    </svg>
+  );
+}
+
+function ExperienceIcon() {
+  return (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+    </svg>
+  );
+}
+
+// Shared bento card shell
+function Card({ children, className = '' }) {
+  return (
+    <section className={`bg-white dark:bg-gray-900 border border-gray-900 dark:border-white shadow-sm p-6 transition-colors duration-300 ${className}`}>
+      {children}
+    </section>
+  );
+}
+
+// Section title row with optional "View All" link
+function SectionHeader({ icon, title, to }) {
+  return (
+    <div className="flex items-center justify-between mb-4">
+      <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+        <span className="text-gray-700 dark:text-gray-300">{icon}</span>
+        {title}
+      </h2>
+      {to && (
+        <Link
+          to={to}
+          className="flex items-center gap-1 text-xs font-medium text-gray-900 dark:text-white hover:underline transition-colors"
+        >
+          View All
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
+      )}
+    </div>
+  );
+}
 
 export default function Main() {
-    const { isDarkMode } = useTheme();
-    const [isMounted, setIsMounted] = useState(false);
-    const { aboutContent, loading: aboutLoading, error: aboutError } = useAboutContent();
-    const { techStack: allTechStack, loading: techStackLoading, error: techStackError } = useTechStack();
-    const { experience: experienceData, loading: experienceLoading, error: experienceError } = useExperience();
-    const { projects, loading: projectsLoading, error: projectsError } = useProjects();
-    const { certifications, loading: certLoading, error: certError } = useCertifications();
+  const { personalDetails } = usePersonalDetails();
+  const { techStack } = useTechStack();
+  const { experience } = useExperience();
+  const { projects } = useProjects();
+  const { certifications } = useCertifications();
 
-    const location = useLocation();
-    const [isExiting, setIsExiting] = useState(false);
+  // First 3 groups, max 6 items each for the home preview
+  const previewStack = techStack.slice(0, 3).map((g) => ({
+    ...g,
+    items: g.items.slice(0, 6),
+  }));
 
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-4">
 
-    useEffect(() => {
-        setIsExiting(false);
-        return () => setIsExiting(true);
-    }, [location]);
+        <Header />
 
-    // Get first 3 groups and limit items to 5 per group for Tech Stack
-    const limitedTechStackData = {
-        groups: allTechStack.slice(0, 3).map(group => ({
-            ...group,
-            items: group.items.slice(0, 5)
-        }))
-    };
+        {/* ── Two-column bento grid ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-    // Show ALL experience items in main view
-    const fullExperience = experienceData;
+          {/* ── Left column ── */}
+          <div className="space-y-4">
 
-    if (aboutLoading || techStackLoading || experienceLoading || projectsLoading || certLoading) {
-        return (
-            <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
-                <div className={`${styles.mainContainerWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
-                    <div className={styles.loadingOverlay}>
-                        <div className={`${styles.spinner} ${isDarkMode ? styles.darkSpinner : ''}`}></div>
-                        <p className={isDarkMode ? styles.darkText : ''}>Loading Portfolio...</p>
+            {/* About */}
+            <Card>
+              <SectionHeader icon={<AboutIcon />} title="About" />
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed transition-colors duration-300">
+                {personalDetails?.summary}
+              </p>
+            </Card>
+
+            {/* Tech Stack preview */}
+            <Card>
+              <SectionHeader icon={<TechStackIcon />} title="Tech Stack" to="/tech-stack" />
+              <div className="space-y-4">
+                {previewStack.map((group) => (
+                  <div key={group.id}>
+                    <p className="text-xs font-medium text-gray-900 dark:text-white uppercase tracking-wider mb-2 transition-colors duration-300">
+                      {group.category}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {group.items.map((item) => (
+                        <span
+                          key={item.name}
+                          className="inline-flex items-center px-2.5 py-1 text-xs font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent transition-colors duration-300"
+                        >
+                          {item.name}
+                        </span>
+                      ))}
                     </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+          </div>
+
+          {/* ── Right column ── */}
+          <div>
+            {/* Experience timeline */}
+            <Card className="h-full">
+              <SectionHeader icon={<ExperienceIcon />} title="Experience" to="/experience" />
+              <div className="relative pl-5">
+                {/* Vertical line */}
+                <div className="absolute left-1.5 top-1 bottom-1 w-px bg-gray-100 dark:bg-gray-800 transition-colors duration-300" />
+
+                <div className="space-y-5">
+                  {experience.map((item) => (
+                    <div key={item.id} className="relative">
+                      {/* Dot */}
+                      <div className={`
+                        absolute -left-4.25 top-1 w-3 h-3 rounded-full border-2 border-white dark:border-gray-900 shadow-sm transition-colors duration-300
+                        ${item.current
+                          ? 'bg-gray-900 dark:bg-white ring-2 ring-gray-900/20 dark:ring-white/20'
+                          : 'bg-gray-300 dark:bg-gray-600'
+                        }
+                      `} />
+
+                      <div className="space-y-0.5">
+                        <div className="flex items-start justify-between gap-2 flex-wrap">
+                          <h3 className="text-sm font-semibold leading-snug text-gray-900 dark:text-white transition-colors duration-300">
+                            {item.title}
+                          </h3>
+                          {item.current && (
+                            <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                              Current
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs font-medium text-gray-700 dark:text-gray-300 transition-colors duration-300">{item.company}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 transition-colors duration-300">{item.period} · {item.location}</p>
+                        {/* Tag preview */}
+                        <div className="flex flex-wrap gap-1 pt-1">
+                          {item.tags.slice(0, 3).map((tag) => (
+                            <span key={tag} className="px-2 py-0.5 text-[10px] font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent transition-colors duration-300">
+                              {tag}
+                            </span>
+                          ))}
+                          {item.tags.length > 3 && (
+                            <span className="px-2 py-0.5 rounded-md text-[10px] text-gray-400 dark:text-gray-500">
+                              +{item.tags.length - 3}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-            </div>
-
-        );
-    }
-
-    if (aboutError || techStackError || experienceError || projectsError || certError) {
-        return (
-            <div className={`${styles.errorOverlay} ${isDarkMode ? styles.darkMode : ''}`}>
-                <p>Failed to load portfolio content.</p>
-                <button type="button" onClick={() => window.location.reload()}>
-                    Retry
-                </button>
-            </div>
-        );
-    }
-
-    return (
-        <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''} ${isMounted ? styles.mounted : ''} ${isExiting ? styles.exit : ''}`}>
-            <div className={`${styles.mainContainerWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
-                <Header />
-                <main className={`${styles.mainContent} ${isDarkMode ? styles.darkMode : ''}`}>
-                    <div className={styles.gridContainer}>
-                        {/* Left Column */}
-                        <div className={styles.leftColumn}>
-                            {/* About */}
-                            <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
-                                <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}>
-                                    <span className={styles.gridIcon}>📄</span> About
-                                </h2>
-                                {aboutContent.map((paragraph, index) => (
-                                    <React.Fragment key={index}>
-                                        <p className={`${styles.aboutText} ${isDarkMode ? styles.darkText : ''}`}>{paragraph}</p>
-                                        {index < aboutContent.length - 1 && <br />}
-                                    </React.Fragment>
-                                ))}
-                            </section>
-
-                            {/* Tech Stack */}
-                            <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
-                                <div className={styles.techStackHeader}>
-                                    <div className={styles.techStackTitleRow}>
-                                        <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}> <span className={styles.gridIcon}>💻</span> Tech Stack</h2>
-                                    </div>
-                                    <Link to="/tech-stack" className={`${styles.techStackLink} ${isDarkMode ? styles.darkLink : ''}`}>
-                                        View All
-                                        <svg className={styles.techStackArrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path>
-                                        </svg>
-                                    </Link>
-                                </div>
-                                <div className={styles.techStackGroups}>
-                                    {limitedTechStackData.groups.map((group, index) => (
-                                        <div key={index} className={styles.techStackGroup}>
-                                            <h3 className={`${styles.techStackGroupTitle} ${isDarkMode ? styles.darkText : ''}`}>{group.title}</h3>
-                                            <div className={styles.techStackTags}>
-                                                {group.items.map((item, itemIndex) => (
-                                                    <span key={itemIndex} className={`${styles.techTag} ${isDarkMode ? styles.darkTechTag : ''}`}>{item}</span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-                        </div>
-
-                        {/* Right Column */}
-                        <div className={styles.rightColumn}>
-                            {/* Experience Section */}
-                            <section className={`${styles.gridBox} ${isDarkMode ? styles.darkGridBox : ''}`}>
-                                <div className={styles.experienceHeader}>
-                                    <div className={styles.experienceTitleRow}>
-                                        <h2 className={`${styles.gridTitle} ${isDarkMode ? styles.darkText : ''}`}> <span className={styles.gridIcon}>💼</span> Experience</h2>
-                                    </div>
-                                    {/* Optional: Add View All link if you still want detailed view */}
-                                    <Link to="/experience" className={`${styles.experienceLink} ${isDarkMode ? styles.darkLink : ''}`}>
-                                        View All
-                                        <svg className={styles.experienceArrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path>
-                                        </svg>
-                                    </Link>
-                                </div>
-                                <div className={styles.timelineBox}>
-                                    <div className={`${styles.timelineLine} ${isDarkMode ? styles.darkTimelineLine : ''}`}></div>
-                                    {fullExperience.map((item) => {
-                                        const itemClass = item.status === 'active'
-                                            ? styles.timelineItemActive
-                                            : item.status === 'current'
-                                                ? styles.timelineItemCurrent
-                                                : styles.timelineItem;
-
-                                        const dotClass = item.status === 'active'
-                                            ? styles.timelineDotActive
-                                            : item.status === 'current'
-                                                ? styles.timelineDotCurrent
-                                                : styles.timelineDot;
-
-                                        const roleClass = item.status === 'active'
-                                            ? styles.timelineRoleActive
-                                            : styles.timelineRole;
-
-                                        return (
-                                            <div key={item.id} className={itemClass}>
-                                                <div className={`${dotClass} ${isDarkMode ? item.status === 'active' ? styles.darkTimelineDotActive : styles.darkTimelineDot : ''}`}></div>
-                                                <div className={styles.timelineContent}>
-                                                    <h3 className={`${roleClass} ${isDarkMode ? styles.darkText : ''}`}>{item.role}</h3>
-                                                    <div className={styles.timelineDetails}>
-                                                        <span className={`${styles.timelineCompany} ${isDarkMode ? styles.darkText : ''}`}>{item.company}</span>
-                                                        <span className={`${styles.timelineYear} ${isDarkMode ? styles.darkTimelineYear : ''}`}>{item.year}</span>
-                                                    </div>
-                                                    {/* Show first description point if available */}
-                                                    {/* {item.description && item.description.length > 0 && (
-                                                    <p className={`${styles.timelineDescription} ${isDarkMode ? styles.darkText : ''}`}>
-                                                        {item.description[0].length > 100
-                                                            ? `${item.description[0].substring(0, 100)}...`
-                                                            : item.description[0]
-                                                        }
-                                                    </p>
-                                                )} */}
-                                                    {/* Show technology preview */}
-                                                    {/* {item.technologies && item.technologies.length > 0 && (
-                                                    <div className={styles.techPreview}>
-                                                        <span className={`${styles.techLabel} ${isDarkMode ? styles.darkText : ''}`}>Tech:</span>
-                                                        <div className={styles.techTagsMini}>
-                                                            {item.technologies.slice(0, 2).map((tech, idx) => (
-                                                                <span key={idx} className={`${styles.techTagMini} ${isDarkMode ? styles.darkTechTag : ''}`}>
-                                                                    {tech}
-                                                                </span>
-                                                            ))}
-                                                            {item.technologies.length > 2 && (
-                                                                <span className={`${styles.moreTech} ${isDarkMode ? styles.darkText : ''}`}>
-                                                                    +{item.technologies.length - 2} more
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                )} */}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </section>
-                        </div>
-                    </div>
-                </main>
-                <Container projects={projects} certifications={certifications} />
-                <ContainerSecond />
-                <GitHubCalendar
-                    username={import.meta.env.VITE_GITHUB_USERNAME}
-                    token={import.meta.env.VITE_GITHUB_TOKEN}
-                />
-            </div>
-
-            <Footer />
+              </div>
+            </Card>
+          </div>
         </div>
-    );
+
+        {/* ── Projects + Certifications ── */}
+        <Container projects={projects} certifications={certifications} />
+
+        {/* ── Connect + Blog ── */}
+        <ContainerSecond />
+
+        {/* ── GitHub Calendar ── */}
+        <GitHubCalendar username={import.meta.env.VITE_GITHUB_USERNAME} />
+
+        <Footer />
+      </div>
+    </div>
+  );
 }

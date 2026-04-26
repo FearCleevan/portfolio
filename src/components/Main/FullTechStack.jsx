@@ -1,72 +1,88 @@
-// src/components/Main/FullTechStack.jsx
-import React from 'react';
-import styles from './FullTechStack.module.css';
-import { Link } from 'react-router-dom';
-import { useTechStack } from '../../firebase/hooks/useTechStack';
-import { useTheme } from '../../context/ThemeContext';
+import PageLayout from '../shared/PageLayout';
+import { useTechStack } from '../../hooks/useTechStack';
+import { useSkills } from '../../hooks/useSkills';
 
 export default function FullTechStack() {
-    const { isDarkMode } = useTheme();
-    const { techStack, loading, error } = useTechStack();
+  const { techStack } = useTechStack();
+  const { skills } = useSkills();
 
-    if (loading) {
-        return (
-            <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
-                <div className={`${styles.fullTechStackContainer} ${isDarkMode ? styles.darkMode : ''}`}>
-                    <div className={styles.loadingOverlay}>
-                        <div className={`${styles.spinner} ${isDarkMode ? styles.darkSpinner : ''}`}></div>
-                        <p className={isDarkMode ? styles.darkText : ''}>Loading tech stack...</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-    
-    if (error) {
-        return (
-            <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
-                <div className={`${styles.fullTechStackContainer} ${isDarkMode ? styles.darkMode : ''}`}>
-                    <div className={styles.errorOverlay}>
-                        <p className={isDarkMode ? styles.darkText : ''}>Error loading tech stack</p>
-                        <button
-                            type="button"
-                            className={isDarkMode ? styles.darkButton : ''}
-                            onClick={() => window.location.reload()}
-                        >
-                            Retry
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+  const totalItems = techStack.reduce((acc, g) => acc + g.items.length, 0);
 
-    return (
-        <div className={`${styles.pageWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
-            <div className={`${styles.fullTechStackContainer} ${isDarkMode ? styles.darkMode : ''}`}>
-                <div className={styles.header}>
-                    <Link to="/" className={`${styles.backButton} ${isDarkMode ? styles.darkLink : ''}`}>
-                        <svg className={styles.backIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                        Back to Home
-                    </Link>
-                    <h1 className={`${styles.title} ${isDarkMode ? styles.darkText : ''}`}>Tech Stack</h1>
-                </div>
-                
-                <div className={styles.techStackGroups}>
-                    {techStack.map((group, index) => (
-                        <div key={index} className={`${styles.techStackGroup} ${isDarkMode ? styles.darkGridBox : ''}`}>
-                            <h2 className={`${styles.groupTitle} ${isDarkMode ? styles.darkText : ''}`}>{group.title}</h2>
-                            <div className={styles.techStackTags}>
-                                {group.items.map((item, itemIndex) => (
-                                    <span key={itemIndex} className={`${styles.techTag} ${isDarkMode ? styles.darkTechTag : ''}`}>{item}</span>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+  return (
+    <PageLayout
+      title="Tech Stack"
+      subtitle={`${totalItems} technologies across ${techStack.length} categories`}
+    >
+      {/* ── Category cards ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {techStack.map((group) => (
+          <div
+            key={group.id}
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6"
+          >
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <span className="w-1.5 h-4 rounded-full bg-blue-500" />
+              {group.category}
+            </h2>
+
+            <div className="flex flex-wrap gap-2">
+              {group.items.map((item) => (
+                <span
+                  key={item.name}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-100 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
+                >
+                  {/* Brand colour dot */}
+                  <span
+                    className="w-2 h-2 rounded-full shrink-0"
+                    style={{ backgroundColor: item.color || '#94a3b8' }}
+                  />
+                  {item.name}
+                </span>
+              ))}
             </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Professional skills ── */}
+      {skills.professional?.length > 0 && (
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <span className="w-1.5 h-4 rounded-full bg-violet-500" />
+            Professional Skills
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {skills.professional.map((skill) => (
+              <span
+                key={skill}
+                className="px-3 py-1.5 rounded-xl text-xs font-medium bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 border border-violet-100 dark:border-violet-800/40"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
         </div>
-    );
+      )}
+
+      {/* ── Soft skills ── */}
+      {skills.soft?.length > 0 && (
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <span className="w-1.5 h-4 rounded-full bg-emerald-500" />
+            Soft Skills
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {skills.soft.map((skill) => (
+              <span
+                key={skill}
+                className="px-3 py-1.5 rounded-xl text-xs font-medium bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-800/40"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </PageLayout>
+  );
 }

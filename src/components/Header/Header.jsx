@@ -1,123 +1,143 @@
-// src/components/header/Header.jsx
-import styles from './Header.module.css';
-import profile from '../../assets/profile.png';
-import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaDownload } from 'react-icons/fa';
-import resume from '../../assets/LazanPeterPaul_CV.pdf';
-import { usePersonalDetails } from '../../firebase/hooks/usePersonalDetails';
+import { useState } from 'react';
+import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaDownload, FaMoon, FaSun } from 'react-icons/fa';
 import { useTheme } from '../../context/ThemeContext';
-import ChatButton from '../Chat/ChatButton';
-
+import { usePersonalDetails } from '../../hooks/usePersonalDetails';
+import { trackCVDownload, trackMeetingClick } from '../../services/analyticsService';
+import profile from '../../assets/profile.png';
 
 function ThemeToggle() {
-    const { isDarkMode, toggleDarkMode } = useTheme();
-    return (
-        <button
-            className={`${styles.themeToggle} ${isDarkMode ? styles.dark : styles.light}`}
-            aria-label="Toggle theme"
-            onClick={toggleDarkMode}
-            type="button"
-        >
-            <div
-                className={`${styles.toggleKnob} ${isDarkMode ? styles.toggleKnobDark : styles.toggleKnobLight}`}
-            >
-                {isDarkMode ? (
-                    <svg className={styles.toggleIcon} viewBox="0 0 20 20" fill="#000000">
-                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-                    </svg>
-                ) : (
-                    <svg className={styles.toggleIcon} viewBox="0 0 20 20" fill="#FFD700">
-                        <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fillRule="evenodd" clipRule="evenodd"></path>
-                    </svg>
-                )}
-            </div>
-        </button>
-    );
+  const { isDarkMode, toggleDarkMode } = useTheme();
+  return (
+    <button
+      onClick={toggleDarkMode}
+      aria-label="Toggle dark mode"
+      type="button"
+      className={`
+        relative flex items-center w-12 h-6 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 dark:focus-visible:ring-gray-400
+        ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}
+      `}
+    >
+      <span
+        className={`
+          absolute flex items-center justify-center w-5 h-5 shadow-sm transition-all duration-300
+          ${isDarkMode
+            ? 'translate-x-6 bg-gray-900'
+            : 'translate-x-0.5 bg-white'
+          }
+        `}
+      >
+        {isDarkMode
+          ? <FaMoon className="w-2.5 h-2.5 text-gray-400" />
+          : <FaSun className="w-2.5 h-2.5 text-gray-700" />
+        }
+      </span>
+    </button>
+  );
 }
 
-const Header = () => {
-    const { isDarkMode } = useTheme();
-    const { personalDetails, error } = usePersonalDetails();
-    const handleScheduleCall = () => {
-        const calendlyUrl = personalDetails?.calendlyUrl || "https://calendly.com/fearcleevan/30min";
-        window.open(calendlyUrl, '_blank', 'noopener,noreferrer');
-    };
+export default function Header() {
+  const { isDarkMode } = useTheme();
+  const { personalDetails } = usePersonalDetails();
 
-    const handleSendEmail = () => {
-        const email = personalDetails?.email || 'fearcleevan123@gmail.com';
-        const subject = 'Regarding your portfolio';
-        const body = 'Hello,\n\nI came across your portfolio and...';
-
-        window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank', 'noopener,noreferrer');
-    };
-
-    if (error) {
-        return (
-            <div className={`${styles.headerWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
-                <div className={styles.container}>
-                    <div className={styles.errorState}>
-                        <p>Error loading profile details</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className={`${styles.headerWrapper} ${isDarkMode ? styles.darkMode : ''}`}>
-            <div className={styles.container}>
-                <div className={styles.profileImage}>
-                    <img src={profile} alt="Peter Paul Abillar Lazan" width={160} height={160} loading="eager" fetchpriority="high" />
-                </div>
-                <div className={styles.details}>
-                    <div className={styles.modeToggle}>
-                        <ThemeToggle />
-                    </div>
-                    <div className={styles.nameContainer}>
-                        <h1 className={`${styles.name} ${isDarkMode ? styles.darkText : ''}`}>
-                            {personalDetails?.fullName || "Peter Paul Abillar Lazan"}
-                            <svg className={styles.certifiedIcon} viewBox="0 0 24 24" fill="none" aria-label="Verified user">
-                                <path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.854-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.688-.13.633-.08 1.29.144 1.896-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.606-.274 1.263-.144 1.896.13.634.433 1.218.877 1.688.47.443 1.054.747 1.687.878.633.132 1.29.084 1.897-.136.274.586.705 1.084 1.246 1.439.54.354 1.17.551 1.816.569.647-.016 1.276-.213 1.817-.567s.972-.854 1.245-1.44c.604.239 1.266.296 1.903.164.636-.132 1.22-.447 1.68-.907.46-.46.776-1.044.908-1.681s.075-1.299-.165-1.903c.586-.274 1.084-.705 1.439-1.246.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z" fill="#1d9bf0"></path>
-                            </svg>
-                        </h1>
-                    </div>
-                    <div className={`${styles.location} ${isDarkMode ? styles.darkText : ''}`}>
-                        <FaMapMarkerAlt className={styles.locationIcon} />
-                        <span>{personalDetails?.address || "Davao City, Philippines"}</span>
-                    </div>
-                    <p className={`${styles.title} ${isDarkMode ? styles.darkText : ''}`}>
-                        {personalDetails?.jobTitle || "Full Stack Developer"}
-                    </p>
-                    <div className={styles.buttons}>
-                        <button
-                            className={`${styles.button} ${styles.scheduleButton} ${isDarkMode ? styles.darkButton : ''}`}
-                            onClick={handleScheduleCall}
-                        >
-                            <FaPhone className={styles.buttonIcon} />
-                            <span className={styles.buttonText}>Schedule a Call</span>
-                        </button>
-                        <button
-                            className={`${styles.button} ${styles.emailButton} ${isDarkMode ? styles.darkEmailButton : ''}`}
-                            onClick={handleSendEmail}
-                        >
-                            <FaEnvelope className={styles.buttonIcon} />
-                            <span className={styles.buttonText}>Send Email</span>
-                        </button>
-                        <a
-                            className={`${styles.button} ${styles.downloadButton} ${isDarkMode ? styles.darkButton : ''}`}
-                            href={resume}
-                            download='Peter-Paul-Lazan-Resume.pdf'
-                        >
-                            <FaDownload className={styles.buttonIcon} />
-                            <span className={styles.buttonText}>Download CV</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            {/* <div className={styles.chatButton}>
-                <ChatButton />
-            </div> */}
-        </div>
+  const handleScheduleCall = () => {
+    trackMeetingClick();
+    window.open(
+      personalDetails?.calendlyUrl || 'https://calendly.com/fearcleevan/30min',
+      '_blank',
+      'noopener,noreferrer'
     );
-};
+  };
 
-export default Header;
+  const handleSendEmail = () => {
+    const email = personalDetails?.email || 'jonathan.mauring17@gmail.com';
+    const subject = 'Regarding your portfolio';
+    const body = 'Hello,\n\nI came across your portfolio and...';
+    window.open(
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  };
+
+  return (
+    <header className="w-full overflow-hidden bg-white dark:bg-gray-900 border border-gray-900 dark:border-white shadow-sm">
+      <div className="p-6 sm:p-8">
+        {/* Profile row */}
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+
+          {/* Avatar */}
+          <div className="relative shrink-0">
+            <div className="w-28 h-28 sm:w-32 sm:h-32 overflow-hidden shadow-md">
+              <img
+                src={profile}
+                alt="Peter Paul Abillar Lazan"
+                className="w-full h-full object-cover"
+                width={128}
+                height={128}
+                loading="eager"
+              />
+            </div>
+            {/* Online indicator */}
+            <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-white dark:border-gray-900 shadow-sm" />
+          </div>
+
+          {/* Details */}
+          <div className="flex-1 text-center sm:text-left min-w-0">
+            {/* Name + verified badge with theme toggle on the right */}
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight truncate">
+                  {personalDetails?.name || 'Peter Paul Abillar Lazan'}
+                </h1>
+                <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-label="Verified">
+                  <path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.854-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.688-.13.633-.08 1.29.144 1.896-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.606-.274 1.263-.144 1.896.13.634.433 1.218.877 1.688.47.443 1.054.747 1.687.878.633.132 1.29.084 1.897-.136.274.586.705 1.084 1.246 1.439.54.354 1.17.551 1.816.569.647-.016 1.276-.213 1.817-.567s.972-.854 1.245-1.44c.604.239 1.266.296 1.903.164.636-.132 1.22-.447 1.68-.907.46-.46.776-1.044.908-1.681s.075-1.299-.165-1.903c.586-.274 1.084-.705 1.439-1.246.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z" fill="#1d9bf0" />
+                </svg>
+              </div>
+              <ThemeToggle />
+            </div>
+
+            {/* Job title */}
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 leading-snug">
+              {personalDetails?.title || 'Web Developer | IT Support Specialist'}
+            </p>
+
+            {/* Location */}
+            <div className="flex items-center justify-center sm:justify-start gap-1.5 text-sm text-gray-500 dark:text-gray-400 mb-5">
+              <FaMapMarkerAlt className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400 shrink-0" />
+              <span>{personalDetails?.location || 'Davao City, Philippines'}</span>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+              <button
+                onClick={handleScheduleCall}
+                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium border border-gray-900 dark:border-white text-gray-900 dark:text-white bg-white dark:bg-gray-900 hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 active:scale-95 transition-all duration-200"
+              >
+                <FaPhone className="w-3 h-3" />
+                Schedule a Call
+              </button>
+
+              <button
+                onClick={handleSendEmail}
+                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent hover:border-gray-900 hover:text-gray-900 dark:hover:border-white dark:hover:text-white active:scale-95 transition-all duration-200"
+              >
+                <FaEnvelope className="w-3 h-3" />
+                Send Email
+              </button>
+
+              <a
+                href="/LazanPeterPaul_CV.pdf"
+                download="Peter-Paul-Lazan-Resume.pdf"
+                onClick={trackCVDownload}
+                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent hover:border-gray-900 hover:text-gray-900 dark:hover:border-white dark:hover:text-white active:scale-95 transition-all duration-200"
+              >
+                <FaDownload className="w-3 h-3" />
+                Download CV
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}

@@ -1,202 +1,217 @@
-// src/components/ContainerSecond/ContainerSecond.jsx
-import React, { useState, useEffect } from 'react';
-import styles from './ContainerSecond.module.css';
 import { Link } from 'react-router-dom';
-import { getBlogPosts } from '../../firebase/services/contentService';
-import { useTheme } from '../../context/ThemeContext';
-import { usePersonalDetails } from '../../firebase/hooks/usePersonalDetails';
+import { usePersonalDetails } from '../../hooks/usePersonalDetails';
+import { useBlogPosts } from '../../hooks/useBlogPosts';
+import { trackSocialClick, trackMeetingClick } from '../../services/analyticsService';
 
+// Real SVG icons
+function ConnectIcon() {
+  return (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+    </svg>
+  );
+}
+
+function BlogIcon() {
+  return (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+    </svg>
+  );
+}
+
+function ArrowRightIcon() {
+  return (
+    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7" />
+    </svg>
+  );
+}
+
+function ViewAllIcon() {
+  return (
+    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7" />
+    </svg>
+  );
+}
 
 export default function ContainerSecond() {
-  const { isDarkMode } = useTheme();
-  const [blogPosts, setBlogPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { personalDetails, loading: personalDetailsLoading } = usePersonalDetails();
+  const { personalDetails } = usePersonalDetails();
+  const { blogPosts } = useBlogPosts();
 
-  useEffect(() => {
-    const fetchBlogPosts = async () => {
-      try {
-        setLoading(true);
-        const posts = await getBlogPosts();
-        // Sort by date and get the 4 most recent posts
-        const recentPosts = posts
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
-          .slice(0, 4);
-        setBlogPosts(recentPosts);
-      } catch (err) {
-        console.error('Error fetching blog posts:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBlogPosts();
-  }, []);
-
-  if (loading || personalDetailsLoading) {
-    return (
-      <div className={`${styles.container} ${isDarkMode ? styles.darkMode : ''}`}>
-        <div className={`${styles.bentoCard} ${isDarkMode ? styles.darkBentoCard : ''}`}>
-          <div className={styles.loadingState}>
-            <div className={styles.spinner}></div>
-            <p>Loading content...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={`${styles.container} ${isDarkMode ? styles.darkMode : ''}`}>
-        <div className={`${styles.bentoCard} ${isDarkMode ? styles.darkBentoCard : ''}`}>
-          <div className={styles.errorState}>
-            <p>Error loading content: {error}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const recentPosts = [...blogPosts]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 4);
 
   return (
-    <div className={`${styles.container} ${isDarkMode ? styles.darkMode : ''}`}>
-      {/* Connect Section - Updated with personal details */}
-      <div className={`${styles.bentoCard} ${isDarkMode ? styles.darkBentoCard : ''}`}>
-        <div className={styles.cardHeader}>
-          <h2 className={`${styles.cardTitle} ${isDarkMode ? styles.darkText : ''}`}>
-            <span className={styles.gridIcon}>🔗</span> Connect
-          </h2>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* ── Connect ── */}
+      <div className="bg-white dark:bg-gray-900 border border-gray-900 dark:border-white shadow-sm p-6 flex flex-col gap-4 transition-colors duration-300">
+        <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <span className="text-gray-700 dark:text-gray-300"><ConnectIcon /></span>
+          Connect
+        </h2>
+
+        {/* Email */}
+        <a
+          href={`mailto:${personalDetails?.email}`}
+          className="flex flex-col gap-0.5 px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-400 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-colors group"
+          onClick={() => trackSocialClick('email')}
+        >
+          <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Primary Email</span>
+          <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors truncate">
+            {personalDetails?.email || 'jonathan.mauring17@gmail.com'}
+          </span>
+        </a>
+
+        {/* Phone */}
+        <a
+          href={`tel:${(personalDetails?.phone || '').replace(/\D/g, '')}`}
+          className="flex flex-col gap-0.5 px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-400 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-colors group"
+        >
+          <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Phone</span>
+          <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+            {personalDetails?.phone || '09515379127'}
+          </span>
+        </a>
+
+        {/* Schedule a Call */}
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">Let's Talk</span>
+          <a
+            href={personalDetails?.calendlyUrl || 'https://calendly.com/fearcleevan/30min'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-400 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-colors group"
+            onClick={() => trackMeetingClick()}
+          >
+            <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+              Schedule a Call
+            </span>
+            <span className="text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white group-hover:translate-x-0.5 transition-all">
+              <ArrowRightIcon />
+            </span>
+          </a>
         </div>
 
-        <div className={styles.cardContent}>
-          {/* Email */}
-          <a className={`${styles.linkCard} ${isDarkMode ? styles.darkLinkCard : ''}`} href={`mailto:${personalDetails?.email}`}>
-            <p className={`${styles.linkLabel} ${isDarkMode ? styles.darkSecondaryText : ''}`}>Primary Email</p>
-            <p className={`${styles.linkText} ${isDarkMode ? styles.darkText : ''}`}>
-              {personalDetails?.email || 'fearcleevan123@gmail.com'}
-            </p>
-          </a>
-
-          {/* Secondary Email */}
-          {personalDetails?.secondaryEmail && (
-            <a className={`${styles.linkCard} ${isDarkMode ? styles.darkLinkCard : ''}`} href={`mailto:${personalDetails.secondaryEmail}`}>
-              <p className={`${styles.linkLabel} ${isDarkMode ? styles.darkSecondaryText : ''}`}>Secondary Email</p>
-              <p className={`${styles.linkText} ${isDarkMode ? styles.darkText : ''}`}>
-                {personalDetails.secondaryEmail}
-              </p>
-            </a>
-          )}
-
-          {/* Phone Number */}
-          <div className={`${styles.linkCard} ${isDarkMode ? styles.darkLinkCard : ''}`}>
-            <p className={`${styles.linkLabel} ${isDarkMode ? styles.darkSecondaryText : ''}`}>Phone</p>
-            <a className={`${styles.linkText} ${isDarkMode ? styles.darkText : ''}`} href={`tel:${personalDetails?.phone?.replace(/\D/g, '')}`}>
-              {personalDetails?.phone || '+63 951 537 9127'}
-            </a>
-          </div>
-
-          {/* Schedule a Call */}
-          <div className={styles.linkGroup}>
-            <p className={`${styles.linkLabel} ${isDarkMode ? styles.darkSecondaryText : ''}`}>Let's Talk</p>
-            <a 
-              className={`${styles.linkCard} ${isDarkMode ? styles.darkLinkCard : ''}`} 
-              href={personalDetails?.calendlyUrl || "https://calendly.com/fearcleevan/30min"} 
-              target="_blank" 
-              rel="noopener noreferrer"
-            >
-              <div className={styles.linkWithIcon}>
-                <span className={`${styles.linkText} ${isDarkMode ? styles.darkText : ''}`}>Schedule a Call</span>
-                <svg className={styles.arrowIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path>
+        {/* Social Links */}
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">Social Links</span>
+          <div className="flex gap-2">
+            {personalDetails?.linkedinUrl && (
+              <a
+                href={personalDetails.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                onClick={() => trackSocialClick('linkedin')}
+                className="flex items-center justify-center w-10 h-10 bg-gray-50 dark:bg-gray-800 border border-gray-400 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-900 dark:hover:border-white transition-colors"
+              >
+                <svg className="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.920-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                 </svg>
-              </div>
-            </a>
-          </div>
-
-          {/* Social Links */}
-          <div className={styles.linkGroup}>
-            <p className={`${styles.linkLabel} ${isDarkMode ? styles.darkSecondaryText : ''}`}>Social Links</p>
-            <div className={styles.socialGrid}>
-              {personalDetails?.linkedinUrl && (
-                <a className={`${styles.socialLink} ${isDarkMode ? styles.darkSocialLink : ''}`} href={personalDetails.linkedinUrl} target="_blank" rel="noopener noreferrer" aria-label="Visit LinkedIn profile" title="Visit LinkedIn profile">
-                  <svg className={styles.socialIcon} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.920-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
-                  </svg>
-                </a>
-              )}
-              
-              {personalDetails?.githubUrl && (
-                <a className={`${styles.socialLink} ${isDarkMode ? styles.darkSocialLink : ''}`} href={personalDetails.githubUrl} target="_blank" rel="noopener noreferrer" aria-label="Visit GitHub profile" title="Visit GitHub profile">
-                  <svg className={styles.socialIcon} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd"></path>
-                  </svg>
-                </a>
-              )}
-              
-              {personalDetails?.instagramUrl && (
-                <a className={`${styles.socialLink} ${isDarkMode ? styles.darkSocialLink : ''}`} href={personalDetails.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Visit Instagram profile" title="Visit Instagram profile">
-                  <svg className={styles.socialIcon} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.630c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.630zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clipRule="evenodd"></path>
-                  </svg>
-                </a>
-              )}
-              
-              {personalDetails?.facebookUrl && (
-                <a className={`${styles.socialLink} ${isDarkMode ? styles.darkSocialLink : ''}`} href={personalDetails.facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Visit Facebook profile" title="Visit Facebook profile">
-                  <svg className={styles.socialIcon} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd"></path>
-                  </svg>
-                </a>
-              )}
-            </div>
+              </a>
+            )}
+            {personalDetails?.githubUrl && (
+              <a
+                href={personalDetails.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                onClick={() => trackSocialClick('github')}
+                className="flex items-center justify-center w-10 h-10 bg-gray-50 dark:bg-gray-800 border border-gray-400 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-900 dark:hover:border-white transition-colors"
+              >
+                <svg className="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24">
+                  <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                </svg>
+              </a>
+            )}
+            {personalDetails?.facebookUrl && (
+              <a
+                href={personalDetails.facebookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                onClick={() => trackSocialClick('facebook')}
+                className="flex items-center justify-center w-10 h-10 bg-gray-50 dark:bg-gray-800 border border-gray-400 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-900 dark:hover:border-white transition-colors"
+              >
+                <svg className="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+              </a>
+            )}
+            {personalDetails?.instagramUrl && (
+              <a
+                href={personalDetails.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                onClick={() => trackSocialClick('instagram')}
+                className="flex items-center justify-center w-10 h-10 bg-gray-50 dark:bg-gray-800 border border-gray-400 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-900 dark:hover:border-white transition-colors"
+              >
+                <svg className="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                </svg>
+              </a>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Blog Posts Section */}
-      <div className={`${styles.bentoCard} ${isDarkMode ? styles.darkBentoCard : ''}`}>
-        <div className={styles.blogHeader}>
-          <h2 className={`${styles.cardTitle} ${isDarkMode ? styles.darkText : ''}`}>
-            <span className={styles.gridIcon}>📝</span> Recent Blog Posts
+      {/* ── Recent Blog Posts ── */}
+      <div className="bg-white dark:bg-gray-900 border border-gray-900 dark:border-white shadow-sm p-6 flex flex-col gap-4 transition-colors duration-300">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <span className="text-gray-700 dark:text-gray-300"><BlogIcon /></span>
+            Recent Blog Posts
           </h2>
-          <Link to="/blog" className={`${styles.viewAllLink} ${isDarkMode ? styles.darkLink : ''}`}>
+          <Link
+            to="/blog"
+            className="inline-flex items-center gap-1 text-xs font-medium text-gray-900 dark:text-white hover:underline transition-colors"
+          >
             View All
-            <svg className={styles.linkArrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7"></path>
-            </svg>
+            <ViewAllIcon />
           </Link>
         </div>
 
-        <div className={styles.blogPosts}>
-          {blogPosts.length === 0 ? (
-            <div className={styles.emptyState}>
-              <p>No blog posts yet. Check back soon!</p>
-            </div>
-          ) : (
-            blogPosts.map((post) => (
-              <div key={post.id} className={`${styles.blogPost} ${isDarkMode ? styles.darkBlogPost : ''}`}>
-                <Link to={`/blog/${post.slug}`} className={styles.blogLink}>
-                  <h3 className={`${styles.blogTitle} ${isDarkMode ? styles.darkText : ''}`}>{post.title}</h3>
-                  <div className={styles.blogMeta}>
-                    <time className={`${styles.blogDate} ${isDarkMode ? styles.darkSecondaryText : ''}`}>{post.date}</time>
-                    <span className={`${styles.blogSeparator} ${isDarkMode ? styles.darkSecondaryText : ''}`}>•</span>
-                    <span className={`${styles.blogReadTime} ${isDarkMode ? styles.darkSecondaryText : ''}`}>{post.readTime}</span>
-                  </div>
-                  <p className={`${styles.blogExcerpt} ${isDarkMode ? styles.darkSecondaryText : ''}`}>
-                    {post.excerpt}
-                  </p>
-                  <div className={styles.blogTags}>
-                    {post.tags.map((tag, index) => (
-                      <span key={index} className={`${styles.tag} ${isDarkMode ? styles.darkTag : ''}`}>{tag}</span>
+        {recentPosts.length === 0 ? (
+          <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-8">No blog posts yet. Check back soon!</p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {recentPosts.map((post) => (
+              <Link
+                key={post.id}
+                to={`/blog/${post.slug}`}
+                className="flex flex-col gap-1.5 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group border border-transparent hover:border-gray-400 dark:hover:border-gray-700"
+              >
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors leading-snug line-clamp-1">
+                  {post.title}
+                </h3>
+                <div className="flex items-center gap-2 text-[11px] text-gray-400 dark:text-gray-500">
+                  <time>{post.date}</time>
+                  <span className="w-1 h-1 bg-gray-300 dark:bg-gray-700" />
+                  <span>{post.readTime}</span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed transition-colors duration-300">
+                  {post.excerpt}
+                </p>
+                {post.tags?.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-0.5">
+                    {post.tags.slice(0, 3).map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-1.5 py-0.5 text-[10px] font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent transition-colors duration-300"
+                      >
+                        {tag}
+                      </span>
                     ))}
                   </div>
-                </Link>
-              </div>
-            ))
-          )}
-        </div>
+                )}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

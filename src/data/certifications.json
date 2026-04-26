@@ -1,0 +1,32 @@
+[
+  {
+    "id": "cert-1",
+    "title": "Dean's List",
+    "issuer": "Samson Polytechnic College of Davao",
+    "issuerUrl": "",
+    "description": "Awarded for consistent academic excellence throughout the program.",
+    "category": "Academic",
+    "year": "2021–2025",
+    "icon": "award"
+  },
+  {
+    "id": "cert-2",
+    "title": "Outstanding Performance in Industry Immersion",
+    "issuer": "Samson Polytechnic College of Davao",
+    "issuerUrl": "",
+    "description": "Recognized for exceptional work and contribution during professional internship placement.",
+    "category": "Academic",
+    "year": "2024",
+    "icon": "star"
+  },
+  {
+    "id": "cert-3",
+    "title": "Outstanding Performance in Capstone Project",
+    "issuer": "Samson Polytechnic College of Davao",
+    "issuerUrl": "",
+    "description": "Awarded for excellence in project design, implementation, and presentation of the capstone project.",
+    "category": "Academic",
+    "year": "2025",
+    "icon": "trophy"
+  }
+]

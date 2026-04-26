@@ -10,9 +10,12 @@
     <meta name="description" content="Full Stack Developer specializing in React, Node.js, and Firebase. View projects, experience, and contact Peter Paul Lazan." />
     <meta name="author" content="Peter Paul Lazan" />
     <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#3b82f6" />
 
-    <!-- Canonical -->
+    <!-- Theme color for browsers (supports dark/light) -->
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)" />
+
+    <!-- Canonical URL -->
     <link rel="canonical" href="https://lazandev.vercel.app/" />
 
     <!-- Open Graph / Facebook -->
@@ -20,7 +23,7 @@
     <meta property="og:url" content="https://lazandev.vercel.app/" />
     <meta property="og:title" content="Peter Paul Lazan — Full Stack Developer" />
     <meta property="og:description" content="Full Stack Developer based in Davao City, Philippines. Experienced in React, Node.js, Firebase, and modern web technologies." />
-    <meta property="og:image" content="https://lazandev.vercel.app/profile.png" />
+    <meta property="og:image" content="https://lazandev.vercel.app/og-image.png" />
     <meta property="og:image:alt" content="Peter Paul Lazan — Full Stack Developer" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content="Peter Paul Lazan Portfolio" />
@@ -30,28 +33,13 @@
     <meta name="twitter:url" content="https://lazandev.vercel.app/" />
     <meta name="twitter:title" content="Peter Paul Lazan — Full Stack Developer" />
     <meta name="twitter:description" content="Full Stack Developer based in Davao City, Philippines. Experienced in React, Node.js, Firebase, and modern web technologies." />
-    <meta name="twitter:image" content="https://lazandev.vercel.app/profile.png" />
+    <meta name="twitter:image" content="https://lazandev.vercel.app/og-image.png" />
 
-    <!-- Favicon -->
+    <!-- Favicon & Touch Icons (replace with proper set) -->
     <link rel="icon" type="image/png" sizes="32x32" href="/profile.png" />
     <link rel="apple-touch-icon" href="/profile.png" />
 
-    <!-- Performance: DNS Prefetch & Preconnect -->
-    <link rel="preconnect" href="https://firestore.googleapis.com" />
-    <link rel="preconnect" href="https://identitytoolkit.googleapis.com" />
-    <link rel="preconnect" href="https://storage.googleapis.com" />
-    <link rel="preconnect" href="https://generativelanguage.googleapis.com" />
-    <link rel="preconnect" href="https://res.cloudinary.com" />
-    <link rel="preconnect" href="https://api.github.com" />
-
-    <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
-    <link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com" />
-    <link rel="dns-prefetch" href="https://storage.googleapis.com" />
-    <link rel="dns-prefetch" href="https://generativelanguage.googleapis.com" />
-    <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-    <link rel="dns-prefetch" href="https://api.github.com" />
-
-    <!-- Fonts: single consolidated load (replaces 4x CSS @import) -->
+    <!-- Performance: DNS prefetch & preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" />
@@ -75,7 +63,7 @@
         "addressLocality": "Davao City",
         "addressCountry": "PH"
       },
-      "email": "fearcleevan123@gmail.com",
+      "email": "jonathan.mauring17@gmail.com",
       "sameAs": [
         "https://github.com/FearCleevan",
         "https://calendly.com/fearcleevan/30min"
@@ -87,6 +75,21 @@
         "JavaScript",
         "Full Stack Web Development"
       ]
+    }
+    </script>
+
+    <!-- JSON-LD Structured Data: WebSite Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Peter Paul Lazan Portfolio",
+      "url": "https://lazandev.vercel.app/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://lazandev.vercel.app/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
     }
     </script>
   </head>

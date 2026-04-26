@@ -1,373 +1,398 @@
-﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FiAward, FiBriefcase, FiCalendar, FiCheck, FiCode, FiCopy, FiMail, FiMessageCircle, FiSend, FiUser } from 'react-icons/fi';
-import styles from './ChatBox.module.css';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FiAward, FiBriefcase, FiCalendar, FiCheck, FiCode, FiCopy, FiMail, FiSend, FiUser, FiX } from 'react-icons/fi';
 import profileImage from '../../assets/profile.png';
 import { aiService } from '../../services/aiService';
-import { trackChatOpen, trackMeetingSubmit, trackQuickAction } from '../../services/analyticsService';
-import { useTheme } from '../../context/ThemeContext';
-
-import { usePersonalDetails } from '../../firebase/hooks/usePersonalDetails';
-import { useProjects } from '../../firebase/hooks/useProjects';
-import { useExperience } from '../../firebase/hooks/useExperience';
-import { useTechStack } from '../../firebase/hooks/useTechStack';
-import { useCertifications } from '../../firebase/hooks/useCertifications';
-import { useBlogPosts } from '../../firebase/hooks/useBlogPosts';
-import { useAboutContent } from '../../firebase/hooks/useFirestore';
-import { saveMeeting } from '../../firebase/services/chatService';
+import { trackChatOpen, trackMeetingClick, trackMeetingSubmit, trackQuickAction } from '../../services/analyticsService';
+import { usePersonalDetails } from '../../hooks/usePersonalDetails';
+import { useProjects } from '../../hooks/useProjects';
+import { useExperience } from '../../hooks/useExperience';
+import { useTechStack } from '../../hooks/useTechStack';
+import { useCertifications } from '../../hooks/useCertifications';
 
 const INITIAL_MESSAGE = {
-    id: 'intro',
-    text: "Hi! I'm Peter's AI assistant. Ask me about his credentials, projects, experience, or request code examples in any popular language.",
-    sender: 'bot',
-    timestamp: new Date(),
-    type: 'text'
+  id: 'intro',
+  text: "Hi! I'm Peter's AI assistant. Ask me about his credentials, projects, experience, or request code examples in any language.",
+  sender: 'bot',
+  timestamp: new Date(),
 };
 
-const ChatBox = ({ onClose }) => {
-    const { isDarkMode } = useTheme();
-    const { personalDetails, loading: personalLoading } = usePersonalDetails();
-    const { projects, loading: projectsLoading } = useProjects();
-    const { experience, loading: experienceLoading } = useExperience();
-    const { techStack, loading: techStackLoading } = useTechStack();
-    const { certifications, loading: certsLoading } = useCertifications();
-    const { blogPosts, loading: blogLoading } = useBlogPosts();
-    const { aboutContent, loading: aboutLoading } = useAboutContent();
+// Split AI response text on fenced code blocks and render them styled
+function MessageContent({ text, copiedKey, onCopy }) {
+  const parts = String(text || '').split(/```([\w+-]*)\n?([\s\S]*?)```/g);
+  if (parts.length === 1) {
+    return <span className="whitespace-pre-wrap break-words">{text}</span>;
+  }
 
-    const [messages, setMessages] = useState([INITIAL_MESSAGE]);
-    const [newMessage, setNewMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSchedulingMeeting, setIsSchedulingMeeting] = useState(false);
-    const [copiedCodeKey, setCopiedCodeKey] = useState('');
-    const [meetingForm, setMeetingForm] = useState({
-        name: '',
-        email: '',
-        purpose: '',
-        preferredTime: '',
-        notes: ''
-    });
-    const [apiStatus, setApiStatus] = useState('checking');
-
-    const messagesEndRef = useRef(null);
-    const isDataLoading = personalLoading || projectsLoading || experienceLoading || techStackLoading || certsLoading || blogLoading || aboutLoading;
-
-    const userData = useMemo(() => ({
-        personalDetails,
-        projects: projects || [],
-        experience: experience || [],
-        techStack: techStack || [],
-        certifications: certifications || [],
-        blogPosts: blogPosts || [],
-        aboutContent: aboutContent || []
-    }), [personalDetails, projects, experience, techStack, certifications, blogPosts, aboutContent]);
-
-    const renderMessageWithCodeBlocks = (text) => {
-        const parts = String(text).split(/```([\w+-]*)\n?([\s\S]*?)```/g);
-        if (parts.length === 1) {
-            return <span>{text}</span>;
-        }
-
-        const rendered = [];
-        for (let i = 0; i < parts.length; i += 3) {
-            const plain = parts[i];
-            if (plain) {
-                rendered.push(<span key={`plain-${i}`}>{plain}</span>);
-            }
-
-            const language = parts[i + 1];
-            const code = parts[i + 2];
-            if (typeof code === 'string') {
-                const codeText = code.trim();
-                const codeKey = `${language || 'text'}-${i}-${codeText.length}`;
-
-                rendered.push(
-                    <div key={`code-${i}`} className={styles.codeBlockWrap}>
-                        <div className={styles.codeHeader}>
-                            <div className={styles.codeLang}>{language || 'text'}</div>
-                            <button
-                                type="button"
-                                className={styles.codeCopyButton}
-                                onClick={async () => {
-                                    try {
-                                        await navigator.clipboard.writeText(codeText);
-                                        setCopiedCodeKey(codeKey);
-                                        setTimeout(() => {
-                                            setCopiedCodeKey((prev) => (prev === codeKey ? '' : prev));
-                                        }, 1800);
-                                    } catch {
-                                        setCopiedCodeKey('');
-                                    }
-                                }}
-                                aria-label={copiedCodeKey === codeKey ? 'Copied' : 'Copy code'}
-                                title={copiedCodeKey === codeKey ? 'Copied' : 'Copy code'}
-                            >
-                                {copiedCodeKey === codeKey ? <FiCheck /> : <FiCopy />}
-                            </button>
-                        </div>
-                        <pre className={styles.codeBlock}><code>{codeText}</code></pre>
-                    </div>
-                );
-            }
-        }
-
-        return rendered;
-    };
-
-    useEffect(() => {
-        setApiStatus(aiService.isReady() ? 'available' : 'unavailable');
-        trackChatOpen();
-    }, []);
-
-    const sendUserMessage = useCallback(async (text) => {
-        if (!text.trim() || isLoading) return;
-
-        const idBase = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-        const userMessage = {
-            id: `u-${idBase}`,
-            text,
-            sender: 'user',
-            timestamp: new Date(),
-            type: 'text'
-        };
-
-        setMessages((prev) => [...prev, userMessage]);
-        setIsLoading(true);
-
-        try {
-            const aiResponse = await aiService.sendMessage(text, userData);
-
-            if (aiService.hasMeetingIntent(text.toLowerCase())) {
-                setIsSchedulingMeeting(true);
-            }
-
-            setMessages((prev) => [...prev, {
-                id: `b-${idBase}`,
-                text: aiResponse,
-                sender: 'bot',
-                timestamp: new Date(),
-                type: 'text'
-            }]);
-
-            setApiStatus('available');
-        } catch {
-            setMessages((prev) => [...prev, {
-                id: `b-${idBase}`,
-                text: 'I could not reach the model right now. I can still help using cached portfolio context. Please try again.',
-                sender: 'bot',
-                timestamp: new Date(),
-                type: 'text'
-            }]);
-            setApiStatus('unavailable');
-        } finally {
-            setIsLoading(false);
-        }
-    }, [isLoading, userData]);
-
-    const handleSendMessage = async (e) => {
-        e.preventDefault();
-        const messageToSend = newMessage;
-        setNewMessage('');
-        await sendUserMessage(messageToSend);
-    };
-
-    const handleMeetingSubmit = async (e) => {
-        e.preventDefault();
-
-        if (!meetingForm.name || !meetingForm.email || !meetingForm.purpose || !meetingForm.preferredTime) {
-            setMessages((prev) => [...prev, {
-                id: `bot-validate-${Date.now()}`,
-                text: 'Please fill in Name, Email, Purpose, and Preferred Time.',
-                sender: 'bot',
-                timestamp: new Date(),
-                type: 'text'
-            }]);
-            return;
-        }
-
-        setIsLoading(true);
-
-        let meetingId = null;
-        try {
-            meetingId = await saveMeeting(meetingForm);
-        } catch {
-            setMessages((prev) => [...prev, {
-                id: `bot-err-${Date.now()}`,
-                text: `There was an issue saving your request. Please email directly at ${personalDetails?.email || 'fearcleevan123@gmail.com'}.`,
-                sender: 'bot',
-                timestamp: new Date(),
-                type: 'text'
-            }]);
-            setIsLoading(false);
-            return;
-        }
-
-        trackMeetingSubmit(meetingForm.purpose);
-
-        setMessages((prev) => [...prev, {
-            id: `meeting-confirm-${Date.now()}`,
-            sender: 'bot',
-            type: 'meetingConfirm',
-            data: { ...meetingForm, meetingId },
-            text: '',
-            timestamp: new Date()
-        }]);
-
-        setMeetingForm({ name: '', email: '', purpose: '', preferredTime: '', notes: '' });
-        setIsSchedulingMeeting(false);
-        setIsLoading(false);
-    };
-
-    const quickActions = useMemo(() => {
-        const actions = [];
-        if ((techStack || []).length) {
-            actions.push({ label: 'Technical Skills', message: "What are Peter's technical skills and expertise?", icon: <FiCode /> });
-        }
-        if ((projects || []).length) {
-            actions.push({ label: 'Projects', message: "Can you show me Peter's projects and stack?", icon: <FiBriefcase /> });
-        }
-        if ((experience || []).length) {
-            actions.push({ label: 'Experience', message: "What is Peter's professional experience?", icon: <FiUser /> });
-        }
-        if ((certifications || []).length) {
-            actions.push({ label: 'Certifications', message: 'What certifications does Peter have?', icon: <FiAward /> });
-        }
-        if (!actions.length) {
-            actions.push({ label: 'Book Meeting', message: "I'd like to schedule a meeting with Peter", icon: <FiCalendar /> });
-            actions.push({ label: 'Blog', message: 'What blog posts has Peter written?', icon: <FiMessageCircle /> });
-        }
-        return actions.slice(0, 4);
-    }, [techStack, projects, experience, certifications]);
-
-    const handleQuickAction = (message, label) => {
-        trackQuickAction(label);
-        sendUserMessage(message);
-    };
-
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSendMessage(e);
-        }
-    };
-
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
-
-    if (isDataLoading && messages.length === 1) {
-        return (
-            <div className={`${styles.chatBox} ${isDarkMode ? styles.darkMode : ''}`}>
-                <div className={`${styles.chatHeader} ${isDarkMode ? styles.darkHeader : ''}`}>
-                    <div className={styles.headerContent}>
-                        <div className={styles.profileImage}><img src={profileImage} alt="AI Assistant" loading="lazy" /></div>
-                        <div className={styles.headerText}><h3>Peter's AI Assistant</h3><div className={styles.status}><span className={styles.statusIndicator}></span><span>Preparing context...</span></div></div>
-                    </div>
-                    <button type="button" onClick={onClose} className={`${styles.closeButton} ${isDarkMode ? styles.darkCloseButton : ''}`} aria-label="Close chat">×</button>
-                </div>
-                <div className={`${styles.messagesContainer} ${isDarkMode ? styles.darkMessages : ''}`}>
-                    <div className={styles.loadingState}>
-                        <div className={styles.spinner}></div>
-                        <p>Loading portfolio context...</p>
-                    </div>
-                </div>
-            </div>
-        );
+  const nodes = [];
+  for (let i = 0; i < parts.length; i += 3) {
+    if (parts[i]) {
+      nodes.push(<span key={`t-${i}`} className="whitespace-pre-wrap break-words">{parts[i]}</span>);
     }
-
-    return (
-        <div className={`${styles.chatBox} ${isDarkMode ? styles.darkMode : ''}`} role="dialog" aria-modal="true" aria-label="Chat with Peter's AI Assistant">
-            <div className={`${styles.chatHeader} ${isDarkMode ? styles.darkHeader : ''}`}>
-                <div className={styles.headerContent}>
-                    <div className={styles.profileImage}><img src={profileImage} alt="AI Assistant" loading="lazy" /></div>
-                    <div className={styles.headerText}>
-                        <h3>Peter's AI Assistant</h3>
-                        <div className={styles.status}>
-                            <span className={`${styles.statusIndicator} ${apiStatus === 'available' ? styles.statusOnline : apiStatus === 'unavailable' ? styles.statusOffline : styles.statusChecking}`}></span>
-                            <span>{apiStatus === 'available' ? 'AI Ready' : apiStatus === 'unavailable' ? 'Limited Mode' : 'Checking AI...'}</span>
-                        </div>
-                    </div>
-                </div>
-                <button type="button" onClick={onClose} className={`${styles.closeButton} ${isDarkMode ? styles.darkCloseButton : ''}`} aria-label="Close chat">×</button>
-            </div>
-
-            <div className={`${styles.messagesContainer} ${isDarkMode ? styles.darkMessages : ''}`}>
-                {apiStatus === 'unavailable' && (
-                    <div className={styles.apiWarning}><span>AI endpoint is unavailable. Responses may be reduced.</span></div>
-                )}
-
-                {messages.length <= 2 && !isDataLoading && quickActions.length > 0 && (
-                    <div className={styles.quickActions}>
-                        <p>Quick prompts</p>
-                        <div className={styles.quickActionsGrid}>
-                            {quickActions.map((action, index) => (
-                                <button key={`${action.label}-${index}`} type="button" className={`${styles.quickActionBtn} ${isDarkMode ? styles.darkQuickAction : ''}`} onClick={() => handleQuickAction(action.message, action.label)} disabled={isLoading} aria-label={action.label}>
-                                    <span className={styles.actionIcon} aria-hidden="true">{action.icon}</span>
-                                    {action.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {messages.map((message) => (
-                    <div
-                        key={message.id}
-                        className={`${styles.message} ${message.sender === 'bot' ? `${styles.botMessage} ${isDarkMode ? styles.darkBotMessage : ''}` : `${styles.userMessage} ${isDarkMode ? styles.darkUserMessage : ''}`}`}
-                    >
-                        {message.sender === 'bot' && (
-                            <div className={styles.messageHeader}>
-                                <img src={profileImage} alt="AI Assistant" className={styles.messageAvatar} loading="lazy" />
-                                <span className={`${styles.messageSender} ${isDarkMode ? styles.darkSender : ''}`}>AI Assistant</span>
-                            </div>
-                        )}
-                        <div className={`${styles.messageContent} ${isDarkMode ? styles.darkContent : ''}`}>
-                            {message.type === 'meetingConfirm' ? (
-                                <div className={styles.meetingSummary}>
-                                    <h4>Meeting Request Confirmed ✓</h4>
-                                    <div className={styles.meetingDetails}>
-                                        <p><strong>Name:</strong> {message.data.name}</p>
-                                        <p><strong>Email:</strong> {message.data.email}</p>
-                                        <p><strong>Purpose:</strong> {message.data.purpose}</p>
-                                        <p><strong>Preferred Time:</strong> {message.data.preferredTime}</p>
-                                        {message.data.notes && <p><strong>Notes:</strong> {message.data.notes}</p>}
-                                        <p style={{ marginTop: '8px', fontSize: '11px', color: '#6b7280' }}>Peter will follow up at {message.data.email} within 24–48h.</p>
-                                    </div>
-                                </div>
-                            ) : (
-                                renderMessageWithCodeBlocks(message.text)
-                            )}
-                        </div>
-                        <div className={`${styles.messageTime} ${isDarkMode ? styles.darkTime : ''}`}>
-                            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </div>
-                    </div>
-                ))}
-                <div ref={messagesEndRef} />
-            </div>
-
-            {isSchedulingMeeting && (
-                <div className={`${styles.meetingForm} ${isDarkMode ? styles.darkMeetingForm : ''}`}>
-                    <h4>Schedule a Meeting with Peter</h4>
-                    <form onSubmit={handleMeetingSubmit}>
-                        <div className={styles.formGroup}><FiUser className={styles.formIcon} aria-hidden="true" /><input type="text" placeholder="Your Full Name *" aria-label="Your full name" value={meetingForm.name} onChange={(e) => setMeetingForm((prev) => ({ ...prev, name: e.target.value }))} required className={isDarkMode ? styles.darkInput : ''} disabled={isLoading} /></div>
-                        <div className={styles.formGroup}><FiMail className={styles.formIcon} aria-hidden="true" /><input type="email" placeholder="Your Email *" aria-label="Your email address" value={meetingForm.email} onChange={(e) => setMeetingForm((prev) => ({ ...prev, email: e.target.value }))} required className={isDarkMode ? styles.darkInput : ''} disabled={isLoading} /></div>
-                        <div className={styles.formGroup}><FiCalendar className={styles.formIcon} aria-hidden="true" /><select value={meetingForm.purpose} onChange={(e) => setMeetingForm((prev) => ({ ...prev, purpose: e.target.value }))} required aria-label="Meeting purpose" className={isDarkMode ? styles.darkInput : ''} disabled={isLoading}><option value="">Meeting Purpose *</option><option value="Project Discussion">Project Discussion</option><option value="Job Opportunity">Job Opportunity</option><option value="Technical Consultation">Technical Consultation</option><option value="Partnership">Partnership</option><option value="Other">Other</option></select></div>
-                        <div className={styles.formGroup}><input type="text" placeholder="Preferred Date/Time *" aria-label="Preferred date and time" value={meetingForm.preferredTime} onChange={(e) => setMeetingForm((prev) => ({ ...prev, preferredTime: e.target.value }))} required className={isDarkMode ? styles.darkInput : ''} disabled={isLoading} /></div>
-                        <div className={styles.formGroup}><textarea placeholder="Additional notes..." aria-label="Additional notes" value={meetingForm.notes} onChange={(e) => setMeetingForm((prev) => ({ ...prev, notes: e.target.value }))} rows="3" className={isDarkMode ? styles.darkInput : ''} disabled={isLoading} /></div>
-                        <div className={styles.formActions}><button type="button" onClick={() => setIsSchedulingMeeting(false)} className={styles.cancelButton} disabled={isLoading}>Cancel</button><button type="submit" className={styles.submitButton} disabled={isLoading}>{isLoading ? 'Submitting...' : 'Schedule Meeting'}</button></div>
-                    </form>
-                </div>
-            )}
-
-            {!isSchedulingMeeting && (
-                <form className={`${styles.messageForm} ${isDarkMode ? styles.darkForm : ''}`} onSubmit={handleSendMessage}>
-                    <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} onKeyDown={handleKeyPress} placeholder="Ask about credentials, projects, code examples, or book a meeting..." className={`${styles.messageInput} ${isDarkMode ? styles.darkInput : ''}`} disabled={isLoading || isDataLoading} />
-                    <button type="submit" className={`${styles.sendButton} ${isDarkMode ? styles.darkSendButton : ''}`} disabled={!newMessage.trim() || isLoading || isDataLoading} aria-label="Send message">
-                        {isLoading ? <div className={styles.spinner}></div> : <FiSend className={styles.sendIcon} />}
-                    </button>
-                </form>
-            )}
+    const lang = parts[i + 1];
+    const code = parts[i + 2];
+    if (typeof code === 'string') {
+      const codeKey = `${lang}-${i}`;
+      nodes.push(
+        <div key={`c-${i}`} className="mt-2 overflow-hidden border border-gray-400 dark:border-gray-500">
+          <div className="flex items-center justify-between px-3 py-1.5 bg-gray-900 dark:bg-gray-950">
+            <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{lang || 'code'}</span>
+            <button
+              type="button"
+              onClick={() => onCopy(code.trim(), codeKey)}
+              aria-label="Copy code"
+              className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-white transition-colors px-1.5 py-0.5"
+            >
+              {copiedKey === codeKey ? <FiCheck className="w-3 h-3" /> : <FiCopy className="w-3 h-3" />}
+              {copiedKey === codeKey ? 'Copied' : 'Copy'}
+            </button>
+          </div>
+          <pre className="p-3 bg-gray-950 text-gray-200 text-[11px] overflow-x-auto leading-relaxed">
+            <code>{code.trim()}</code>
+          </pre>
         </div>
-    );
-};
+      );
+    }
+  }
+  return <>{nodes}</>;
+}
 
-export default ChatBox;
+// Animated typing indicator
+function TypingDots() {
+  return (
+    <div className="flex items-end gap-1 px-1 py-0.5">
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 animate-bounce"
+          style={{ animationDelay: `${i * 0.15}s`, animationDuration: '0.9s' }}
+        />
+      ))}
+    </div>
+  );
+}
+
+const QUICK_ACTIONS = [
+  { label: 'Tech Skills', message: "What are Peter's technical skills and expertise?", icon: FiCode },
+  { label: 'Projects', message: "Tell me about Peter's projects.", icon: FiBriefcase },
+  { label: 'Experience', message: "What is Peter's professional experience?", icon: FiUser },
+  { label: 'Certifications', message: "What certifications does Peter have?", icon: FiAward },
+];
+
+export default function ChatBox({ onClose }) {
+  const { personalDetails } = usePersonalDetails();
+  const { projects } = useProjects();
+  const { experience } = useExperience();
+  const { techStack } = useTechStack();
+  const { certifications } = useCertifications();
+
+  const [messages, setMessages] = useState([INITIAL_MESSAGE]);
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [copiedKey, setCopiedKey] = useState('');
+  const [apiStatus, setApiStatus] = useState('checking');
+  const [meetingOpen, setMeetingOpen] = useState(false);
+  const [meetingForm, setMeetingForm] = useState({ name: '', email: '', purpose: '', preferredTime: '', notes: '' });
+  const [meetingBusy, setMeetingBusy] = useState(false);
+
+  const bottomRef = useRef(null);
+  const inputRef = useRef(null);
+
+  const showQuickActions = messages.length <= 1 && !isTyping;
+
+  useEffect(() => {
+    setApiStatus(aiService.isReady() ? 'available' : 'unavailable');
+    trackChatOpen();
+  }, []);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isTyping]);
+
+  const handleCopy = useCallback(async (text, key) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey((k) => (k === key ? '' : k)), 1800);
+    } catch { /* clipboard blocked */ }
+  }, []);
+
+  const sendMessage = useCallback(async (text) => {
+    if (!text.trim() || isTyping) return;
+    setInput('');
+
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    setMessages((prev) => [...prev, { id: `u-${id}`, text, sender: 'user', timestamp: new Date() }]);
+    setIsTyping(true);
+
+    try {
+      const reply = await aiService.sendMessage(text);
+      setMessages((prev) => [...prev, { id: `b-${id}`, text: reply, sender: 'bot', timestamp: new Date() }]);
+      setApiStatus('available');
+
+      if (aiService.hasMeetingIntent?.(text.toLowerCase())) {
+        setMeetingOpen(true);
+        trackMeetingClick();
+      }
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { id: `b-${id}`, text: "Sorry, I couldn't reach the AI right now. Please try again in a moment.", sender: 'bot', timestamp: new Date() },
+      ]);
+      setApiStatus('unavailable');
+    } finally {
+      setIsTyping(false);
+    }
+  }, [isTyping]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    sendMessage(input);
+  };
+
+  const handleQuick = (action) => {
+    trackQuickAction(action.label);
+    sendMessage(action.message);
+  };
+
+  const handleMeetingSubmit = async (e) => {
+    e.preventDefault();
+    if (!meetingForm.name || !meetingForm.email || !meetingForm.purpose || !meetingForm.preferredTime) return;
+    setMeetingBusy(true);
+
+    const meetingId = `mtg-${Date.now()}`;
+    trackMeetingSubmit(meetingForm.purpose);
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `mtg-${meetingId}`,
+        sender: 'bot',
+        type: 'meetingConfirm',
+        data: { ...meetingForm },
+        text: '',
+        timestamp: new Date(),
+      },
+    ]);
+
+    setMeetingForm({ name: '', email: '', purpose: '', preferredTime: '', notes: '' });
+    setMeetingOpen(false);
+    setMeetingBusy(false);
+  };
+
+  const statusColor = apiStatus === 'available' ? 'bg-emerald-400' : apiStatus === 'unavailable' ? 'bg-red-400' : 'bg-amber-400';
+  const statusLabel = apiStatus === 'available' ? 'AI Ready' : apiStatus === 'unavailable' ? 'Limited Mode' : 'Connecting…';
+
+  return (
+    <div
+      className="fixed bottom-5 right-5 z-50 flex flex-col bg-white dark:bg-gray-900 border border-gray-900 dark:border-white shadow-2xl overflow-hidden"
+      style={{ width: 'min(370px, calc(100vw - 24px))', height: 'min(560px, calc(100dvh - 100px))' }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Chat with Peter's AI Assistant"
+    >
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shrink-0 transition-colors duration-300">
+        <div className="flex items-center gap-3">
+          <div className="relative w-9 h-9 overflow-hidden">
+            <img src={profileImage} alt="Peter" className="w-full h-full object-cover" />
+            <span className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 border-2 rounded-full border-white dark:border-gray-900 z-10 ${statusColor}`} />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-900 dark:text-white leading-none transition-colors duration-300">Peter's AI Assistant</p>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5 transition-colors duration-300">{statusLabel}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close chat"
+          className="p-1.5 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        >
+          <FiX className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* ── Messages ── */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+
+        {/* Quick action chips — shown only before any user message */}
+        {showQuickActions && (
+          <div className="mb-1">
+            <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Quick prompts</p>
+            <div className="grid grid-cols-2 gap-2">
+              {QUICK_ACTIONS.map((a) => {
+                const Icon = a.icon;
+                return (
+                  <button
+                    key={a.label}
+                    type="button"
+                    onClick={() => handleQuick(a)}
+                    disabled={isTyping}
+                    className="flex items-center gap-1.5 px-3 py-2 text-[11px] font-medium bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 hover:border-gray-900 dark:hover:border-white hover:text-gray-900 dark:hover:text-white transition-colors text-left disabled:opacity-50"
+                  >
+                    <Icon className="w-3 h-3 shrink-0" />
+                    {a.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {messages.map((msg) => {
+          const isBot = msg.sender === 'bot';
+          return (
+            <div key={msg.id} className={`flex flex-col ${isBot ? 'items-start' : 'items-end'} gap-1`}>
+              {isBot && (
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <img src={profileImage} alt="AI" className="w-5 h-5 object-cover" />
+                  <span className="text-[10px] font-semibold text-gray-400 dark:text-gray-500">AI Assistant</span>
+                </div>
+              )}
+
+              <div
+                className={`max-w-[85%] px-3.5 py-2.5 text-sm leading-relaxed ${isBot
+                  ? 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200'
+                  : 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                  }`}
+              >
+                {msg.type === 'meetingConfirm' ? (
+                  <div className="text-xs space-y-1">
+                    <p className="font-semibold text-gray-900 dark:text-white mb-2">Meeting Request Received ✓</p>
+                    <p><span className="font-medium text-gray-500 dark:text-gray-400">Name:</span> {msg.data.name}</p>
+                    <p><span className="font-medium text-gray-500 dark:text-gray-400">Email:</span> {msg.data.email}</p>
+                    <p><span className="font-medium text-gray-500 dark:text-gray-400">Purpose:</span> {msg.data.purpose}</p>
+                    <p><span className="font-medium text-gray-500 dark:text-gray-400">Time:</span> {msg.data.preferredTime}</p>
+                    {msg.data.notes && <p><span className="font-medium text-gray-500 dark:text-gray-400">Notes:</span> {msg.data.notes}</p>}
+                    <p className="text-[10px] text-gray-400 mt-2">Peter will follow up within 24–48h.</p>
+                  </div>
+                ) : (
+                  <MessageContent text={msg.text} copiedKey={copiedKey} onCopy={handleCopy} />
+                )}
+              </div>
+
+              <span className="text-[10px] text-gray-300 dark:text-gray-600 px-1">
+                {msg.timestamp?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            </div>
+          );
+        })}
+
+        {/* Typing indicator */}
+        {isTyping && (
+          <div className="flex flex-col items-start gap-1">
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <img src={profileImage} alt="AI" className="w-5 h-5 object-cover" />
+              <span className="text-[10px] font-semibold text-gray-400 dark:text-gray-500">AI Assistant</span>
+            </div>
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3.5 py-2.5">
+              <TypingDots />
+            </div>
+          </div>
+        )}
+
+        <div ref={bottomRef} />
+      </div>
+
+      {/* ── Meeting form panel ── */}
+      {meetingOpen && (
+        <div className="shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-4 overflow-y-auto max-h-72 transition-colors duration-300">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-semibold text-gray-900 dark:text-white transition-colors duration-300">Schedule a Meeting</p>
+            <button type="button" onClick={() => setMeetingOpen(false)} className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+              <FiX className="w-4 h-4" />
+            </button>
+          </div>
+          <form onSubmit={handleMeetingSubmit} className="space-y-2">
+            <div className="relative">
+              <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+              <input
+                type="text" placeholder="Your Full Name *" required
+                value={meetingForm.name} onChange={(e) => setMeetingForm((f) => ({ ...f, name: e.target.value }))}
+                disabled={meetingBusy}
+                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-400 dark:border-gray-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
+              />
+            </div>
+            <div className="relative">
+              <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+              <input
+                type="email" placeholder="Your Email *" required
+                value={meetingForm.email} onChange={(e) => setMeetingForm((f) => ({ ...f, email: e.target.value }))}
+                disabled={meetingBusy}
+                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-400 dark:border-gray-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
+              />
+            </div>
+            <div className="relative">
+              <FiCalendar className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+              <select
+                required value={meetingForm.purpose} onChange={(e) => setMeetingForm((f) => ({ ...f, purpose: e.target.value }))}
+                disabled={meetingBusy}
+                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-400 dark:border-gray-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
+              >
+                <option value="">Meeting Purpose *</option>
+                <option>Project Discussion</option>
+                <option>Job Opportunity</option>
+                <option>Technical Consultation</option>
+                <option>Partnership</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <input
+              type="text" placeholder="Preferred Date/Time *" required
+              value={meetingForm.preferredTime} onChange={(e) => setMeetingForm((f) => ({ ...f, preferredTime: e.target.value }))}
+              disabled={meetingBusy}
+              className="w-full px-3 py-2 text-sm border border-gray-400 dark:border-gray-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
+            />
+            <textarea
+              placeholder="Additional notes…" rows={2}
+              value={meetingForm.notes} onChange={(e) => setMeetingForm((f) => ({ ...f, notes: e.target.value }))}
+              disabled={meetingBusy}
+              className="w-full px-3 py-2 text-sm border border-gray-400 dark:border-gray-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors resize-none"
+            />
+            <div className="flex gap-2 pt-1">
+              <button type="button" onClick={() => setMeetingOpen(false)} disabled={meetingBusy}
+                className="flex-1 py-2 text-sm font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent hover:border-gray-900 dark:hover:border-white hover:text-gray-900 dark:hover:text-white transition-colors">
+                Cancel
+              </button>
+              <button type="submit" disabled={meetingBusy}
+                className="flex-1 py-2 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors disabled:opacity-50">
+                {meetingBusy ? 'Sending…' : 'Send Request'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* ── Input bar ── */}
+      {!meetingOpen && (
+        <form
+          onSubmit={handleSubmit}
+          className="shrink-0 flex items-center gap-2 px-3 py-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300"
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(e); } }}
+            placeholder="Ask about skills, projects, or book a call…"
+            disabled={isTyping}
+            className="flex-1 px-3.5 py-2 text-sm border border-gray-400 dark:border-gray-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors disabled:opacity-60"
+          />
+          <button
+            type="submit"
+            disabled={!input.trim() || isTyping}
+            aria-label="Send message"
+            className="w-9 h-9 flex items-center justify-center bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+          >
+            {isTyping ? (
+              <span className="w-4 h-4 border-2 border-white/30 dark:border-gray-900/30 border-t-white dark:border-t-gray-900 animate-spin" />
+            ) : (
+              <FiSend className="w-4 h-4" />
+            )}
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}

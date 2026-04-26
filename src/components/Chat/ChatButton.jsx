@@ -1,49 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import styles from './ChatButton.module.css';
-import { FaCommentDots } from 'react-icons/fa';
+import { FiMessageSquare, FiX } from 'react-icons/fi';
 import ChatBox from './ChatBox';
-import { useTheme } from '../../context/ThemeContext';
 
-const ChatButton = () => {
-    const { isDarkMode } = useTheme();
-    const [isChatOpen, setIsChatOpen] = useState(false);
-    const [portalElement, setPortalElement] = useState(null);
+export default function ChatButton() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [portal, setPortal] = useState(null);
 
-    useEffect(() => {
-        // Create portal element on mount
-        const element = document.createElement('div');
-        element.id = 'chat-portal';
-        document.body.appendChild(element);
-        setPortalElement(element);
+  useEffect(() => {
+    const el = document.createElement('div');
+    el.id = 'chat-portal';
+    document.body.appendChild(el);
+    setPortal(el);
+    return () => document.body.removeChild(el);
+  }, []);
 
-        // Clean up on unmount
-        return () => {
-            document.body.removeChild(element);
-        };
-    }, []);
+  return (
+    <>
+      {/* Floating toggle button */}
+      <button
+        type="button"
+        onClick={() => setIsOpen((v) => !v)}
+        aria-label={isOpen ? 'Close chat' : 'Chat with Peter'}
+        className={`fixed bottom-5 right-5 z-50 flex items-center gap-2 px-4 py-3 shadow-lg transition-all duration-200 font-medium text-sm border
+          ${isOpen
+            ? 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 border-gray-400 dark:border-gray-500'
+            : 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200 border-gray-900 dark:border-white'
+          }`}
+      >
+        {isOpen
+          ? <FiX className="w-4 h-4 shrink-0" />
+          : <FiMessageSquare className="w-4 h-4 shrink-0" />
+        }
+        {!isOpen && <span>Chat with Peter</span>}
+      </button>
 
-    return (
-        <>
-            {!isChatOpen && (
-                <button
-                    className={`${styles.chatButton} ${isDarkMode ? styles.dark : ''}`}
-                    onClick={() => setIsChatOpen(true)}
-                    aria-label="Chat with Peter"
-                >
-                    <FaCommentDots className={styles.chatIcon} />
-                    <span className={styles.chatText}>Chat with Peter</span>
-                </button>
-            )}
-            
-            {isChatOpen && portalElement && createPortal(
-                <div className={styles.chatBoxContainer}>
-                    <ChatBox onClose={() => setIsChatOpen(false)} />
-                </div>,
-                portalElement
-            )}
-        </>
-    );
-};
-
-export default ChatButton;
+      {/* Chat panel rendered into portal */}
+      {isOpen && portal && createPortal(
+        <ChatBox onClose={() => setIsOpen(false)} />,
+        portal
+      )}
+    </>
+  );
+}
