@@ -103,7 +103,7 @@ export default function Header() {
 
             {/* Location */}
             <div className="flex items-center justify-center sm:justify-start gap-1.5 text-sm text-gray-500 dark:text-gray-400 mb-5 duration-300">
-              <FaMapMarkerAlt className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400 shrink-0" />
+              <FaMapMarkerAlt className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400 shrink-0 duration-300" />
               <span>{personalDetails?.location || 'Davao City, Philippines'}</span>
             </div>
 
