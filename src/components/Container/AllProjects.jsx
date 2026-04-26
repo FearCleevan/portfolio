@@ -239,6 +239,7 @@ export default function AllProjects() {
             />
           </div>
 
+          {/* this is comment */}
           {selectedImages.length > 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); showNext(); }}
