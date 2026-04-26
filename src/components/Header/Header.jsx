@@ -60,7 +60,7 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full overflow-hidden bg-white dark:bg-gray-900 border border-gray-900 dark:border-white shadow-sm">
+    <header className="w-full overflow-hidden bg-white dark:bg-gray-900 border border-gray-900 dark:border-white shadow-sm duration-300">
       <div className="p-6 sm:p-8">
         {/* Profile row */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
@@ -78,7 +78,7 @@ export default function Header() {
               />
             </div>
             {/* Online indicator */}
-            <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-white dark:border-gray-900 shadow-sm" />
+            <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-white dark:border-gray-900 shadow-sm duration-300" />
           </div>
 
           {/* Details */}
@@ -86,7 +86,7 @@ export default function Header() {
             {/* Name + verified badge with theme toggle on the right */}
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight truncate">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight truncate duration-300">
                   {personalDetails?.name || 'Peter Paul Abillar Lazan'}
                 </h1>
                 <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-label="Verified">
@@ -97,12 +97,12 @@ export default function Header() {
             </div>
 
             {/* Job title */}
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 leading-snug">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 leading-snug duration-300">
               {personalDetails?.title || 'Web Developer | IT Support Specialist'}
             </p>
 
             {/* Location */}
-            <div className="flex items-center justify-center sm:justify-start gap-1.5 text-sm text-gray-500 dark:text-gray-400 mb-5">
+            <div className="flex items-center justify-center sm:justify-start gap-1.5 text-sm text-gray-500 dark:text-gray-400 mb-5 duration-300">
               <FaMapMarkerAlt className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400 shrink-0" />
               <span>{personalDetails?.location || 'Davao City, Philippines'}</span>
             </div>
@@ -111,7 +111,7 @@ export default function Header() {
             <div className="flex flex-wrap justify-center sm:justify-start gap-2">
               <button
                 onClick={handleScheduleCall}
-                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium border border-gray-900 dark:border-white text-gray-900 dark:text-white bg-white dark:bg-gray-900 hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 active:scale-95 transition-all duration-200"
+                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium border border-gray-900 dark:border-white text-gray-900 dark:text-white bg-white dark:bg-gray-900 hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 active:scale-95 transition-all duration-300"
               >
                 <FaPhone className="w-3 h-3" />
                 Schedule a Call
@@ -119,7 +119,7 @@ export default function Header() {
 
               <button
                 onClick={handleSendEmail}
-                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent hover:border-gray-900 hover:text-gray-900 dark:hover:border-white dark:hover:text-white active:scale-95 transition-all duration-200"
+                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent hover:border-gray-900 hover:text-gray-900 dark:hover:border-white dark:hover:text-white active:scale-95 transition-all duration-300"
               >
                 <FaEnvelope className="w-3 h-3" />
                 Send Email
@@ -129,7 +129,7 @@ export default function Header() {
                 href="/LazanPeterPaul_CV.pdf"
                 download="Peter-Paul-Lazan-Resume.pdf"
                 onClick={trackCVDownload}
-                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent hover:border-gray-900 hover:text-gray-900 dark:hover:border-white dark:hover:text-white active:scale-95 transition-all duration-200"
+                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent hover:border-gray-900 hover:text-gray-900 dark:hover:border-white dark:hover:text-white active:scale-95 transition-all duration-300"
               >
                 <FaDownload className="w-3 h-3" />
                 Download CV

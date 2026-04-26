@@ -35,13 +35,13 @@ export default function Footer() {
   ].filter((s) => s.href);
 
   return (
-    <footer className="w-full bg-white dark:bg-gray-900 border border-gray-900 dark:border-white shadow-sm px-6 py-5">
+    <footer className="w-full bg-white dark:bg-gray-900 border border-gray-900 dark:border-white shadow-sm px-6 py-5 duration-300">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
 
         {/* Copyright */}
         <p className="text-xs text-gray-400 dark:text-gray-500 text-center sm:text-left">
           © {year}{' '}
-          <span className="text-gray-900 dark:text-white font-medium">
+          <span className="text-gray-900 dark:text-white font-medium duration-300">
             {personalDetails?.name || 'Peter Paul Abillar Lazan'}
           </span>
           . All rights reserved.
@@ -58,7 +58,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 aria-label={label}
                 onClick={() => trackSocialClick(label.toLowerCase())}
-                className="flex items-center justify-center w-10 h-10 bg-gray-50 dark:bg-gray-800 border border-gray-400 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-900 dark:hover:border-white transition-colors"
+                className="flex items-center justify-center w-10 h-10 bg-gray-50 dark:bg-gray-800 border border-gray-400 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-900 dark:hover:border-white transition-colors duration-300"
               >
                 {icon}
               </a>
@@ -67,11 +67,11 @@ export default function Footer() {
         )}
 
         {/* Built with */}
-        <p className="text-xs text-gray-400 dark:text-gray-500">
+        <p className="text-xs text-gray-400 dark:text-gray-500 duration-300">
           Built with{' '}
-          <span className="text-gray-900 dark:text-white font-medium">React</span>
+          <span className="text-gray-900 dark:text-white font-medium duration-300">React</span>
           {' + '}
-          <span className="text-gray-900 dark:text-white font-medium">Tailwind</span>
+          <span className="text-gray-900 dark:text-white font-medium duration-300">Tailwind</span>
         </p>
       </div>
     </footer>

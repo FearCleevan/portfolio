@@ -206,7 +206,7 @@ export default function BlogPost() {
 
           <div className="flex items-center gap-3 text-sm text-gray-400 dark:text-gray-500">
             <time>{post.date}</time>
-            <span className="w-1 h-1 bg-gray-300 dark:bg-gray-700" />
+            <span className="w-1 h-1 bg-gray-300 dark:bg-gray-700 duration-300" />
             <span>{post.readTime}</span>
           </div>
         </header>

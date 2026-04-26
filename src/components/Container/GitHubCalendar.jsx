@@ -68,19 +68,19 @@ function formatDate(dateStr) {
 function GitHubFallback({ username }) {
   return (
     <div className="bg-white dark:bg-gray-900 border border-gray-900 dark:border-white shadow-sm p-6 transition-colors duration-300">
-      <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white mb-4">
-        <span className="text-gray-700 dark:text-gray-300"><GitHubIcon /></span>
+      <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white mb-4 duration-300">
+        <span className="text-gray-700 dark:text-gray-300 duration-300"><GitHubIcon /></span>
         GitHub Activity
       </h2>
       <div className="flex flex-col items-center gap-4 py-6">
-        <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center duration-300">
           View contribution history and open-source work on GitHub.
         </p>
         <a
           href={`https://github.com/${username}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors duration-300"
         >
           <GitHubIcon />
           @{username}
@@ -185,8 +185,8 @@ export default function GitHubCalendar({ username }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
         <div>
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-            <span className="text-gray-700 dark:text-gray-300"><GitHubIcon /></span>
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white duration-300">
+            <span className="text-gray-700 dark:text-gray-300 duration-300"><GitHubIcon /></span>
             GitHub Contributions
           </h2>
           {!loading && !error && (

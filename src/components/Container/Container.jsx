@@ -61,14 +61,14 @@ const CERT_ICONS = {
 function SectionHeader({ emoji, title, to }) {
   return (
     <div className="flex items-center justify-between mb-4">
-      <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-        <span className="text-gray-700 dark:text-gray-300">{emoji}</span>
+      <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white duration-300">
+        <span className="text-gray-700 dark:text-gray-300 duration-300">{emoji}</span>
         {title}
       </h2>
       {to && (
         <Link
           to={to}
-          className="flex items-center gap-1 text-xs font-medium text-gray-900 dark:text-white hover:underline"
+          className="flex items-center gap-1 text-xs font-medium text-gray-900 dark:text-white hover:underline duration-300"
         >
           View All
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +102,7 @@ export default function Container({ projects = [], certifications = [] }) {
                 href={href || '#'}
                 target={href ? '_blank' : undefined}
                 rel="noopener noreferrer"
-                className="group flex flex-col gap-1.5 p-3.5 bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-400 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-all duration-200"
+                className="group flex flex-col gap-1.5 p-3.5 bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-400 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-all duration-300"
               >
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-2">

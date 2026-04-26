@@ -49,14 +49,14 @@ function Card({ children, className = '' }) {
 function SectionHeader({ icon, title, to }) {
   return (
     <div className="flex items-center justify-between mb-4">
-      <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-        <span className="text-gray-700 dark:text-gray-300">{icon}</span>
+      <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white duration-300">
+        <span className="text-gray-700 dark:text-gray-300 duration-300">{icon}</span>
         {title}
       </h2>
       {to && (
         <Link
           to={to}
-          className="flex items-center gap-1 text-xs font-medium text-gray-900 dark:text-white hover:underline transition-colors"
+          className="flex items-center gap-1 text-xs font-medium text-gray-900 dark:text-white hover:underline transition-colors duration-300"
         >
           View All
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

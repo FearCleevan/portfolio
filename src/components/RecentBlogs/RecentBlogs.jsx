@@ -83,7 +83,7 @@ export default function RecentBlogs() {
                   {post.tags.slice(0, 2).map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 text-[10px] font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent hover:border-gray-900 dark:hover:border-white hover:text-gray-900 dark:hover:text-white transition-colors"
+                      className="px-2 py-0.5 text-[10px] font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent hover:border-gray-900 dark:hover:border-white hover:text-gray-900 dark:hover:text-white transition-colors duration-300"
                     >
                       {tag}
                     </span>
@@ -102,9 +102,9 @@ export default function RecentBlogs() {
               </h3>
 
               {/* Meta */}
-              <div className="flex items-center gap-2 text-[11px] text-gray-400 dark:text-gray-500 mb-2">
+              <div className="flex items-center gap-2 text-[11px] text-gray-400 dark:text-gray-500 mb-2 duration-300">
                 <time>{post.date}</time>
-                <span className="w-1 h-1 bg-gray-300 dark:bg-gray-700" />
+                <span className="w-1 h-1 bg-gray-300 dark:bg-gray-700 duration-300" />
                 <span>{post.readTime}</span>
               </div>
 

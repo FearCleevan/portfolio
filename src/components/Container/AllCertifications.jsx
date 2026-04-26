@@ -114,7 +114,7 @@ export default function AllCertifications() {
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <div className="text-gray-700 dark:text-gray-300">
+                      <div className="text-gray-700 dark:text-gray-300 duration-300">
                         <EducationIcon />
                       </div>
                       <h3 className="text-base font-bold text-gray-900 dark:text-white transition-colors duration-300">{edu.degree}</h3>

@@ -46,13 +46,13 @@ export default function FullExperience() {
                     <span>{item.period}</span>
                     {item.type && (
                       <>
-                        <span className="w-1 h-1 bg-gray-300 dark:bg-gray-700 shrink-0" />
+                        <span className="w-1 h-1 bg-gray-300 dark:bg-gray-700 shrink-0 duration-300" />
                         <span>{item.type}</span>
                       </>
                     )}
                     {item.location && (
                       <>
-                        <span className="w-1 h-1 bg-gray-300 dark:bg-gray-700 shrink-0" />
+                        <span className="w-1 h-1 bg-gray-300 dark:bg-gray-700 shrink-0 duration-300" />
                         <span className="flex items-center gap-1">
                           <FaMapMarkerAlt className="w-3 h-3 text-gray-600 dark:text-gray-400" />
                           {item.location}
