@@ -7,7 +7,8 @@
     <!-- Primary Meta Tags -->
     <title>Peter Paul Lazan — Full Stack Developer | Portfolio</title>
     <meta name="title" content="Peter Paul Lazan — Full Stack Developer | Portfolio" />
-    <meta name="description" content="Full Stack Developer specializing in React, Node.js, and Firebase. View projects, experience, and contact Peter Paul Lazan." />
+    <meta name="description" content="Full Stack Developer, Mobile App DevOps, and IT Systems Administrator based in Davao City, Philippines. Specializing in React, Node.js, TypeScript, and Supabase." />
+    <meta name="keywords" content="Peter Paul Lazan, Full Stack Developer, React Developer, Node.js, TypeScript, Supabase, Mobile DevOps, IT Systems, Davao City, Philippines, Web Developer, Portfolio" />
     <meta name="author" content="Peter Paul Lazan" />
     <meta name="robots" content="index, follow" />
 
@@ -22,8 +23,10 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://lazandev.vercel.app/" />
     <meta property="og:title" content="Peter Paul Lazan — Full Stack Developer" />
-    <meta property="og:description" content="Full Stack Developer based in Davao City, Philippines. Experienced in React, Node.js, Firebase, and modern web technologies." />
+    <meta property="og:description" content="Full Stack Developer, Mobile App DevOps, and IT Systems Administrator based in Davao City, Philippines. Specializing in React, Node.js, TypeScript, and Supabase." />
     <meta property="og:image" content="https://lazandev.vercel.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Peter Paul Lazan — Full Stack Developer" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content="Peter Paul Lazan Portfolio" />
@@ -32,12 +35,29 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://lazandev.vercel.app/" />
     <meta name="twitter:title" content="Peter Paul Lazan — Full Stack Developer" />
-    <meta name="twitter:description" content="Full Stack Developer based in Davao City, Philippines. Experienced in React, Node.js, Firebase, and modern web technologies." />
+    <meta name="twitter:description" content="Full Stack Developer, Mobile App DevOps, and IT Systems Administrator based in Davao City, Philippines. Specializing in React, Node.js, TypeScript, and Supabase." />
     <meta name="twitter:image" content="https://lazandev.vercel.app/og-image.png" />
 
-    <!-- Favicon & Touch Icons (replace with proper set) -->
+    <!-- Favicon & Touch Icons -->
     <link rel="icon" type="image/png" sizes="32x32" href="/profile.png" />
     <link rel="apple-touch-icon" href="/profile.png" />
+
+    <!-- Google Analytics 4 — loads only when VITE_GA_MEASUREMENT_ID is set -->
+    <script>
+      (function () {
+        var id = '%VITE_GA_MEASUREMENT_ID%';
+        if (!id || id === '%VITE_GA_MEASUREMENT_ID%' || id === 'G-XXXXXXXXXX') return;
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', id, { send_page_view: false });
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+        document.head.appendChild(s);
+      })();
+    </script>
 
     <!-- Performance: DNS prefetch & preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -66,14 +86,23 @@
       "email": "jonathan.mauring17@gmail.com",
       "sameAs": [
         "https://github.com/FearCleevan",
+        "https://linkedin.com/in/peter-paul-lazan",
+        "https://www.instagram.com/fear.cleevan/",
+        "https://www.facebook.com/FearCleevan",
         "https://calendly.com/fearcleevan/30min"
       ],
       "knowsAbout": [
         "React",
         "Node.js",
-        "Firebase",
+        "TypeScript",
         "JavaScript",
-        "Full Stack Web Development"
+        "Supabase",
+        "MySQL",
+        "React Native",
+        "CI/CD",
+        "Full Stack Web Development",
+        "Mobile App Development",
+        "IT Systems Administration"
       ]
     }
     </script>
@@ -99,4 +128,3 @@
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
-

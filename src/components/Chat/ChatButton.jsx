@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { FiMessageSquare, FiX } from 'react-icons/fi';
 import ChatBox from './ChatBox';
+import { trackChatOpen } from '../../services/analyticsService';
 
 export default function ChatButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +21,11 @@ export default function ChatButton() {
       {/* Floating toggle button */}
       <button
         type="button"
-        onClick={() => setIsOpen((v) => !v)}
+        onClick={() => {
+          const opening = !isOpen;
+          setIsOpen(opening);
+          if (opening) trackChatOpen();
+        }}
         aria-label={isOpen ? 'Close chat' : 'Chat with Peter'}
         className={`fixed bottom-5 right-5 z-50 flex items-center gap-2 px-4 py-3 shadow-lg transition-all duration-200 font-medium text-sm border
           ${isOpen

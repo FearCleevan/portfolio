@@ -1,5 +1,6 @@
-import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { trackPageView } from './services/analyticsService';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -16,9 +17,20 @@ const RecentBlogs       = lazy(() => import('./components/RecentBlogs/RecentBlog
 const BlogPost          = lazy(() => import('./components/BlogPost/BlogPost'));
 const NotFound          = lazy(() => import('./components/NotFound/NotFound'));
 
+function RouteTracker() {
+  const location = useLocation();
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location.pathname]);
+  return null;
+}
+
 function App() {
   return (
     <LoadingProvider>
+      {/* Fires trackPageView on every navigation */}
+      <RouteTracker />
+
       {/* Thin progress bar on every route change */}
       <NavigationBar />
 
