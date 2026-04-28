@@ -9,6 +9,7 @@ lerna-debug.log*
 .env
 .env.example
 REFACTOR_PLAN.md
+.claude
 
 node_modules
 dist
