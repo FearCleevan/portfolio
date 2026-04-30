@@ -2,7 +2,8 @@
   {
     "id": "proj-1",
     "title": "HRIS SaaS Platform",
-    "description": "A comprehensive Human Resource Information System SaaS platform with landing page, dashboards, and mobile app. Features employee management, payroll, attendance tracking, and leave management built on Supabase.",
+    "description": "A comprehensive HR platform handling employee management, payroll tracking, and attendance — built for multi-role access with a responsive web and mobile interface.",
+    "currentlyBuilding": true,
     "techStack": ["Next.js", "React", "Vite", "React Native", "Tailwind CSS", "CSS Modules", "TypeScript", "Supabase", "PostgreSQL"],
     "category": "Web & Mobile",
     "type": "SaaS",
@@ -14,7 +15,7 @@
   {
     "id": "proj-2",
     "title": "My AI Assistant (Local LLM, RAG System)",
-    "description": "A local AI assistant using Retrieval-Augmented Generation (RAG) architecture. Indexes personal documents and provides context-aware answers using local LLMs via Ollama, with a VS Code extension interface.",
+    "description": "A fully offline AI assistant that reads private documents and answers questions with context — no API keys, no cloud. Built with Ollama, ChromaDB, and FastAPI.",
     "techStack": ["Python", "Ollama", "ChromaDB", "sentence-transformers", "FastAPI", "PyQt6", "Textual", "BeautifulSoup", "pypdf", "TypeScript"],
     "category": "AI / ML",
     "type": "Tool",
@@ -26,7 +27,7 @@
   {
     "id": "proj-3",
     "title": "PayUp — Late Payment Escalator",
-    "description": "A mobile app that automates late payment reminders and escalation workflows for businesses. Features configurable escalation rules, push notifications, and payment tracking via Supabase.",
+    "description": "A mobile app that automates payment reminders and escalation workflows for businesses — reducing manual follow-ups with push notifications and payment tracking.",
     "techStack": ["React Native", "Expo Router", "TypeScript", "NativeWind", "Supabase"],
     "category": "Mobile",
     "type": "Mobile App",
@@ -98,7 +99,7 @@
   {
     "id": "proj-9",
     "title": "Chat System — Company Internal Chat",
-    "description": "Real-time internal chat system with role-based access control (RBAC), file/image sharing via Cloudinary, and read receipts. Built for The Launchpad Inc's internal team communication.",
+    "description": "A real-time internal chat system with role-based access control, file/image sharing via Cloudinary, and read receipts — deployed for a live company.",
     "techStack": ["React.js", "Firebase", "Firestore", "Authentication", "Cloudinary"],
     "category": "Web",
     "type": "Web App",
@@ -110,7 +111,7 @@
   {
     "id": "proj-10",
     "title": "LP CRM — Customer Relationship Management",
-    "description": "Full-stack CRM system for The Launchpad Inc's sales team. Features lead management, pipeline tracking, customer profiles, activity logs, and automated follow-up reminders.",
+    "description": "A full-stack CRM for a real sales team — managing leads, pipeline stages, customer profiles, and activity logs across the organization.",
     "techStack": ["React.js", "Node.js", "Express.js", "MySQL"],
     "category": "Web",
     "type": "Web App",

@@ -74,7 +74,7 @@ export default function AllProjects() {
   }, [isPreviewOpen, closePreview, showNext, showPrev]);
 
   return (
-    <PageLayout title="All Projects" subtitle={`${projects.length} projects`}>
+    <PageLayout title="All Projects" subtitle="14 projects built and shipped — from SaaS platforms and mobile apps to AI systems and internal tools.">
 
       {/* ── Search bar ── */}
       <div className="relative">
@@ -138,14 +138,20 @@ export default function AllProjects() {
               >
                 {/* Card body */}
                 <div className="flex flex-col flex-1 p-5">
-                  {/* Category + featured badge */}
-                  <div className="flex items-center gap-2 mb-3">
+                  {/* Category + featured + currently building badges */}
+                  <div className="flex items-center gap-2 mb-3 flex-wrap">
                     <span className="px-2 py-0.5 text-[10px] font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent">
                       {project.category || 'Web'}
                     </span>
                     {project.featured && (
                       <span className="px-2 py-0.5 text-[10px] font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent">
                         Featured
+                      </span>
+                    )}
+                    {project.currentlyBuilding && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded-full border border-amber-300 dark:border-amber-600 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                        Currently Building
                       </span>
                     )}
                   </div>

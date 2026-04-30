@@ -37,67 +37,98 @@ function EducationIcon() {
   );
 }
 
+function ClockIcon() {
+  return (
+    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z" />
+    </svg>
+  );
+}
+
 const ICON_MAP = {
   trophy: TrophyIcon,
   star: StarIcon,
   award: AwardIcon,
   education: EducationIcon,
+  clock: ClockIcon,
 };
+
+function CertCard({ cert }) {
+  const Icon = ICON_MAP[cert.icon] || AwardIcon;
+  return (
+    <div className="flex flex-col bg-white dark:bg-gray-900 border border-gray-900 dark:border-white shadow-sm p-6 hover:border-gray-700 dark:hover:border-gray-300 transition-all duration-200">
+      {/* Icon */}
+      <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4 border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300">
+        <Icon />
+      </div>
+
+      {/* Category + in-progress badges */}
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
+        <span className="inline-block px-2 py-0.5 text-[10px] font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent">
+          {cert.category}
+        </span>
+        {cert.inProgress && (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded-full border border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+            In Progress
+          </span>
+        )}
+      </div>
+
+      <h3 className="text-sm font-bold text-gray-900 dark:text-white leading-snug mb-1 transition-colors duration-300">
+        {cert.title}
+      </h3>
+
+      <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300">
+        {cert.issuer}
+      </p>
+
+      <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed flex-1 transition-colors duration-300">
+        {cert.description}
+      </p>
+
+      {cert.year && (
+        <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+          <span className="text-xs text-gray-400 dark:text-gray-500">{cert.year}</span>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AllCertifications() {
   const { certifications } = useCertifications();
   const { education }      = useEducation();
 
+  const achieved    = certifications.filter((c) => !c.inProgress);
+  const inProgress  = certifications.filter((c) => c.inProgress);
+
   return (
     <PageLayout
       title="Certifications & Education"
-      subtitle="Academic achievements and education background"
+      subtitle="Academic achievements, credentials, and continuous learning."
     >
-      {/* ── Certifications ── */}
+      {/* ── Achievements ── */}
       <section>
         <h2 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4">
           Achievements
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {certifications.map((cert) => {
-            const Icon = ICON_MAP[cert.icon] || AwardIcon;
-            return (
-              <div
-                key={cert.id}
-                className="flex flex-col bg-white dark:bg-gray-900 border border-gray-900 dark:border-white shadow-sm p-6 hover:border-gray-700 dark:hover:border-gray-300 transition-all duration-200"
-              >
-                {/* Icon */}
-                <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4 border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300">
-                  <Icon />
-                </div>
-
-                {/* Category badge */}
-                <span className="inline-block mb-2 px-2 py-0.5 text-[10px] font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent self-start">
-                  {cert.category}
-                </span>
-
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white leading-snug mb-1 transition-colors duration-300">
-                  {cert.title}
-                </h3>
-
-                <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300">
-                  {cert.issuer}
-                </p>
-
-                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed flex-1 transition-colors duration-300">
-                  {cert.description}
-                </p>
-
-                {cert.year && (
-                  <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-                    <span className="text-xs text-gray-400 dark:text-gray-500">{cert.year}</span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {achieved.map((cert) => <CertCard key={cert.id} cert={cert} />)}
         </div>
       </section>
+
+      {/* ── Currently Learning ── */}
+      {inProgress.length > 0 && (
+        <section>
+          <h2 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4">
+            Currently Learning / Pursuing
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {inProgress.map((cert) => <CertCard key={cert.id} cert={cert} />)}
+          </div>
+        </section>
+      )}
 
       {/* ── Education ── */}
       {education?.length > 0 && (

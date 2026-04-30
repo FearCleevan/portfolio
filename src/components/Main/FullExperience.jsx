@@ -8,7 +8,7 @@ export default function FullExperience() {
   return (
     <PageLayout
       title="Experience"
-      subtitle={`${experience.length} position${experience.length !== 1 ? 's' : ''}`}
+      subtitle="2+ years of hands-on experience across full-stack development, mobile DevOps, and IT systems administration."
     >
       <div className="relative pl-6 space-y-6">
         {/* Vertical timeline line */}

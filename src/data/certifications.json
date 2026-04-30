@@ -4,7 +4,7 @@
     "title": "Dean's List",
     "issuer": "Samson Polytechnic College of Davao",
     "issuerUrl": "",
-    "description": "Awarded for consistent academic excellence throughout the program.",
+    "description": "Consistently made the Dean's List throughout the 4-year BS Information Technology program — awarded for academic excellence each qualifying semester.",
     "category": "Academic",
     "year": "2021–2025",
     "icon": "award"
@@ -28,5 +28,17 @@
     "category": "Academic",
     "year": "2025",
     "icon": "trophy"
+  }
+,
+  {
+    "id": "cert-4",
+    "title": "AWS Certified Cloud Practitioner",
+    "issuer": "Amazon Web Services (AWS)",
+    "issuerUrl": "",
+    "description": "Foundational cloud certification covering AWS core services, security, architecture, pricing, and support — currently studying toward exam readiness.",
+    "category": "Cloud",
+    "year": "In Progress",
+    "icon": "clock",
+    "inProgress": true
   }
 ]

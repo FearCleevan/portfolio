@@ -48,10 +48,22 @@ export default function ContainerSecond() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {/* ── Connect ── */}
       <div className="bg-white dark:bg-gray-900 border border-gray-900 dark:border-white shadow-sm p-6 flex flex-col gap-4 transition-colors duration-300">
-        <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2 duration-300">
-          <span className="text-gray-700 dark:text-gray-300 duration-300"><ConnectIcon /></span>
-          Connect
-        </h2>
+        <div>
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2 duration-300 mb-1">
+            <span className="text-gray-700 dark:text-gray-300 duration-300"><ConnectIcon /></span>
+            Connect
+          </h2>
+          {/* Availability status */}
+          <div className="flex items-center gap-1.5 mb-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <span className="text-xs text-emerald-700 dark:text-emerald-400 font-medium duration-300">Available — actively looking for opportunities.</span>
+          </div>
+          {/* Headline + subline */}
+          <p className="text-base font-bold text-gray-900 dark:text-white leading-snug duration-300">Let's build something together.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mt-1 duration-300">
+            I'm currently open to full-time roles, project-based work, and freelance contracts — locally in the Philippines or fully remote.
+          </p>
+        </div>
 
         {/* Email */}
         <a
@@ -93,6 +105,7 @@ export default function ContainerSecond() {
               <ArrowRightIcon />
             </span>
           </a>
+          <p className="text-[10px] text-gray-400 dark:text-gray-500 px-1 duration-300">⚡ Usually responds within 24 hours.</p>
         </div>
 
         {/* Social Links */}

@@ -25,7 +25,7 @@ export default function RecentBlogs() {
   }, [sorted, search]);
 
   return (
-    <PageLayout title="All Blog Posts" subtitle={`${blogPosts.length} ${blogPosts.length === 1 ? 'post' : 'posts'}`}>
+    <PageLayout title="All Blog Posts" subtitle="Technical deep-dives on full-stack development, mobile DevOps, AI/ML, and security — written from real production experience.">
 
       {/* ── Search ── */}
       <div className="relative">
@@ -124,6 +124,19 @@ export default function RecentBlogs() {
           ))}
         </div>
       )}
+      {/* ── Suggest a topic CTA ── */}
+      <div className="mt-2 pt-6 border-t border-gray-200 dark:border-gray-800 text-center transition-colors duration-300">
+        <p className="text-xs text-gray-400 dark:text-gray-500 duration-300">
+          Have a topic you'd like me to cover?{' '}
+          <a
+            href="mailto:jonathan.mauring17@gmail.com?subject=Blog Topic Suggestion"
+            className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white underline underline-offset-2 transition-colors duration-200"
+          >
+            Reach out
+          </a>
+          {' '}— I'm always open to writing about real problems.
+        </p>
+      </div>
     </PageLayout>
   );
 }

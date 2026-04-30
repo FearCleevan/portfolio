@@ -9,6 +9,7 @@
     "type": "Full-time",
     "current": true,
     "responsibilities": [
+      "Managed full DevOps and IT operations for a growing company — overseeing mobile app deployment, cloud infrastructure, CI/CD pipelines, and cross-team coordination.",
       "Mobile App DevOps (iOS & Android): Managed full iOS and Android app deployment lifecycle on Apple App Store Connect and Google Play Console, including provisioning profiles, certificates, TestFlight distribution, and production releases for React Native / Expo applications.",
       "Web Development & Deployment: Built and maintained mobile app landing pages using React.js and TypeScript; managed deployments via Vercel including custom domain setup, environment variables, and production/preview branch management.",
       "Version Control & CI/CD: Administered GitHub repositories, handled pull request reviews and merging, enforced branching strategies, and managed CI/CD deployment pipelines through Vercel's Git integration.",
@@ -30,6 +31,7 @@
     "type": "Full-time",
     "current": false,
     "responsibilities": [
+      "Built and deployed full-stack web systems and automated data pipelines for a real company — from internal CRM and chat systems to ETL workflows and server administration.",
       "Full-Stack Web Development: Built and deployed full-stack web applications using React.js, Node.js/Express, and MySQL/Firebase, including an Internal CRM, Real-Time Chat System with RBAC, and client landing pages for automated lead capture.",
       "Automated Data Pipelines: Created ETL workflows with Google Apps Script to automate data extraction, validation, and loading into Google Sheets; integrated lead capture and notification systems to reduce manual work.",
       "Hosting, DNS & Deployment: Managed hosting on Hostinger and GoDaddy including deployments, domain setup, DNS records (MX, SPF, DKIM, DMARC), email routing, and SSL certificate installation.",
