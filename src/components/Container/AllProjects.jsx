@@ -6,7 +6,7 @@ import {
   SiSupabase, SiPython, SiExpo,
 } from 'react-icons/si';
 import PageLayout from '../shared/PageLayout';
-import { useProjects } from '../../hooks/useProjects';
+import projects from '../../data/projects';            // ← updated import
 import { trackProjectView } from '../../services/analyticsService';
 
 const TECH_ICONS = {
@@ -33,7 +33,7 @@ function getTechIcon(name = '') {
 const CATEGORIES = ['All', 'Web', 'Mobile', 'AI / ML', 'Open Source'];
 
 export default function AllProjects() {
-  const { projects } = useProjects();
+  // Projects are now imported directly, no hook needed
   const [search, setSearch] = useState('');
   const [activeCategory, setCategory] = useState('All');
   const [preview, setPreview] = useState({ projectId: null, imageIndex: 0 });
@@ -51,7 +51,7 @@ export default function AllProjects() {
       );
     }
     return list;
-  }, [projects, search, activeCategory]);
+  }, [search, activeCategory]);
 
   const selectedProject = projects.find((p) => p.id === preview.projectId);
   const selectedImages = selectedProject?.sampleImages || [];
@@ -107,8 +107,8 @@ export default function AllProjects() {
             key={cat}
             onClick={() => setCategory(cat)}
             className={`px-3.5 py-1.5 text-xs font-medium transition-all duration-200 border ${activeCategory === cat
-              ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white'
-              : 'bg-transparent border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 hover:border-gray-900 dark:hover:border-white active:scale-95'
+                ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white'
+                : 'bg-transparent border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 hover:border-gray-900 dark:hover:border-white active:scale-95'
               }`}
           >
             {cat}
@@ -137,11 +137,10 @@ export default function AllProjects() {
             const visibleCount = Math.min(images.length, 2);
             const hasMore = images.length > 2;
 
-            // Determine links: use links array if present, else fallback to single link
             const links = project.links && project.links.length > 0
               ? project.links
-              : (project.liveUrl || project.url)
-                ? [{ label: 'Open', url: project.liveUrl || project.url }]
+              : (project.hostedUrl || project.liveUrl || project.url)
+                ? [{ label: 'Open', url: project.hostedUrl || project.liveUrl || project.url }]
                 : [];
 
             return (
@@ -154,7 +153,7 @@ export default function AllProjects() {
 
                 {/* Card body */}
                 <div className="flex flex-col flex-1 p-5">
-                  {/* Category + featured + currently building badges */}
+                  {/* Badges */}
                   <div className="flex items-center gap-2 mb-3 flex-wrap">
                     <span className="px-2 py-0.5 text-[10px] font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 bg-transparent">
                       {project.category || 'Web'}
@@ -172,7 +171,7 @@ export default function AllProjects() {
                     )}
                   </div>
 
-                  {/* Title + multiple links */}
+                  {/* Title + links */}
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h3 className="text-sm font-bold text-gray-900 dark:text-white leading-snug group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-2">
                       {project.title}
@@ -223,6 +222,7 @@ export default function AllProjects() {
                     </div>
                   )}
                 </div>
+
                 {/* ── Image thumbnails ── */}
                 {showThumbnails && (
                   <div className="relative flex gap-1 p-4 pb-2">
@@ -238,13 +238,12 @@ export default function AllProjects() {
                           className="w-full h-full object-cover"
                           loading="lazy"
                         />
-                        {/* Overlay badge on the second image when there are more */}
                         {hasMore && idx === 1 && (
                           <div
                             className="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
-                              openPreview(project.id, 2); // first hidden image
+                              openPreview(project.id, 2);
                             }}
                           >
                             <span className="text-white text-lg font-bold drop-shadow-md">
@@ -262,7 +261,6 @@ export default function AllProjects() {
         </div>
       )}
 
-      {/* ── Image preview overlay (unchanged functionality) ── */}
       {/* ── Image preview overlay (larger) ── */}
       {isPreviewOpen && (
         <div
@@ -271,7 +269,6 @@ export default function AllProjects() {
           role="dialog"
           aria-modal="true"
         >
-          {/* Close button – top right */}
           <button
             onClick={closePreview}
             className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
@@ -280,7 +277,6 @@ export default function AllProjects() {
             <FiX className="w-5 h-5" />
           </button>
 
-          {/* Previous arrow */}
           {selectedImages.length > 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); showPrev(); }}
@@ -291,7 +287,6 @@ export default function AllProjects() {
             </button>
           )}
 
-          {/* Image container – takes up available space */}
           <div
             className="max-w-[calc(100vw-6rem)] max-h-[calc(100vh-6rem)] w-auto h-auto"
             onClick={(e) => e.stopPropagation()}
@@ -303,7 +298,6 @@ export default function AllProjects() {
             />
           </div>
 
-          {/* Next arrow */}
           {selectedImages.length > 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); showNext(); }}
