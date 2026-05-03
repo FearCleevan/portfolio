@@ -1,6 +1,6 @@
 import personalDetails from './personalDetails.json';
 import experience from './experience.json';
-import projects from './projects.json';
+import projects from './projects';
 import skills from './skills.json';
 import techStack from './techStack.json';
 import education from './education.json';
