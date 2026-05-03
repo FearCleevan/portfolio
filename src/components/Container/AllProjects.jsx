@@ -34,9 +34,9 @@ const CATEGORIES = ['All', 'Web', 'Mobile', 'AI / ML', 'Open Source'];
 
 export default function AllProjects() {
   const { projects } = useProjects();
-  const [search, setSearch]             = useState('');
-  const [activeCategory, setCategory]  = useState('All');
-  const [preview, setPreview]          = useState({ projectId: null, imageIndex: 0 });
+  const [search, setSearch] = useState('');
+  const [activeCategory, setCategory] = useState('All');
+  const [preview, setPreview] = useState({ projectId: null, imageIndex: 0 });
 
   const filtered = useMemo(() => {
     let list = projects;
@@ -54,13 +54,17 @@ export default function AllProjects() {
   }, [projects, search, activeCategory]);
 
   const selectedProject = projects.find((p) => p.id === preview.projectId);
-  const selectedImages  = selectedProject?.sampleImages || [];
-  const activeImage     = selectedImages[preview.imageIndex];
-  const isPreviewOpen   = Boolean(activeImage);
+  const selectedImages = selectedProject?.sampleImages || [];
+  const activeImage = selectedImages[preview.imageIndex];
+  const isPreviewOpen = Boolean(activeImage);
 
-  const closePreview  = useCallback(() => setPreview({ projectId: null, imageIndex: 0 }), []);
-  const showNext      = useCallback(() => setPreview((p) => ({ ...p, imageIndex: (p.imageIndex + 1) % selectedImages.length })), [selectedImages.length]);
-  const showPrev      = useCallback(() => setPreview((p) => ({ ...p, imageIndex: (p.imageIndex - 1 + selectedImages.length) % selectedImages.length })), [selectedImages.length]);
+  const closePreview = useCallback(() => setPreview({ projectId: null, imageIndex: 0 }), []);
+  const showNext = useCallback(() => setPreview((p) => ({ ...p, imageIndex: (p.imageIndex + 1) % selectedImages.length })), [selectedImages.length]);
+  const showPrev = useCallback(() => setPreview((p) => ({ ...p, imageIndex: (p.imageIndex - 1 + selectedImages.length) % selectedImages.length })), [selectedImages.length]);
+
+  const openPreview = useCallback((projectId, imageIndex = 0) => {
+    setPreview({ projectId, imageIndex });
+  }, []);
 
   useEffect(() => {
     if (!isPreviewOpen) return;
@@ -102,11 +106,10 @@ export default function AllProjects() {
           <button
             key={cat}
             onClick={() => setCategory(cat)}
-            className={`px-3.5 py-1.5 text-xs font-medium transition-all duration-200 border ${
-              activeCategory === cat
-                ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white'
-                : 'bg-transparent border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 hover:border-gray-900 dark:hover:border-white active:scale-95'
-            }`}
+            className={`px-3.5 py-1.5 text-xs font-medium transition-all duration-200 border ${activeCategory === cat
+              ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white'
+              : 'bg-transparent border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 hover:border-gray-900 dark:hover:border-white active:scale-95'
+              }`}
           >
             {cat}
           </button>
@@ -129,13 +132,26 @@ export default function AllProjects() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((project) => {
-            const href = project.liveUrl || project.url;
+            const images = project.sampleImages || [];
+            const showThumbnails = images.length > 0;
+            const visibleCount = Math.min(images.length, 2);
+            const hasMore = images.length > 2;
+
+            // Determine links: use links array if present, else fallback to single link
+            const links = project.links && project.links.length > 0
+              ? project.links
+              : (project.liveUrl || project.url)
+                ? [{ label: 'Open', url: project.liveUrl || project.url }]
+                : [];
+
             return (
               <div
                 key={project.id}
                 className="group flex flex-col bg-white dark:bg-gray-900 border border-gray-400 dark:border-gray-500 shadow-sm hover:border-gray-900 dark:hover:border-white hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-all duration-200 overflow-hidden"
                 onClick={() => trackProjectView(project.title)}
               >
+
+
                 {/* Card body */}
                 <div className="flex flex-col flex-1 p-5">
                   {/* Category + featured + currently building badges */}
@@ -156,24 +172,26 @@ export default function AllProjects() {
                     )}
                   </div>
 
-                  {/* Title + external link */}
+                  {/* Title + multiple links */}
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h3 className="text-sm font-bold text-gray-900 dark:text-white leading-snug group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-2">
                       {project.title}
                     </h3>
-                    {href && (
-                      <a
-                        href={href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="shrink-0 mt-0.5 p-1 text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                        aria-label={`Open ${project.title}`}
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </a>
+                    {links.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 shrink-0">
+                        {links.map((link, i) => (
+                          <a
+                            key={i}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center px-2 py-0.5 text-[10px] font-medium border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 hover:border-gray-900 dark:hover:border-white transition-colors"
+                          >
+                            {link.label}
+                          </a>
+                        ))}
+                      </div>
                     )}
                   </div>
 
@@ -205,51 +223,91 @@ export default function AllProjects() {
                     </div>
                   )}
                 </div>
+                {/* ── Image thumbnails ── */}
+                {showThumbnails && (
+                  <div className="relative flex gap-1 p-4 pb-2">
+                    {images.slice(0, visibleCount).map((img, idx) => (
+                      <button
+                        key={idx}
+                        onClick={(e) => { e.stopPropagation(); openPreview(project.id, idx); }}
+                        className="relative flex-1 aspect-video bg-gray-100 dark:bg-gray-800 overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+                      >
+                        <img
+                          src={img.url}
+                          alt={img.alt || `${project.title} preview ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                        {/* Overlay badge on the second image when there are more */}
+                        {hasMore && idx === 1 && (
+                          <div
+                            className="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openPreview(project.id, 2); // first hidden image
+                            }}
+                          >
+                            <span className="text-white text-lg font-bold drop-shadow-md">
+                              +{images.length - 2}
+                            </span>
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
       )}
 
-      {/* ── Image preview overlay ── */}
+      {/* ── Image preview overlay (unchanged functionality) ── */}
+      {/* ── Image preview overlay (larger) ── */}
       {isPreviewOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-8"
           onClick={closePreview}
           role="dialog"
           aria-modal="true"
         >
+          {/* Close button – top right */}
           <button
             onClick={closePreview}
-            className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 text-white transition-colors"
+            className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
             aria-label="Close"
           >
             <FiX className="w-5 h-5" />
           </button>
 
+          {/* Previous arrow */}
           {selectedImages.length > 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); showPrev(); }}
-              className="absolute left-4 p-2 bg-white/10 hover:bg-white/20 text-white transition-colors"
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
               aria-label="Previous"
             >
               <FiChevronLeft className="w-5 h-5" />
             </button>
           )}
 
-          <div className="max-w-4xl max-h-[85vh] mx-16" onClick={(e) => e.stopPropagation()}>
+          {/* Image container – takes up available space */}
+          <div
+            className="max-w-[calc(100vw-6rem)] max-h-[calc(100vh-6rem)] w-auto h-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <img
               src={activeImage.url}
               alt={`${selectedProject?.title} preview`}
-              className="max-w-full max-h-[85vh] object-contain"
+              className="max-w-full max-h-[calc(100vh-6rem)] object-contain"
             />
           </div>
 
-          {/* this is comment */}
+          {/* Next arrow */}
           {selectedImages.length > 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); showNext(); }}
-              className="absolute right-4 p-2 bg-white/10 hover:bg-white/20 text-white transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
               aria-label="Next"
             >
               <FiChevronRight className="w-5 h-5" />
