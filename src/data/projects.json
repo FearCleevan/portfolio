@@ -23,19 +23,19 @@
     "image": "",
     "sampleImages": [
       {
-        "url": "/src/assets/projectImages/hris-landing-page/image1.png",
+        "url": "/assets/projectImages/hris-landing-page/image1.png",
         "alt": "HRIS Landing Page 1"
       },
       {
-        "url": "/src/assets/projectImages/hris-landing-page/image2.png",
+        "url": "/assets/projectImages/hris-landing-page/image2.png",
         "alt": "HRIS Landing Page 2"
       },
       {
-        "url": "/src/assets/projectImages/hris-landing-page/image3.png",
+        "url": "/assets/projectImages/hris-landing-page/image3.png",
         "alt": "HRIS Landing Page 3"
       },
       {
-        "url": "/src/assets/projectImages/hris-landing-page/image4.png",
+        "url": "/assets/projectImages/hris-landing-page/image4.png",
         "alt": "HRIS Landing Page 4"
       },
       {
@@ -43,7 +43,7 @@
         "alt": "HRIS Landing Page 5"
       },
       {
-        "url": "/src/assets/projectImages/hris-landing-page/image6.png",
+        "url": "/assets/projectImages/hris-landing-page/image6.png",
         "alt": "HRIS Landing Page 6"
       }
     ],
